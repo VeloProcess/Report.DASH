@@ -224,76 +224,51 @@ export const generateFeedback = async (operatorData, indicators) => {
       if (averages.tmt) comparisonInfo += `- TMT médio: ${averages.tmt}\n`;
     }
 
-    const prompt = `Você é um analista de performance. Gere um feedback mensal CONCISO e DIRETO para um operador de atendimento.
+    const prompt = `Feedback ${operatorData.name} - ${operatorData.reference_month || operatorData.referenceMonth}
 
-OPERADOR:
-- Nome: ${operatorData.name}
-- Mês de referência: ${operatorData.reference_month || operatorData.referenceMonth}
-
-MÉTRICAS DO OPERADOR:
-${operatorMetrics.calls !== null ? `- Ligações realizadas: ${operatorMetrics.calls}` : ''}
-${operatorMetrics.tma ? `- TMA (Tempo Médio de Atendimento): ${operatorMetrics.tma}` : ''}
-${operatorMetrics.tickets !== null ? `- Tickets: ${operatorMetrics.tickets}` : ''}
-${operatorMetrics.tmt ? `- TMT: ${operatorMetrics.tmt}` : ''}
-${operatorMetrics.percentLogado ? `- % Logado: ${operatorMetrics.percentLogado}` : ''}
-${operatorMetrics.pausaEscalada ? `- Pausa Escalada: ${operatorMetrics.pausaEscalada}` : ''}
-${operatorMetrics.totalPausas ? `- Total de Pausas: ${operatorMetrics.totalPausas}` : ''}
-${operatorMetrics.almocoEscalado ? `- Almoço Escalado: ${operatorMetrics.almocoEscalado}` : ''}
-${operatorMetrics.almocoRealizado ? `- Almoço Realizado: ${operatorMetrics.almocoRealizado}` : ''}
-${operatorMetrics.pausa10Escalada ? `- Pausa 10 Escalada: ${operatorMetrics.pausa10Escalada}` : ''}
-${operatorMetrics.pausa10Realizado ? `- Pausa 10 Realizado: ${operatorMetrics.pausa10Realizado}` : ''}
-${operatorMetrics.pausaBanheiro ? `- Pausa Banheiro: ${operatorMetrics.pausaBanheiro}` : ''}
-${operatorMetrics.pausaFeedback ? `- Pausa Feedback: ${operatorMetrics.pausaFeedback}` : ''}
+Métricas:
+${operatorMetrics.calls !== null ? `Ligações: ${operatorMetrics.calls}` : ''}
+${operatorMetrics.tma ? `TMA: ${operatorMetrics.tma}` : ''}
+${operatorMetrics.tickets !== null ? `Tickets: ${operatorMetrics.tickets}` : ''}
+${operatorMetrics.tmt ? `TMT: ${operatorMetrics.tmt}` : ''}
+${operatorMetrics.percentLogado ? `% Logado: ${operatorMetrics.percentLogado}` : ''}
+${operatorMetrics.pausaEscalada ? `Pausa Escalada: ${operatorMetrics.pausaEscalada}` : ''}
+${operatorMetrics.totalPausas ? `Total Pausas: ${operatorMetrics.totalPausas}` : ''}
+${operatorMetrics.almocoEscalado ? `Almoço Escalado: ${operatorMetrics.almocoEscalado}` : ''}
+${operatorMetrics.almocoRealizado ? `Almoço Realizado: ${operatorMetrics.almocoRealizado}` : ''}
+${operatorMetrics.pausa10Escalada ? `Pausa 10 Escalada: ${operatorMetrics.pausa10Escalada}` : ''}
+${operatorMetrics.pausa10Realizado ? `Pausa 10 Realizado: ${operatorMetrics.pausa10Realizado}` : ''}
+${operatorMetrics.pausaBanheiro ? `Pausa Banheiro: ${operatorMetrics.pausaBanheiro}` : ''}
+${operatorMetrics.pausaFeedback ? `Pausa Feedback: ${operatorMetrics.pausaFeedback}` : ''}
 ${comparisonInfo}
 
-=== INSTRUÇÕES OBRIGATÓRIAS ===
+3 tópicos:
 
-Organize o feedback em APENAS 3 TÓPICOS:
+CHAMADAS
+- Ligações: acima média = MANTER, abaixo = MELHORAR
+- TMA: abaixo média = MANTER, acima = MELHORAR
+- TMT: abaixo média = MANTER, acima = MELHORAR
 
-1. CHAMADAS
-   - Ligações realizadas: Compare com a média da equipe. Se estiver acima da média = MANTER, se abaixo = MELHORAR
-   - TMA: Compare com a média da equipe. Se estiver ABAIXO da média = MANTER (bom), se estiver ACIMA da média = MELHORAR (ruim)
-   - TMT: Compare com a média da equipe. Se estiver ABAIXO da média = MANTER (bom), se estiver ACIMA da média = MELHORAR (ruim)
+TICKETS
+- Tickets: acima média = MANTER, abaixo = MELHORAR
 
-2. TICKETS
-   - Tickets: Compare com a média da equipe. Se estiver acima da média = MANTER, se abaixo = MELHORAR
+PAUSAS
+- % Logado: 100% = MANTER, < 100% = MELHORAR, > 100% = MANTER
+- Pausas: realizado > escalado = MELHORAR, realizado <= escalado = MANTER
 
-3. PAUSAS
-   - % Logado: 
-     * Se for 100% = MANTER (está ótimo)
-     * Se for MENOR que 100% = MELHORAR (pode melhorar)
-     * Se for MAIOR que 100% = MANTER (está ótimo)
-   - Para TODAS as pausas (Pausa Escalada vs Total de Pausas, Almoço Escalado vs Almoço Realizado, Pausa 10 Escalada vs Pausa 10 Realizado, Pausa Banheiro, Pausa Feedback):
-     * Se TEMPO REALIZADO > TEMPO ESCALADO = MELHORAR (está ruim, ultrapassou o tempo permitido)
-     * Se TEMPO REALIZADO < TEMPO ESCALADO = MANTER (está bom, dentro do tempo permitido)
-     * Se TEMPO REALIZADO = TEMPO ESCALADO = MANTER (está bom, no limite)
+Formato simples: nome métrica, valor, média, status (MANTER/MELHORAR), análise curta.
 
-FORMATO OBRIGATÓRIO PARA CADA MÉTRICA:
-
-[NOME DA MÉTRICA]
-Valor: [valor exato do operador]
-Média da equipe: [média se disponível, ou "N/A"]
-Status: MANTER ou MELHORAR
-Análise: [2-3 linhas explicando a comparação e o motivo do status]
-
-EXEMPLO:
-TMA (Tempo Médio de Atendimento)
-Valor: 00:05:30
-Média da equipe: 00:04:20
-Status: MELHORAR
-Análise: O TMA de 5 minutos e 30 segundos está ACIMA da média da equipe (4 minutos e 20 segundos). Isso indica que o operador está demorando mais que o esperado para atender cada ligação, impactando a produtividade. É necessário focar em agilidade e otimização do tempo de atendimento.
-
-Formate a resposta em JSON:
+JSON:
 {
-  "summary": "resumo geral conciso (máximo 2 parágrafos)",
-  "metricsAnalysis": "análise organizada em 3 seções: CHAMADAS, TICKETS, PAUSAS. Cada métrica deve seguir o formato acima com Valor, Média da equipe, Status e Análise",
-  "positivePoints": "pontos positivos resumidos",
-  "attentionPoints": "pontos de atenção resumidos",
-  "recommendations": "recomendações práticas e acionáveis",
-  "operatorResponseModel": "modelo de resposta profissional e curto do operador"
+  "summary": "resumo breve",
+  "metricsAnalysis": "CHAMADAS\n[análise métricas]\n\nTICKETS\n[análise métricas]\n\nPAUSAS\n[análise métricas]",
+  "positivePoints": "pontos positivos",
+  "attentionPoints": "pontos de atenção",
+  "recommendations": "recomendações",
+  "operatorResponseModel": "resposta do operador"
 }`;
 
-    const systemPrompt = 'Você é um analista de performance profissional. Siga EXATAMENTE o formato e as regras especificadas no prompt do usuário. Organize o feedback em apenas 3 tópicos: CHAMADAS, TICKETS e PAUSAS.';
+    const systemPrompt = 'Você é um analista de performance. Gere feedback direto e objetivo em 3 tópicos: CHAMADAS, TICKETS e PAUSAS. Seja conciso, sem detalhamento excessivo.';
 
     let responseContent;
     let usedProvider = '';

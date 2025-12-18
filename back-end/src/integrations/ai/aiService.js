@@ -182,6 +182,93 @@ const generateWithGemini = async (prompt, systemPrompt) => {
   return response.text();
 };
 
+// Função para formatar array de métricas em texto
+const formatMetricsArray = (metricsArray) => {
+  const sections = {
+    CHAMADAS: [],
+    TICKETS: [],
+    PAUSAS: []
+  };
+
+  metricsArray.forEach(metric => {
+    const metricName = (metric.metric || metric.name || '').toUpperCase();
+    
+    if (metricName.includes('LIGAÇÃO') || metricName.includes('TMA') || metricName.includes('TMT')) {
+      sections.CHAMADAS.push(metric);
+    } else if (metricName.includes('TICKET')) {
+      sections.TICKETS.push(metric);
+    } else {
+      sections.PAUSAS.push(metric);
+    }
+  });
+
+  let formatted = '';
+  
+  if (sections.CHAMADAS.length > 0) {
+    formatted += 'CHAMADAS\n\n';
+    sections.CHAMADAS.forEach(metric => {
+      formatted += `${metric.metric || metric.name}\n`;
+      formatted += `Valor: ${metric.value || 'N/A'}\n`;
+      if (metric.average !== null && metric.average !== undefined) formatted += `Média: ${metric.average}\n`;
+      formatted += `Status: ${metric.status || metric.Status || 'N/A'}\n`;
+      formatted += `Análise: ${metric.analysis || metric.analise || 'N/A'}\n\n`;
+    });
+  }
+
+  if (sections.TICKETS.length > 0) {
+    formatted += 'TICKETS\n\n';
+    sections.TICKETS.forEach(metric => {
+      formatted += `${metric.metric || metric.name}\n`;
+      formatted += `Valor: ${metric.value || 'N/A'}\n`;
+      if (metric.average !== null && metric.average !== undefined) formatted += `Média: ${metric.average}\n`;
+      formatted += `Status: ${metric.status || metric.Status || 'N/A'}\n`;
+      formatted += `Análise: ${metric.analysis || metric.analise || 'N/A'}\n\n`;
+    });
+  }
+
+  if (sections.PAUSAS.length > 0) {
+    formatted += 'PAUSAS\n\n';
+    sections.PAUSAS.forEach(metric => {
+      formatted += `${metric.metric || metric.name}\n`;
+      formatted += `Valor: ${metric.value || 'N/A'}\n`;
+      if (metric.average !== null && metric.average !== undefined) formatted += `Média: ${metric.average}\n`;
+      formatted += `Status: ${metric.status || metric.Status || 'N/A'}\n`;
+      formatted += `Análise: ${metric.analysis || metric.analise || 'N/A'}\n\n`;
+    });
+  }
+
+  return formatted.trim();
+};
+
+// Função para formatar objeto de métricas em texto
+const formatMetricsObject = (metricsObj) => {
+  let formatted = '';
+  
+  for (const [section, metrics] of Object.entries(metricsObj)) {
+    formatted += `${section.toUpperCase()}\n\n`;
+    
+    if (Array.isArray(metrics)) {
+      metrics.forEach(metric => {
+        formatted += `${metric.metric || metric.name || ''}\n`;
+        formatted += `Valor: ${metric.value || 'N/A'}\n`;
+        if (metric.average !== null && metric.average !== undefined) formatted += `Média: ${metric.average}\n`;
+        formatted += `Status: ${metric.status || metric.Status || 'N/A'}\n`;
+        formatted += `Análise: ${metric.analysis || metric.analise || 'N/A'}\n\n`;
+      });
+    } else if (typeof metrics === 'object') {
+      for (const [metricName, metricData] of Object.entries(metrics)) {
+        formatted += `${metricName}\n`;
+        formatted += `Valor: ${metricData.value || metricData.Valor || 'N/A'}\n`;
+        if (metricData.average !== null && metricData.average !== undefined) formatted += `Média: ${metricData.average}\n`;
+        formatted += `Status: ${metricData.status || metricData.Status || 'N/A'}\n`;
+        formatted += `Análise: ${metricData.analysis || metricData.analise || metricData.Análise || 'N/A'}\n\n`;
+      }
+    }
+  }
+  
+  return formatted.trim();
+};
+
 // Função principal com fallback
 export const generateFeedback = async (operatorData, indicators) => {
   try {
@@ -258,10 +345,49 @@ PAUSAS
 
 Formato simples: nome métrica, valor, média, status (MANTER/MELHORAR), análise curta.
 
+IMPORTANTE: O campo "metricsAnalysis" deve ser TEXTO FORMATADO, NÃO JSON. Formato:
+
+CHAMADAS
+
+Ligações realizadas
+Valor: [valor]
+Média: [média]
+Status: MANTER
+Análise: [análise curta]
+
+TMA
+Valor: [valor]
+Média: [média]
+Status: MANTER ou MELHORAR
+Análise: [análise curta]
+
+TMT
+Valor: [valor]
+Média: [média]
+Status: MANTER ou MELHORAR
+Análise: [análise curta]
+
+TICKETS
+
+Tickets
+Valor: [valor]
+Média: [média]
+Status: MANTER ou MELHORAR
+Análise: [análise curta]
+
+PAUSAS
+
+% Logado
+Valor: [valor]
+Status: MANTER ou MELHORAR
+Análise: [análise curta]
+
+[Para cada pausa: nome, valor realizado vs escalado, status, análise]
+
 JSON:
 {
   "summary": "resumo breve",
-  "metricsAnalysis": "CHAMADAS\n[análise métricas]\n\nTICKETS\n[análise métricas]\n\nPAUSAS\n[análise métricas]",
+  "metricsAnalysis": "TEXTO FORMATADO conforme exemplo acima, NÃO JSON",
   "positivePoints": "pontos positivos",
   "attentionPoints": "pontos de atenção",
   "recommendations": "recomendações",
@@ -320,14 +446,30 @@ JSON:
       throw new Error('Resposta da IA não contém o campo "summary"');
     }
 
-    // Converter metricsAnalysis de objeto para string se necessário
+    // Converter metricsAnalysis de objeto/JSON para string formatada
     let metricsAnalysisText = '';
 
     if (typeof feedbackData.metricsAnalysis === 'string') {
-      metricsAnalysisText = feedbackData.metricsAnalysis;
+      // Tentar parsear se for JSON string
+      try {
+        const parsed = JSON.parse(feedbackData.metricsAnalysis);
+        if (Array.isArray(parsed)) {
+          // Se for array de objetos, formatar
+          metricsAnalysisText = formatMetricsArray(parsed);
+        } else {
+          metricsAnalysisText = feedbackData.metricsAnalysis;
+        }
+      } catch {
+        // Não é JSON, usar como está
+        metricsAnalysisText = feedbackData.metricsAnalysis;
+      }
+    } else if (Array.isArray(feedbackData.metricsAnalysis)) {
+      // Se for array direto
+      metricsAnalysisText = formatMetricsArray(feedbackData.metricsAnalysis);
     } else if (typeof feedbackData.metricsAnalysis === 'object' && feedbackData.metricsAnalysis !== null) {
       console.log('⚠️ metricsAnalysis veio como objeto, convertendo para string...');
-      metricsAnalysisText = JSON.stringify(feedbackData.metricsAnalysis, null, 2);
+      // Se for objeto com seções
+      metricsAnalysisText = formatMetricsObject(feedbackData.metricsAnalysis);
     } else {
       console.error('⚠️ ATENÇÃO: Campo metricsAnalysis está vazio ou em formato inválido!');
       throw new Error('A IA não gerou a análise detalhada de métricas no formato esperado. Por favor, tente novamente.');

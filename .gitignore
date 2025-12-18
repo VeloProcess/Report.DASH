@@ -1,0 +1,62 @@
+# Dependências
+node_modules/
+**/node_modules/
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.*.local
+back-end/.env
+front-end/.env
+
+# Dados locais
+back-end/data/
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!back-end/src/controllers/send_email.JSON
+!vercel.json
+!front-end/vercel.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build
+dist/
+build/
+front-end/dist/
+back-end/dist/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporários
+*.tmp
+*.temp
+.cache/
+
+# Arquivos de credenciais do Google
+back-end/credentials.json
+back-end/*credentials*.json
+**/credentials*.json
+FORMATO_CORRETO_ENV.txt
+**/*ENV*.txt
+**/*env*.txt
+
+# PDFs gerados temporariamente
+*.pdf
+!documentation/*.pdf
+

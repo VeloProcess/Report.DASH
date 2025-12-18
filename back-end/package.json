@@ -1,0 +1,26 @@
+{
+  "name": "feedback-system-backend",
+  "version": "1.0.0",
+  "description": "Backend do sistema de feedback mensal com IA",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "openai": "^4.20.1",
+    "nodemailer": "^6.9.7",
+    "pdfkit": "^0.14.0",
+    "googleapis": "^128.0.0",
+    "@google/generative-ai": "^0.21.0",
+    "groq-sdk": "^0.7.0"
+  }
+}
+

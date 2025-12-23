@@ -11,9 +11,27 @@ const indicatorsFile = path.join(dataDir, 'indicators.json');
 const feedbacksFile = path.join(dataDir, 'feedbacks.json');
 const logsFile = path.join(dataDir, 'logs.json');
 
+// Debug: Log dos caminhos
+console.log('📂 Diretório atual (process.cwd()):', process.cwd());
+console.log('📂 Diretório do módulo (__dirname):', __dirname);
+console.log('📂 Diretório de dados (dataDir):', dataDir);
+console.log('📂 Arquivo operators.json:', operatorsFile);
+console.log('📂 Arquivo existe?', fs.existsSync(operatorsFile));
+
 // Garantir que o diretório data existe
 if (!fs.existsSync(dataDir)) {
+  console.log('⚠️ Diretório data não existe, criando...');
   fs.mkdirSync(dataDir, { recursive: true });
+} else {
+  console.log('✅ Diretório data existe');
+}
+
+// Verificar se operators.json existe
+if (fs.existsSync(operatorsFile)) {
+  const operators = JSON.parse(fs.readFileSync(operatorsFile, 'utf8'));
+  console.log(`✅ operators.json encontrado com ${Array.isArray(operators) ? operators.length : 0} operadores`);
+} else {
+  console.log('❌ operators.json NÃO encontrado!');
 }
 
 // Inicializar arquivos JSON se não existirem

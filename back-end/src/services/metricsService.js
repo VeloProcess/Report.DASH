@@ -8,6 +8,13 @@ const __dirname = path.dirname(__filename);
 const metricsDir = path.join(__dirname, '../../data');
 const metricsFile = path.join(metricsDir, 'Metrics.json');
 
+// Debug: Log dos caminhos
+console.log('📂 Metrics - Diretório atual (process.cwd()):', process.cwd());
+console.log('📂 Metrics - Diretório do módulo (__dirname):', __dirname);
+console.log('📂 Metrics - Diretório de dados (metricsDir):', metricsDir);
+console.log('📂 Metrics - Arquivo Metrics.json:', metricsFile);
+console.log('📂 Metrics - Arquivo existe?', fs.existsSync(metricsFile));
+
 /**
  * Carrega o arquivo Metrics.json
  * @returns {Object} Dados do arquivo Metrics.json
@@ -15,16 +22,37 @@ const metricsFile = path.join(metricsDir, 'Metrics.json');
 const loadMetricsFile = () => {
   try {
     if (!fs.existsSync(metricsFile)) {
-      console.log('⚠️ Arquivo Metrics.json não encontrado, criando estrutura vazia...');
+      console.log('⚠️ Arquivo Metrics.json não encontrado em:', metricsFile);
+      console.log('⚠️ Tentando caminhos alternativos...');
+      
+      // Tentar caminhos alternativos
+      const alternativePaths = [
+        path.join(process.cwd(), 'data', 'Metrics.json'),
+        path.join(process.cwd(), 'back-end', 'data', 'Metrics.json'),
+        path.join(__dirname, '../../../data', 'Metrics.json'),
+      ];
+      
+      for (const altPath of alternativePaths) {
+        if (fs.existsSync(altPath)) {
+          console.log(`✅ Metrics.json encontrado em caminho alternativo: ${altPath}`);
+          const content = fs.readFileSync(altPath, 'utf-8');
+          return JSON.parse(content);
+        }
+      }
+      
+      console.log('⚠️ Criando estrutura vazia...');
       const emptyStructure = {};
       saveMetricsFile(emptyStructure);
       return emptyStructure;
     }
     
+    console.log('✅ Metrics.json encontrado, carregando...');
     const content = fs.readFileSync(metricsFile, 'utf-8');
-    return JSON.parse(content);
+    const data = JSON.parse(content);
+    console.log(`✅ Metrics.json carregado com ${Object.keys(data).length} entradas`);
+    return data;
   } catch (error) {
-    console.error('Erro ao carregar Metrics.json:', error);
+    console.error('❌ Erro ao carregar Metrics.json:', error);
     return {};
   }
 };

@@ -5,18 +5,46 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dataDir = path.join(__dirname, '..', 'data');
-const operatorsFile = path.join(dataDir, 'operators.json');
-const indicatorsFile = path.join(dataDir, 'indicators.json');
-const feedbacksFile = path.join(dataDir, 'feedbacks.json');
-const logsFile = path.join(dataDir, 'logs.json');
+// Tentar múltiplos caminhos possíveis (para funcionar localmente e no Render)
+const possibleDataDirs = [
+  path.join(__dirname, '..', 'data'), // Local: src/../data
+  path.join(process.cwd(), 'data'), // Render com rootDir: back-end/data
+  path.join(process.cwd(), 'back-end', 'data'), // Render sem rootDir
+  path.join(__dirname, '../../data'), // Alternativo
+];
+
+let dataDir = null;
+let operatorsFile = null;
+let indicatorsFile = null;
+let feedbacksFile = null;
+let logsFile = null;
+
+// Encontrar o diretório data que existe
+for (const dir of possibleDataDirs) {
+  if (fs.existsSync(dir)) {
+    dataDir = dir;
+    console.log(`✅ Diretório data encontrado em: ${dataDir}`);
+    break;
+  }
+}
+
+// Se não encontrou, usar o primeiro (será criado)
+if (!dataDir) {
+  dataDir = possibleDataDirs[0];
+  console.log(`⚠️ Diretório data não encontrado, usando: ${dataDir}`);
+}
+
+operatorsFile = path.join(dataDir, 'operators.json');
+indicatorsFile = path.join(dataDir, 'indicators.json');
+feedbacksFile = path.join(dataDir, 'feedbacks.json');
+logsFile = path.join(dataDir, 'logs.json');
 
 // Debug: Log dos caminhos
 console.log('📂 Diretório atual (process.cwd()):', process.cwd());
 console.log('📂 Diretório do módulo (__dirname):', __dirname);
-console.log('📂 Diretório de dados (dataDir):', dataDir);
+console.log('📂 Diretório de dados escolhido (dataDir):', dataDir);
 console.log('📂 Arquivo operators.json:', operatorsFile);
-console.log('📂 Arquivo existe?', fs.existsSync(operatorsFile));
+console.log('📂 Arquivo operators.json existe?', fs.existsSync(operatorsFile));
 
 // Garantir que o diretório data existe
 if (!fs.existsSync(dataDir)) {

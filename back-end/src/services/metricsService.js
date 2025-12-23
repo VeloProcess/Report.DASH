@@ -5,13 +5,38 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const metricsDir = path.join(__dirname, '../../data');
-const metricsFile = path.join(metricsDir, 'Metrics.json');
+// Tentar múltiplos caminhos possíveis
+const possibleMetricsDirs = [
+  path.join(__dirname, '../../data'), // Local: services/../../data
+  path.join(process.cwd(), 'data'), // Render com rootDir: back-end/data
+  path.join(process.cwd(), 'back-end', 'data'), // Render sem rootDir
+  path.join(__dirname, '../../../data'), // Alternativo
+];
+
+let metricsDir = null;
+let metricsFile = null;
+
+// Encontrar o diretório data que existe
+for (const dir of possibleMetricsDirs) {
+  if (fs.existsSync(dir)) {
+    metricsDir = dir;
+    console.log(`✅ Metrics - Diretório data encontrado em: ${metricsDir}`);
+    break;
+  }
+}
+
+// Se não encontrou, usar o primeiro (será criado)
+if (!metricsDir) {
+  metricsDir = possibleMetricsDirs[0];
+  console.log(`⚠️ Metrics - Diretório data não encontrado, usando: ${metricsDir}`);
+}
+
+metricsFile = path.join(metricsDir, 'Metrics.json');
 
 // Debug: Log dos caminhos
 console.log('📂 Metrics - Diretório atual (process.cwd()):', process.cwd());
 console.log('📂 Metrics - Diretório do módulo (__dirname):', __dirname);
-console.log('📂 Metrics - Diretório de dados (metricsDir):', metricsDir);
+console.log('📂 Metrics - Diretório de dados escolhido:', metricsDir);
 console.log('📂 Metrics - Arquivo Metrics.json:', metricsFile);
 console.log('📂 Metrics - Arquivo existe?', fs.existsSync(metricsFile));
 

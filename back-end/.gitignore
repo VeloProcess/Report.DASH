@@ -1,6 +1,12 @@
 node_modules/
 .env
-data/
+data/*.log
+data/feedbacks.json
+data/logs.json
+data/indicators.json
+# Manter operators.json e Metrics.json no Git
+!data/operators.json
+!data/Metrics.json
 *.log
 .DS_Store
 

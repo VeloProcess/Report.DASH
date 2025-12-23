@@ -2,17 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { initializeDatabase } from './database.js';
-
-// Importar rotas com tratamento de erro
-let authRoutes;
-try {
-  authRoutes = (await import('./routes/authRoutes.js')).default;
-  console.log('✅ authRoutes importado com sucesso');
-} catch (error) {
-  console.error('❌ Erro ao importar authRoutes:', error);
-  throw error;
-}
-
+import authRoutes from './routes/authRoutes.js';
 import operatorRoutes from './routes/operatorRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
 import logRoutes from './routes/logRoutes.js';
@@ -59,11 +49,12 @@ if (authRoutes) {
   console.error('❌ authRoutes não está definido!');
 }
 
-// Rota de teste direta
+// Rota de teste direta para debug
 app.post('/api/auth/login-test', (req, res) => {
   console.log('✅ Rota de teste /api/auth/login-test chamada');
   res.json({ test: 'ok', message: 'Rota de teste funcionando' });
 });
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Sistema de Feedback funcionando' });
 });
@@ -74,6 +65,7 @@ console.log('  - POST /api/auth/login');
 console.log('  - GET /api/auth/me');
 console.log('  - POST /api/auth/logout');
 console.log('  - GET /api/health');
+console.log('  - POST /api/auth/login-test (teste)');
 
 // Rotas protegidas (requerem autenticação)
 app.use('/api/operators', operatorRoutes);
@@ -86,4 +78,3 @@ app.use('/api/sheets', googleSheetsRoutes);
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });
-

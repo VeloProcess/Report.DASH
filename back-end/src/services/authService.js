@@ -2,6 +2,7 @@ import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { getOperatorByEmail } from '../utils/operatorUtils.js';
+import { isManager } from '../utils/managerUtils.js';
 
 dotenv.config();
 

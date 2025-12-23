@@ -68,6 +68,7 @@ export const createSessionToken = (userData) => {
       email: userData.email,
       operatorId: userData.operatorId,
       operatorName: userData.operatorName,
+      isManager: isManager(userData.email),
     },
     JWT_SECRET,
     { expiresIn: '24h' }

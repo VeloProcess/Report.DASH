@@ -2,6 +2,7 @@ import express from 'express';
 import { processLogin } from '../services/authService.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { getOperatorByEmail } from '../utils/operatorUtils.js';
+import { isManager } from '../utils/managerUtils.js';
 
 const router = express.Router();
 
@@ -52,8 +53,9 @@ router.post('/login', async (req, res) => {
 router.get('/me', authenticateToken, async (req, res) => {
   try {
     const operator = getOperatorByEmail(req.user.email);
+    const managerStatus = isManager(req.user.email);
     
-    if (!operator) {
+    if (!operator && !managerStatus) {
       return res.status(404).json({ 
         error: 'Operador não encontrado' 
       });
@@ -63,10 +65,11 @@ router.get('/me', authenticateToken, async (req, res) => {
       email: req.user.email,
       operatorId: req.user.operatorId,
       operatorName: req.user.operatorName,
-      name: operator.name,
-      position: operator.position,
-      team: operator.team,
-      referenceMonth: operator.reference_month,
+      name: operator?.name || req.user.operatorName,
+      position: operator?.position || null,
+      team: operator?.team || null,
+      referenceMonth: operator?.reference_month || null,
+      isManager: managerStatus,
     });
   } catch (error) {
     console.error('Erro ao buscar dados do usuário:', error);

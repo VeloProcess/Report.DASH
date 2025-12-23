@@ -9,6 +9,7 @@ import logRoutes from './routes/logRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import exportRoutes from './routes/exportRoutes.js';
 import googleSheetsRoutes from './routes/googleSheetsRoutes.js';
+import managerRoutes from './routes/managerRoutes.js';
 
 dotenv.config();
 
@@ -74,6 +75,7 @@ app.use('/api/logs', logRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/sheets', googleSheetsRoutes);
+app.use('/api/manager', managerRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);

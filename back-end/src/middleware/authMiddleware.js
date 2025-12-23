@@ -33,6 +33,7 @@ export const authenticateToken = async (req, res, next) => {
       email: userData.email,
       operatorId: userData.operatorId,
       operatorName: userData.operatorName,
+      isManager: userData.isManager || false,
     };
 
     next();

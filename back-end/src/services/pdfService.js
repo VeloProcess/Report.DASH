@@ -1,4 +1,35 @@
 import PDFDocument from 'pdfkit';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Cores da Velotax
+const COLORS = {
+  blue1: '#1694ff',
+  blue2: '#1634ff',
+  blueDark: '#000058',
+  white: '#ffffff',
+  black: '#000000',
+};
+
+// Caminhos dos logos
+const getLogoPath = (logoName) => {
+  const possiblePaths = [
+    path.join(__dirname, '../../assets', logoName),
+    path.join(process.cwd(), 'assets', logoName),
+    path.join(process.cwd(), 'back-end', 'assets', logoName),
+  ];
+  
+  for (const logoPath of possiblePaths) {
+    if (fs.existsSync(logoPath)) {
+      return logoPath;
+    }
+  }
+  return null;
+};
 
 // Função auxiliar para escapar texto HTML
 const escapeHtml = (text) => {
@@ -152,22 +183,43 @@ export const generateMetricsPDF = async (operator, indicators, month = null) => 
       const chunks = [];
       const doc = new PDFDocument({
         size: 'A4',
-        margins: { top: 50, bottom: 50, left: 50, right: 50 },
+        margins: { top: 100, bottom: 100, left: 50, right: 50 },
       });
 
       doc.on('data', (chunk) => chunks.push(chunk));
       doc.on('end', () => resolve(Buffer.concat(chunks)));
       doc.on('error', reject);
 
-      // Cabeçalho
-      doc.fontSize(20).font('Helvetica-Bold').text('Relatório de Métricas Mensais', { align: 'center' });
+      // Logo Natalino no Cabeçalho
+      const logoNatalinoPath = getLogoPath('logo-natalino.png');
+      if (logoNatalinoPath) {
+        try {
+          const logoHeight = 40;
+          const logoWidth = 150;
+          const x = (doc.page.width - logoWidth) / 2;
+          doc.image(logoNatalinoPath, x, 20, { width: logoWidth, height: logoHeight });
+          doc.y = 70;
+        } catch (error) {
+          console.log('⚠️ Erro ao carregar logo natalino:', error.message);
+        }
+      }
+
+      // Cabeçalho com cores azuis
+      doc.fontSize(20).font('Helvetica-Bold').fillColor(COLORS.blue1).text('Relatório de Métricas Mensais', { align: 'center' });
+      doc.fillColor(COLORS.black);
       doc.moveDown();
-      doc.fontSize(12).font('Helvetica').text(`Operador: ${operator.name}`, { align: 'center' });
+      doc.fontSize(12).font('Helvetica').fillColor(COLORS.blue2).text(`Operador: ${operator.name}`, { align: 'center' });
+      doc.fillColor(COLORS.black);
       doc.text(`Cargo: ${operator.position || 'N/A'}`, { align: 'center' });
       doc.text(`Equipe: ${operator.team || 'N/A'}`, { align: 'center' });
-      doc.text(`Período: ${month || operator.reference_month || 'N/A'}`, { align: 'center' });
+      doc.fillColor(COLORS.blue1).text(`Período: ${month || operator.reference_month || 'N/A'}`, { align: 'center' });
+      doc.fillColor(COLORS.black);
       doc.moveDown();
+      
+      // Linha decorativa azul
+      doc.strokeColor(COLORS.blue1).lineWidth(2);
       doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+      doc.strokeColor(COLORS.black).lineWidth(1);
       doc.moveDown();
 
       // Função auxiliar para adicionar métrica
@@ -186,8 +238,8 @@ export const generateMetricsPDF = async (operator, indicators, month = null) => 
 
       // Seção: Atendimento
       if (indicators.calls || indicators.tma || indicators.tickets || indicators.tmt) {
-        doc.fontSize(16).font('Helvetica-Bold').fillColor('#3498db').text('ATENDIMENTO');
-        doc.fillColor('#000000');
+        doc.fontSize(16).font('Helvetica-Bold').fillColor(COLORS.blue1).text('ATENDIMENTO');
+        doc.fillColor(COLORS.black);
         doc.moveDown(0.5);
         
         addMetric('Ligações Realizadas', indicators.calls);
@@ -199,8 +251,8 @@ export const generateMetricsPDF = async (operator, indicators, month = null) => 
 
       // Seção: Qualidade
       if (indicators.quality_score || indicators.qtd_pesq_telefone || indicators.pesquisa_ticket || indicators.qtd_pesq_ticket) {
-        doc.fontSize(16).font('Helvetica-Bold').fillColor('#27ae60').text('QUALIDADE');
-        doc.fillColor('#000000');
+        doc.fontSize(16).font('Helvetica-Bold').fillColor(COLORS.blue2).text('QUALIDADE');
+        doc.fillColor(COLORS.black);
         doc.moveDown(0.5);
         
         addMetric('Pesquisa Telefone', indicators.quality_score);
@@ -215,8 +267,8 @@ export const generateMetricsPDF = async (operator, indicators, month = null) => 
       // Seção: Disponibilidade e Pausas
       if (indicators.total_escalado || indicators.total_logado || indicators.percent_logado || 
           indicators.pausa_escalada || indicators.total_pausas) {
-        doc.fontSize(16).font('Helvetica-Bold').fillColor('#e74c3c').text('DISPONIBILIDADE E PAUSAS');
-        doc.fillColor('#000000');
+        doc.fontSize(16).font('Helvetica-Bold').fillColor(COLORS.blue1).text('DISPONIBILIDADE E PAUSAS');
+        doc.fillColor(COLORS.black);
         doc.moveDown(0.5);
         
         addMetric('Total Escalado', indicators.total_escalado);
@@ -233,8 +285,8 @@ export const generateMetricsPDF = async (operator, indicators, month = null) => 
 
       // Seção: Intervalos
       if (indicators.almoco_escalado || indicators.almoco_realizado || indicators.pausa_10_escalada) {
-        doc.fontSize(16).font('Helvetica-Bold').fillColor('#f39c12').text('INTERVALOS');
-        doc.fillColor('#000000');
+        doc.fontSize(16).font('Helvetica-Bold').fillColor(COLORS.blue2).text('INTERVALOS');
+        doc.fillColor(COLORS.black);
         doc.moveDown(0.5);
         
         addMetric('Almoço Escalado', indicators.almoco_escalado);
@@ -252,8 +304,8 @@ export const generateMetricsPDF = async (operator, indicators, month = null) => 
 
       // Seção: Desenvolvimento
       if (indicators.treinamento || indicators.percent_treinamento) {
-        doc.fontSize(16).font('Helvetica-Bold').fillColor('#9b59b6').text('DESENVOLVIMENTO');
-        doc.fillColor('#000000');
+        doc.fontSize(16).font('Helvetica-Bold').fillColor(COLORS.blueDark).text('DESENVOLVIMENTO');
+        doc.fillColor(COLORS.black);
         doc.moveDown(0.5);
         
         addMetric('Treinamento', indicators.treinamento);
@@ -263,11 +315,31 @@ export const generateMetricsPDF = async (operator, indicators, month = null) => 
 
       // Rodapé
       doc.moveDown();
+      
+      // Linha decorativa azul
+      doc.strokeColor(COLORS.blue1).lineWidth(2);
       doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+      doc.strokeColor(COLORS.black).lineWidth(1);
       doc.moveDown();
-      doc.fontSize(10).font('Helvetica-Oblique').fillColor('#7f8c8d')
+      
+      // Logo Básico no Rodapé
+      const logoBasicoPath = getLogoPath('logo-basico.png');
+      if (logoBasicoPath) {
+        try {
+          const logoHeight = 30;
+          const logoWidth = 120;
+          const x = (doc.page.width - logoWidth) / 2;
+          const y = doc.page.height - 80;
+          doc.image(logoBasicoPath, x, y, { width: logoWidth, height: logoHeight });
+          doc.y = y + logoHeight + 10;
+        } catch (error) {
+          console.log('⚠️ Erro ao carregar logo básico:', error.message);
+        }
+      }
+      
+      doc.fontSize(10).font('Helvetica-Oblique').fillColor(COLORS.blue2)
         .text(`Relatório gerado em ${new Date().toLocaleDateString('pt-BR')}`, { align: 'center' });
-      doc.fillColor('#000000');
+      doc.fillColor(COLORS.black);
 
       doc.end();
     } catch (error) {

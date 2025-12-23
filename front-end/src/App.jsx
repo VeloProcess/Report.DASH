@@ -1,26 +1,52 @@
-import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import OperatorForm from './pages/OperatorForm';
-import IndicatorsForm from './pages/IndicatorsForm';
-import FeedbackView from './pages/FeedbackView';
-import LogsPanel from './pages/LogsPanel';
-import Navigation from './components/Navigation';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 import './styles/App.css';
+
+function AppRoutes() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh' 
+      }}>
+        Carregando...
+      </div>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} />
+      <Route 
+        path="/dashboard" 
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } 
+      />
+      <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
+      <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
+    </Routes>
+  );
+}
 
 function App() {
   return (
-    <div className="app">
-      <Navigation />
-      <main className="main-content">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/operator/new" element={<OperatorForm />} />
-          <Route path="/indicators/:operatorId" element={<IndicatorsForm />} />
-          <Route path="/feedback/:operatorId" element={<FeedbackView />} />
-          <Route path="/logs" element={<LogsPanel />} />
-        </Routes>
-      </main>
-    </div>
+    <AuthProvider>
+      <div className="app">
+        <main className="main-content">
+          <AppRoutes />
+        </main>
+      </div>
+    </AuthProvider>
   );
 }
 

@@ -1,7 +1,7 @@
 import { 
-  getOperatorDataFromSheet, 
-  listOperatorsFromSheet 
-} from '../integrations/google/googleSheetsService.js';
+  getOperatorDataFromXlsx, 
+  listOperatorsFromXlsx 
+} from '../services/xlsxService.js';
 import { createLog } from '../services/logService.js';
 
 /**
@@ -9,12 +9,11 @@ import { createLog } from '../services/logService.js';
  */
 export const getOperatorData = async (req, res) => {
   try {
-    const spreadsheetId = req.query.spreadsheetId || process.env.GOOGLE_SPREADSHEET_ID;
-    const { sheetName, operatorName } = req.query;
+    const { sheetName, operatorName, fileName } = req.query;
 
-    if (!spreadsheetId || !sheetName || !operatorName) {
+    if (!sheetName || !operatorName) {
       return res.status(400).json({ 
-        error: 'Parâmetros obrigatórios: sheetName, operatorName (spreadsheetId pode estar no .env)' 
+        error: 'Parâmetros obrigatórios: sheetName, operatorName' 
       });
     }
 
@@ -26,10 +25,10 @@ export const getOperatorData = async (req, res) => {
       });
     }
 
-    const data = await getOperatorDataFromSheet(
-      spreadsheetId, 
+    const data = await getOperatorDataFromXlsx(
       sheetName.toUpperCase(), 
-      operatorName
+      operatorName,
+      fileName || null
     );
 
     if (!data) {
@@ -53,12 +52,11 @@ export const getOperatorData = async (req, res) => {
  */
 export const listOperators = async (req, res) => {
   try {
-    const spreadsheetId = req.query.spreadsheetId || process.env.GOOGLE_SPREADSHEET_ID;
-    const { sheetName } = req.query;
+    const { sheetName, fileName } = req.query;
 
-    if (!spreadsheetId || !sheetName) {
+    if (!sheetName) {
       return res.status(400).json({ 
-        error: 'Parâmetros obrigatórios: sheetName (spreadsheetId pode estar no .env)' 
+        error: 'Parâmetro obrigatório: sheetName' 
       });
     }
 
@@ -70,9 +68,9 @@ export const listOperators = async (req, res) => {
       });
     }
 
-    const operators = await listOperatorsFromSheet(
-      spreadsheetId, 
-      sheetName.toUpperCase()
+    const operators = await listOperatorsFromXlsx(
+      sheetName.toUpperCase(),
+      fileName || null
     );
 
     res.json({ operators });
@@ -90,14 +88,13 @@ export const listOperators = async (req, res) => {
  */
 export const getIndicatorsFromSheet = async (req, res) => {
   try {
-    const spreadsheetId = req.query.spreadsheetId || process.env.GOOGLE_SPREADSHEET_ID;
-    const { sheetName, operatorName } = req.query;
+    const { sheetName, operatorName, fileName } = req.query;
 
-    console.log('Busca de indicadores:', { spreadsheetId, sheetName, operatorName });
+    console.log('Busca de indicadores:', { sheetName, operatorName, fileName });
 
-    if (!spreadsheetId || !sheetName || !operatorName) {
+    if (!sheetName || !operatorName) {
       return res.status(400).json({ 
-        error: 'Parâmetros obrigatórios: sheetName, operatorName (spreadsheetId pode estar no .env)' 
+        error: 'Parâmetros obrigatórios: sheetName, operatorName' 
       });
     }
 
@@ -105,10 +102,10 @@ export const getIndicatorsFromSheet = async (req, res) => {
     const decodedOperatorName = decodeURIComponent(operatorName.replace(/\+/g, ' '));
     console.log('Nome do operador decodificado:', decodedOperatorName);
 
-    const data = await getOperatorDataFromSheet(
-      spreadsheetId, 
+    const data = await getOperatorDataFromXlsx(
       sheetName.toUpperCase(), 
-      decodedOperatorName
+      decodedOperatorName,
+      fileName || null
     );
 
     if (!data) {
@@ -177,15 +174,11 @@ export const getIndicatorsFromSheet = async (req, res) => {
     // Mensagens de erro mais amigáveis
     let errorMessage = error.message || 'Erro desconhecido';
     
-    if (error.message?.includes('GOOGLE_CREDENTIALS') || error.message?.includes('não configurado')) {
-      errorMessage = 'Credenciais do Google não configuradas. Verifique o arquivo .env e consulte CONFIGURACAO_GOOGLE_SHEETS.md';
-    } else if (error.message?.includes('Permission denied') || error.message?.includes('403') || error.code === 403) {
-      errorMessage = `Sem permissão para acessar a planilha. Verifique se a planilha foi compartilhada com o email ${process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL} como Editor.`;
-    } else if (error.message?.includes('not found') || error.message?.includes('404') || error.code === 404) {
-      errorMessage = 'Planilha ou aba não encontrada. Verifique se o ID da planilha está correto no .env e se a aba existe.';
-    } else if (error.message?.includes('Unable to parse range')) {
-      errorMessage = `Aba "${sheetName}" não encontrada na planilha. Verifique se a aba existe e se o nome está correto (OUT, NOV ou DEZ).`;
-    } else if (error.message?.includes('Coluna')) {
+    if (error.message?.includes('db.dados') || error.message?.includes('não encontrada')) {
+      errorMessage = 'Pasta db.dados não encontrada ou arquivo XLSX não encontrado. Verifique se a pasta existe na raiz do projeto e se contém um arquivo .xlsx';
+    } else if (error.message?.includes('Aba') && error.message?.includes('não encontrada')) {
+      errorMessage = `Aba "${sheetName}" não encontrada no arquivo. Verifique se a aba existe e se o nome está correto (OUT, NOV ou DEZ).`;
+    } else if (error.message?.includes('Operador') && error.message?.includes('não encontrado')) {
       errorMessage = error.message;
     }
     

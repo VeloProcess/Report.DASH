@@ -1,53 +1,18 @@
-import { addOperator, getOperators, getOperatorById as getOperatorByIdDB } from '../database.js';
+import { getOperatorById as getOperatorByIdDB } from '../database.js';
 import { createLog } from '../services/logService.js';
-import { getAvailableOperatorNames } from '../services/emailService.js';
+import { getOperatorByEmail } from '../utils/operatorUtils.js';
 
-export const createOperator = (req, res) => {
+/**
+ * GET /api/operators/me
+ * Retorna dados do operador autenticado
+ */
+export const getMyOperator = (req, res) => {
   try {
-    const { name, position, team, referenceMonth } = req.body;
-
-    if (!name || !position || !team || !referenceMonth) {
-      return res.status(400).json({ 
-        error: 'Todos os campos são obrigatórios: name, position, team, referenceMonth' 
-      });
+    if (!req.user) {
+      return res.status(401).json({ error: 'Autenticação necessária' });
     }
 
-    const operator = addOperator({
-      name,
-      position,
-      team,
-      reference_month: referenceMonth,
-    });
-
-    createLog(name, referenceMonth, 'Cadastro de operador', 'success', `Operador ${name} cadastrado com sucesso`);
-
-    res.status(201).json({
-      id: operator.id,
-      name: operator.name,
-      position: operator.position,
-      team: operator.team,
-      referenceMonth: operator.reference_month,
-      message: 'Operador cadastrado com sucesso',
-    });
-  } catch (error) {
-    createLog(null, null, 'Cadastro de operador', 'error', error.message);
-    res.status(500).json({ error: 'Erro ao cadastrar operador', details: error.message });
-  }
-};
-
-export const getAllOperators = (req, res) => {
-  try {
-    const operators = getOperators();
-    res.json(operators.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar operadores', details: error.message });
-  }
-};
-
-export const getOperatorById = (req, res) => {
-  try {
-    const { id } = req.params;
-    const operator = getOperatorByIdDB(id);
+    const operator = getOperatorByEmail(req.user.email);
 
     if (!operator) {
       return res.status(404).json({ error: 'Operador não encontrado' });
@@ -59,12 +24,34 @@ export const getOperatorById = (req, res) => {
   }
 };
 
-export const getAvailableNames = (req, res) => {
+/**
+ * GET /api/operators/:id
+ * Retorna operador por ID (apenas se for o próprio operador autenticado)
+ */
+export const getOperatorById = (req, res) => {
   try {
-    const names = getAvailableOperatorNames();
-    res.json({ names });
+    if (!req.user) {
+      return res.status(401).json({ error: 'Autenticação necessária' });
+    }
+
+    const { id } = req.params;
+    const operator = getOperatorByIdDB(id);
+
+    if (!operator) {
+      return res.status(404).json({ error: 'Operador não encontrado' });
+    }
+
+    // Validar que o operador solicitado é o mesmo do usuário autenticado
+    const authenticatedOperator = getOperatorByEmail(req.user.email);
+    if (!authenticatedOperator || authenticatedOperator.id !== parseInt(id)) {
+      return res.status(403).json({ 
+        error: 'Acesso negado: Você não tem permissão para acessar estes dados' 
+      });
+    }
+
+    res.json(operator);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar nomes disponíveis', details: error.message });
+    res.status(500).json({ error: 'Erro ao buscar operador', details: error.message });
   }
 };
 

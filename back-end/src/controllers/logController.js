@@ -1,15 +1,14 @@
-import { getAllLogs, getLogsByOperator } from '../services/logService.js';
+import { getLogsByOperatorName } from '../database.js';
 
 export const getLogs = (req, res) => {
   try {
-    const { operatorName } = req.query;
-    
-    let logs;
-    if (operatorName) {
-      logs = getLogsByOperator(operatorName);
-    } else {
-      logs = getAllLogs();
+    if (!req.user) {
+      return res.status(401).json({ error: 'Autenticação necessária' });
     }
+
+    // Retornar apenas logs do operador autenticado
+    const operatorName = req.user.operatorName;
+    const logs = getLogsByOperatorName(operatorName);
 
     res.json(logs);
   } catch (error) {

@@ -7,26 +7,48 @@ dotenv.config();
 
 // Configurar Groq (Principal)
 let groqApiKey = process.env.GROQ_API_KEY;
+console.log('🔍 DEBUG: Verificando GROQ_API_KEY...');
+console.log('🔍 DEBUG: Tipo:', typeof groqApiKey);
+console.log('🔍 DEBUG: Valor raw:', groqApiKey ? groqApiKey.substring(0, 20) + '...' : 'undefined/null');
+
 if (groqApiKey) {
   groqApiKey = groqApiKey.trim().replace(/\s+/g, '').replace(/['"]/g, '');
-  console.log('🔑 Chave do Groq processada. Tamanho:', groqApiKey.length, 'caracteres');
-  console.log('🔑 Primeiros caracteres:', groqApiKey.substring(0, 10) + '...');
+  if (groqApiKey && groqApiKey.length > 10) {
+    console.log('✅ Chave do Groq processada. Tamanho:', groqApiKey.length, 'caracteres');
+    console.log('✅ Primeiros caracteres:', groqApiKey.substring(0, 10) + '...');
+  } else {
+    console.error('❌ GROQ_API_KEY está vazia ou inválida após processamento');
+    groqApiKey = null;
+  }
 } else {
-  console.error('❌ GROQ_API_KEY não configurada');
+  console.error('❌ GROQ_API_KEY não configurada no .env');
+  console.error('💡 Dica: Verifique se o arquivo .env está na pasta back-end/');
+  console.error('💡 Dica: Verifique se a linha GROQ_API_KEY=... está no arquivo');
 }
 
-const groq = groqApiKey ? new Groq({
+const groq = groqApiKey && groqApiKey.length > 10 ? new Groq({
   apiKey: groqApiKey,
 }) : null;
 
 // Configurar Gemini (Fallback)
 let geminiApiKey = process.env.GEMINI_API_KEY;
+console.log('🔍 DEBUG: Verificando GEMINI_API_KEY...');
+console.log('🔍 DEBUG: Tipo:', typeof geminiApiKey);
+console.log('🔍 DEBUG: Valor raw:', geminiApiKey ? geminiApiKey.substring(0, 20) + '...' : 'undefined/null');
+
 if (geminiApiKey) {
   geminiApiKey = geminiApiKey.trim().replace(/\s+/g, '').replace(/['"]/g, '');
-  console.log('🔑 Chave do Gemini processada. Tamanho:', geminiApiKey.length, 'caracteres');
-  console.log('🔑 Primeiros caracteres:', geminiApiKey.substring(0, 10) + '...');
+  if (geminiApiKey && geminiApiKey.length > 10) {
+    console.log('✅ Chave do Gemini processada. Tamanho:', geminiApiKey.length, 'caracteres');
+    console.log('✅ Primeiros caracteres:', geminiApiKey.substring(0, 10) + '...');
+  } else {
+    console.error('❌ GEMINI_API_KEY está vazia ou inválida após processamento');
+    geminiApiKey = null;
+  }
 } else {
-  console.error('❌ GEMINI_API_KEY não configurada');
+  console.error('❌ GEMINI_API_KEY não configurada no .env');
+  console.error('💡 Dica: Verifique se o arquivo .env está na pasta back-end/');
+  console.error('💡 Dica: Verifique se a linha GEMINI_API_KEY=... está no arquivo');
 }
 
 const gemini = geminiApiKey ? new GoogleGenerativeAI(geminiApiKey) : null;
@@ -53,19 +75,29 @@ const secondsToTime = (totalSeconds) => {
 
 // Função para calcular médias de todos os operadores
 const calculateAverages = () => {
-  const allIndicators = getIndicators();
-  
-  // Pegar apenas os indicadores mais recentes de cada operador
-  const latestIndicators = {};
-  allIndicators.forEach(ind => {
-    const opId = ind.operator_id;
-    if (!latestIndicators[opId] || new Date(ind.created_at) > new Date(latestIndicators[opId].created_at)) {
-      latestIndicators[opId] = ind;
+  try {
+    const allIndicators = getIndicators();
+    
+    if (!allIndicators || allIndicators.length === 0) {
+      console.log('⚠️ Nenhum indicador encontrado para calcular médias');
+      return null;
     }
-  });
+    
+    // Pegar apenas os indicadores mais recentes de cada operador
+    const latestIndicators = {};
+    allIndicators.forEach(ind => {
+      if (!ind || !ind.operator_id) return;
+      const opId = ind.operator_id;
+      if (!latestIndicators[opId] || new Date(ind.created_at || 0) > new Date(latestIndicators[opId].created_at || 0)) {
+        latestIndicators[opId] = ind;
+      }
+    });
 
-  const indicatorsArray = Object.values(latestIndicators);
-  if (indicatorsArray.length === 0) return null;
+    const indicatorsArray = Object.values(latestIndicators);
+    if (indicatorsArray.length === 0) {
+      console.log('⚠️ Nenhum indicador válido encontrado após filtrar');
+      return null;
+    }
 
   const averages = {
     tma: null,
@@ -129,7 +161,13 @@ const calculateAverages = () => {
     averages.tmt = secondsToTime(Math.round(avgSeconds));
   }
 
+  console.log('✅ Médias calculadas com sucesso:', averages);
   return averages;
+  } catch (error) {
+    console.error('❌ Erro ao calcular médias:', error);
+    console.error('Stack:', error.stack);
+    return null;
+  }
 };
 
 // Função para gerar feedback usando Groq (Principal)
@@ -270,11 +308,18 @@ const formatMetricsObject = (metricsObj) => {
 };
 
 // Função principal com fallback
-export const generateFeedback = async (operatorData, indicators) => {
+export const generateFeedback = async (operatorData, indicators, monthComparison = null) => {
   try {
     // Validar se pelo menos uma API está configurada
+    console.log('🔍 DEBUG: Verificando APIs antes de gerar feedback...');
+    console.log('🔍 DEBUG: groqApiKey existe?', !!groqApiKey);
+    console.log('🔍 DEBUG: geminiApiKey existe?', !!geminiApiKey);
+    
     if (!groqApiKey && !geminiApiKey) {
-      throw new Error('Nenhuma API de IA configurada. Configure GROQ_API_KEY ou GEMINI_API_KEY no Render.');
+      console.error('❌ Nenhuma API configurada!');
+      console.error('💡 Verifique o arquivo back-end/.env');
+      console.error('💡 Certifique-se de que as linhas GROQ_API_KEY=... e/ou GEMINI_API_KEY=... estão presentes');
+      throw new Error('Nenhuma API de IA configurada. Configure GROQ_API_KEY ou GEMINI_API_KEY no arquivo .env (pasta back-end/).');
     }
 
     // Calcular médias de todos os operadores
@@ -310,6 +355,13 @@ export const generateFeedback = async (operatorData, indicators) => {
       if (averages.tickets) comparisonInfo += `- Tickets médios: ${averages.tickets}\n`;
       if (averages.tmt) comparisonInfo += `- TMT médio: ${averages.tmt}\n`;
     }
+    
+    // Adicionar comparação entre meses se disponível
+    let monthComparisonText = '';
+    if (monthComparison && monthComparison.summary) {
+      monthComparisonText = `\n\n${monthComparison.summary}\n`;
+      monthComparisonText += '\nIMPORTANTE: Inclua esta comparação mensal no feedback, mencionando se o operador melhorou, está deixando a desejar ou está na média comparado com os meses anteriores.\n';
+    }
 
     const prompt = `Feedback ${operatorData.name} - ${operatorData.reference_month || operatorData.referenceMonth}
 
@@ -328,6 +380,7 @@ ${operatorMetrics.pausa10Realizado ? `Pausa 10 Realizado: ${operatorMetrics.paus
 ${operatorMetrics.pausaBanheiro ? `Pausa Banheiro: ${operatorMetrics.pausaBanheiro}` : ''}
 ${operatorMetrics.pausaFeedback ? `Pausa Feedback: ${operatorMetrics.pausaFeedback}` : ''}
 ${comparisonInfo}
+${monthComparisonText}
 
 3 tópicos:
 
@@ -394,7 +447,9 @@ JSON:
   "operatorResponseModel": "resposta do operador"
 }`;
 
-    const systemPrompt = 'Você é um analista de performance. Gere feedback direto e objetivo em 3 tópicos: CHAMADAS, TICKETS e PAUSAS. Seja conciso, sem detalhamento excessivo.';
+    const systemPrompt = `Você é um analista de performance. Gere feedback direto e objetivo em 3 tópicos: CHAMADAS, TICKETS e PAUSAS. Seja conciso, sem detalhamento excessivo.
+
+${monthComparison ? 'IMPORTANTE: Inclua comparação com meses anteriores no feedback. Mencione se o operador melhorou, está deixando a desejar ou está na média comparado com os meses anteriores.' : ''}`;
 
     let responseContent;
     let usedProvider = '';
@@ -449,30 +504,45 @@ JSON:
     // Converter metricsAnalysis de objeto/JSON para string formatada
     let metricsAnalysisText = '';
 
-    if (typeof feedbackData.metricsAnalysis === 'string') {
-      // Tentar parsear se for JSON string
-      try {
-        const parsed = JSON.parse(feedbackData.metricsAnalysis);
-        if (Array.isArray(parsed)) {
-          // Se for array de objetos, formatar
-          metricsAnalysisText = formatMetricsArray(parsed);
-        } else {
+    try {
+      if (typeof feedbackData.metricsAnalysis === 'string') {
+        // Tentar parsear se for JSON string
+        try {
+          const parsed = JSON.parse(feedbackData.metricsAnalysis);
+          if (Array.isArray(parsed)) {
+            console.log('📋 metricsAnalysis é array JSON, formatando...');
+            metricsAnalysisText = formatMetricsArray(parsed);
+          } else {
+            console.log('📋 metricsAnalysis é string, usando como está');
+            metricsAnalysisText = feedbackData.metricsAnalysis;
+          }
+        } catch (parseError) {
+          // Não é JSON, usar como está
+          console.log('📋 metricsAnalysis não é JSON válido, usando como texto');
           metricsAnalysisText = feedbackData.metricsAnalysis;
         }
-      } catch {
-        // Não é JSON, usar como está
-        metricsAnalysisText = feedbackData.metricsAnalysis;
+      } else if (Array.isArray(feedbackData.metricsAnalysis)) {
+        console.log('📋 metricsAnalysis é array direto, formatando...');
+        metricsAnalysisText = formatMetricsArray(feedbackData.metricsAnalysis);
+      } else if (typeof feedbackData.metricsAnalysis === 'object' && feedbackData.metricsAnalysis !== null) {
+        console.log('⚠️ metricsAnalysis veio como objeto, convertendo para string...');
+        metricsAnalysisText = formatMetricsObject(feedbackData.metricsAnalysis);
+      } else {
+        console.error('⚠️ ATENÇÃO: Campo metricsAnalysis está vazio ou em formato inválido!');
+        console.error('Tipo recebido:', typeof feedbackData.metricsAnalysis);
+        console.error('Valor recebido:', feedbackData.metricsAnalysis);
+        throw new Error('A IA não gerou a análise detalhada de métricas no formato esperado. Por favor, tente novamente.');
       }
-    } else if (Array.isArray(feedbackData.metricsAnalysis)) {
-      // Se for array direto
-      metricsAnalysisText = formatMetricsArray(feedbackData.metricsAnalysis);
-    } else if (typeof feedbackData.metricsAnalysis === 'object' && feedbackData.metricsAnalysis !== null) {
-      console.log('⚠️ metricsAnalysis veio como objeto, convertendo para string...');
-      // Se for objeto com seções
-      metricsAnalysisText = formatMetricsObject(feedbackData.metricsAnalysis);
-    } else {
-      console.error('⚠️ ATENÇÃO: Campo metricsAnalysis está vazio ou em formato inválido!');
-      throw new Error('A IA não gerou a análise detalhada de métricas no formato esperado. Por favor, tente novamente.');
+    } catch (formatError) {
+      console.error('❌ Erro ao formatar metricsAnalysis:', formatError);
+      console.error('Stack:', formatError.stack);
+      // Tentar usar o valor original como fallback
+      if (feedbackData.metricsAnalysis) {
+        metricsAnalysisText = String(feedbackData.metricsAnalysis);
+        console.log('⚠️ Usando valor original como fallback');
+      } else {
+        throw new Error(`Erro ao processar análise de métricas: ${formatError.message}`);
+      }
     }
 
     if (!metricsAnalysisText || metricsAnalysisText.trim() === '') {

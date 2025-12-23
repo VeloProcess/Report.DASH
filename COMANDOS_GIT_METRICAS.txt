@@ -1,0 +1,41 @@
+========================================
+COMANDOS GIT - Sistema de Metricas Mensais
+========================================
+
+Execute estes comandos no Git Bash ou CMD:
+
+1. Verificar status:
+   git status
+
+2. Adicionar arquivos:
+   git add back-end/src/services/metricsService.js
+   git add back-end/src/routes/dashboardRoutes.js
+   git add back-end/scripts/preencher_outubro.js
+   git add back-end/scripts/preencher_novembro.js
+   git add back-end/scripts/preencher_dezembro.js
+   git add back-end/scripts/gerar_metrics_final.js
+   git add back-end/scripts/gerar_metrics_com_meses.js
+   git add GUIA_COMMIT_METRICS.md
+   git add EXPLICACAO_CAMPO_DADOS.md
+
+3. Fazer commit:
+   git commit -m "Implementar sistema de metricas mensais (Outubro, Novembro, Dezembro)
+
+   - Adicionar estrutura de meses no Metrics.json
+   - Criar scripts para preencher dados mensais
+   - Atualizar metricsService para suportar busca por mes
+   - Adicionar campo 'atrasos' em Dezembro
+   - Suportar TMT e nota_ticket nos meses"
+
+4. Fazer push:
+   git push origin main
+   
+   OU se a branch for master:
+   git push origin master
+
+========================================
+OU SIMPLESMENTE EXECUTE:
+========================================
+
+Clique duas vezes em: COMMIT_METRICAS_MENSAIS.bat
+

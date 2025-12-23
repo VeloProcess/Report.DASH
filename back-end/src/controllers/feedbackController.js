@@ -10,11 +10,16 @@ import { generateFeedback } from '../integrations/ai/aiService.js';
 import { createLog } from '../services/logService.js';
 import { sendFeedbackEmail } from '../services/emailService.js';
 import { generateFeedbackPDF } from '../services/pdfService.js';
+import { getMetricsByEmail, convertMetricsToDashboardFormat, getAvailableMonths } from '../services/metricsService.js';
+import { compareMonths, formatComparisonForPrompt } from '../services/monthComparisonService.js';
 
 export const createIndicators = (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Autenticação necessária' });
+    }
+
     const { 
-      operatorId, 
       calls, 
       tma, 
       qualityScore, 
@@ -45,9 +50,8 @@ export const createIndicators = (req, res) => {
       percentTreinamento,
     } = req.body;
 
-    if (!operatorId) {
-      return res.status(400).json({ error: 'operatorId é obrigatório' });
-    }
+    // Usar operatorId do usuário autenticado
+    const operatorId = req.user.operatorId;
 
     const operator = getOperatorById(operatorId);
 
@@ -99,15 +103,15 @@ export const createIndicators = (req, res) => {
 
 export const generateFeedbackWithAI = async (req, res) => {
   try {
-    const { operatorId } = req.body;
+    if (!req.user) {
+      return res.status(401).json({ error: 'Autenticação necessária' });
+    }
+
+    // Usar operatorId do usuário autenticado
+    const operatorId = req.user.operatorId;
 
     console.log('=== DEBUG: Gerar Feedback ===');
-    console.log('operatorId recebido:', operatorId);
-    console.log('Tipo do operatorId:', typeof operatorId);
-
-    if (!operatorId) {
-      return res.status(400).json({ error: 'operatorId é obrigatório' });
-    }
+    console.log('operatorId do usuário autenticado:', operatorId);
 
     const operator = getOperatorById(operatorId);
 
@@ -118,7 +122,28 @@ export const generateFeedbackWithAI = async (req, res) => {
 
     console.log('Operador encontrado:', operator.name);
 
-    const indicators = getLatestIndicatorByOperatorId(operatorId);
+    // Buscar métricas do Metrics.json (prioridade) ou do sistema antigo
+    const email = req.user.email;
+    let indicators = null;
+    let currentMonth = null;
+    
+    // Tentar buscar do Metrics.json primeiro
+    const metricsData = getMetricsByEmail(email);
+    if (metricsData && metricsData.dados) {
+      console.log('✅ Métricas encontradas no Metrics.json');
+      indicators = convertMetricsToDashboardFormat(metricsData);
+      currentMonth = metricsData.mes_atual || 'Dezembro'; // Usar mês atual ou padrão Dezembro
+      
+      // Adicionar dados adicionais para compatibilidade
+      indicators.additionalData = {
+        ...indicators,
+        ...metricsData.dados
+      };
+    } else {
+      // Fallback para sistema antigo
+      indicators = getLatestIndicatorByOperatorId(operatorId);
+      console.log('⚠️ Usando sistema antigo (indicators.json)');
+    }
 
     console.log('Indicadores encontrados:', indicators ? 'Sim' : 'Não');
     if (indicators) {
@@ -132,21 +157,44 @@ export const generateFeedbackWithAI = async (req, res) => {
       });
     }
 
+    // Buscar comparação entre meses
+    let monthComparison = null;
+    let comparisonText = '';
+    
+    if (email && currentMonth) {
+      console.log(`📊 Buscando comparação de meses para ${email} (mês atual: ${currentMonth})`);
+      monthComparison = compareMonths(email, currentMonth);
+      if (monthComparison) {
+        comparisonText = formatComparisonForPrompt(monthComparison);
+        console.log('✅ Comparação entre meses gerada:', monthComparison.summary);
+      } else {
+        console.log('⚠️ Comparação entre meses não disponível (dados insuficientes)');
+      }
+    }
+
     // Gerar feedback com IA
     console.log('Chamando IA para gerar feedback...');
-    const groqKey = process.env.GROQ_API_KEY?.trim().replace(/\s+/g, '');
-    const geminiKey = process.env.GEMINI_API_KEY?.trim().replace(/\s+/g, '');
-    console.log('GROQ_API_KEY configurada:', !!groqKey);
-    console.log('GEMINI_API_KEY configurada:', !!geminiKey);
+    console.log('🔍 DEBUG: Verificando variáveis de ambiente...');
+    console.log('🔍 DEBUG: process.env.GROQ_API_KEY existe?', !!process.env.GROQ_API_KEY);
+    console.log('🔍 DEBUG: process.env.GEMINI_API_KEY existe?', !!process.env.GEMINI_API_KEY);
+    
+    const groqKey = process.env.GROQ_API_KEY?.trim().replace(/\s+/g, '').replace(/['"]/g, '');
+    const geminiKey = process.env.GEMINI_API_KEY?.trim().replace(/\s+/g, '').replace(/['"]/g, '');
+    
+    console.log('GROQ_API_KEY configurada:', !!groqKey, groqKey ? `(tamanho: ${groqKey.length})` : '(vazia)');
+    console.log('GEMINI_API_KEY configurada:', !!geminiKey, geminiKey ? `(tamanho: ${geminiKey.length})` : '(vazia)');
     
     if (!groqKey && !geminiKey) {
+      console.error('❌ Nenhuma API configurada!');
+      console.error('💡 Verifique o arquivo back-end/.env');
+      console.error('💡 Certifique-se de que as linhas GROQ_API_KEY=... e/ou GEMINI_API_KEY=... estão presentes');
       return res.status(500).json({ 
         error: 'Nenhuma API de IA configurada',
-        details: 'Configure GROQ_API_KEY (principal) ou GEMINI_API_KEY (fallback) no Render.'
+        details: 'Configure GROQ_API_KEY (principal) ou GEMINI_API_KEY (fallback) no arquivo .env (pasta back-end/). Verifique CONFIGURAR_APIS_LOCAL.md para instruções.'
       });
     }
     
-    const feedbackData = await generateFeedback(operator, indicators);
+    const feedbackData = await generateFeedback(operator, indicators, monthComparison);
     console.log('Feedback gerado com sucesso. Campos:', Object.keys(feedbackData));
 
     // Salvar feedback no banco
@@ -176,10 +224,10 @@ export const generateFeedbackWithAI = async (req, res) => {
     console.error('❌ Erro completo ao gerar feedback:', error);
     console.error('Stack:', error.stack);
     
-    const operator = getOperatorById(req.body.operatorId);
+    const operator = req.user ? getOperatorById(req.user.operatorId) : null;
 
     createLog(
-      operator?.name || null,
+      operator?.name || req.user?.operatorName || null,
       operator?.reference_month || null,
       'Geração de feedback com IA',
       'error',
@@ -196,7 +244,12 @@ export const generateFeedbackWithAI = async (req, res) => {
 
 export const getFeedbackByOperator = (req, res) => {
   try {
-    const { operatorId } = req.params;
+    if (!req.user) {
+      return res.status(401).json({ error: 'Autenticação necessária' });
+    }
+
+    // Usar operatorId do usuário autenticado
+    const operatorId = req.user.operatorId;
     const feedback = getLatestFeedbackByOperatorId(operatorId);
 
     if (!feedback) {
@@ -211,8 +264,19 @@ export const getFeedbackByOperator = (req, res) => {
 
 export const getAllFeedbacks = (req, res) => {
   try {
-    const feedbacks = getAllFeedbacksWithOperators();
-    res.json(feedbacks);
+    if (!req.user) {
+      return res.status(401).json({ error: 'Autenticação necessária' });
+    }
+
+    // Retornar apenas feedbacks do operador autenticado
+    const operatorId = req.user.operatorId;
+    const feedback = getLatestFeedbackByOperatorId(operatorId);
+
+    if (!feedback) {
+      return res.json([]);
+    }
+
+    res.json([feedback]);
   } catch (error) {
     res.status(500).json({ error: 'Erro ao buscar feedbacks', details: error.message });
   }
@@ -220,11 +284,12 @@ export const getAllFeedbacks = (req, res) => {
 
 export const sendFeedbackByEmail = async (req, res) => {
   try {
-    const { operatorId } = req.body;
-
-    if (!operatorId) {
-      return res.status(400).json({ error: 'operatorId é obrigatório' });
+    if (!req.user) {
+      return res.status(401).json({ error: 'Autenticação necessária' });
     }
+
+    // Usar operatorId do usuário autenticado
+    const operatorId = req.user.operatorId;
 
     const operator = getOperatorById(operatorId);
 
@@ -260,10 +325,10 @@ export const sendFeedbackByEmail = async (req, res) => {
       email: emailResult.email,
     });
   } catch (error) {
-    const operator = getOperatorById(req.body.operatorId);
+    const operator = req.user ? getOperatorById(req.user.operatorId) : null;
     
     createLog(
-      operator?.name || null,
+      operator?.name || req.user?.operatorName || null,
       operator?.reference_month || null,
       'Envio de feedback por email',
       'error',

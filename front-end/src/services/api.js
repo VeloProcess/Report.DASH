@@ -71,6 +71,17 @@ export const exportPDF = (month = null) => {
   const params = month ? { month } : {};
   return api.get('/export/pdf', { responseType: 'blob', params });
 };
+
+// Gestores (apenas para gestores)
+export const getManagerOperators = () => api.get('/manager/operators');
+export const getManagerOperatorMetrics = (operatorId, month = null) => {
+  const params = month ? { month } : {};
+  return api.get(`/manager/operators/${operatorId}/metrics`, { params });
+};
+export const exportManagerPDF = (operatorId, month = null) => {
+  const params = month ? { month } : {};
+  return api.get(`/manager/operators/${operatorId}/export/pdf`, { responseType: 'blob', params });
+};
 export const exportCSV = (month = null) => {
   const params = month ? { month } : {};
   return api.get('/export/csv', { responseType: 'blob', params });

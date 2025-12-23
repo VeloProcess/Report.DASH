@@ -38,7 +38,9 @@ export const AuthProvider = ({ children }) => {
       if (response.data.success) {
         localStorage.setItem('authToken', response.data.token);
         setUser(response.data.user);
-        navigate('/dashboard');
+        // Redirecionar gestores para dashboard de gestão
+        const isManager = response.data.user?.isManager || false;
+        navigate(isManager ? '/manager' : '/dashboard');
       }
     } catch (error) {
       console.error('Erro no login:', error);

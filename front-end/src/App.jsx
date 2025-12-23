@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import ManagerDashboard from './pages/ManagerDashboard';
 import './styles/App.css';
 
 function AppRoutes() {
@@ -21,21 +22,33 @@ function AppRoutes() {
     );
   }
 
-  return (
-    <Routes>
-      <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} />
-      <Route 
-        path="/dashboard" 
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        } 
-      />
-      <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
-      <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
-    </Routes>
-  );
+        // Redirecionar gestores para dashboard de gestão
+        const isManager = user?.isManager || false;
+        const defaultRoute = isManager ? "/manager" : "/dashboard";
+
+        return (
+          <Routes>
+            <Route path="/login" element={isAuthenticated ? <Navigate to={defaultRoute} replace /> : <Login />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  {isManager ? <Navigate to="/manager" replace /> : <Dashboard />}
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/manager"
+              element={
+                <ProtectedRoute>
+                  {isManager ? <ManagerDashboard /> : <Navigate to="/dashboard" replace />}
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/" element={<Navigate to={isAuthenticated ? defaultRoute : "/login"} replace />} />
+            <Route path="*" element={<Navigate to={isAuthenticated ? defaultRoute : "/login"} replace />} />
+          </Routes>
+        );
 }
 
 function App() {

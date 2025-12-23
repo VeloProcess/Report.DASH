@@ -118,6 +118,8 @@ export const processLogin = async (googleToken) => {
     operatorId = 0; // ID especial para operadores não cadastrados
   }
   
+  const managerStatus = isManager(googleUser.email);
+  
   // Criar token de sessão
   const sessionToken = createSessionToken({
     email: googleUser.email,
@@ -135,6 +137,7 @@ export const processLogin = async (googleToken) => {
       position: operator?.position || null,
       team: operator?.team || null,
       hasOperatorData: !!operator,
+      isManager: managerStatus,
     },
   };
 };

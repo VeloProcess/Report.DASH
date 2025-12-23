@@ -149,7 +149,7 @@ function Dashboard() {
     return null;
   };
 
-  const renderMetricCard = (key, label, value) => {
+  const renderMetricCard = (key, label, value, isPercentage = false) => {
     if (value === null || value === undefined || value === '') return null;
     
     return (
@@ -159,6 +159,7 @@ function Dashboard() {
         value={value}
         explanation={METRIC_EXPLANATIONS[key]}
         status={getMetricStatus(key, value)}
+        isPercentage={isPercentage}
       />
     );
   };
@@ -253,6 +254,8 @@ function Dashboard() {
               {renderMetricCard('qtd_pesq_telefone', 'Qtd Pesquisa Telefone', metrics.qtd_pesq_telefone)}
               {renderMetricCard('pesquisa_ticket', 'Pesquisa Ticket', metrics.pesquisa_ticket)}
               {renderMetricCard('qtd_pesq_ticket', 'Qtd Pesquisa Ticket', metrics.qtd_pesq_ticket)}
+              {renderMetricCard('nota_qualidade', 'Nota Qualidade', metrics.nota_qualidade, true)}
+              {renderMetricCard('qtd_avaliacoes', 'Qtd Avaliações', metrics.qtd_avaliacoes)}
             </div>
           </section>
 

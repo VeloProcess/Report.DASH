@@ -36,6 +36,8 @@ const METRIC_EXPLANATIONS = {
   percent_pausa_feedback: 'Percentual de tempo usado em pausas de feedback',
   treinamento: 'Tempo total dedicado a treinamentos',
   percent_treinamento: 'Percentual de tempo dedicado a treinamentos',
+  nota_qualidade: 'Nota geral de qualidade do atendimento (em porcentagem)',
+  qtd_avaliacoes: 'Quantidade de avaliações de qualidade recebidas',
 };
 
 function ManagerDashboard() {
@@ -127,7 +129,7 @@ function ManagerDashboard() {
     }
   };
 
-  const renderMetricCard = (key, label, value) => {
+  const renderMetricCard = (key, label, value, isPercentage = false) => {
     if (value === null || value === undefined || value === '') return null;
     
     return (
@@ -137,6 +139,7 @@ function ManagerDashboard() {
         value={value}
         explanation={METRIC_EXPLANATIONS[key]}
         status={null}
+        isPercentage={isPercentage}
       />
     );
   };
@@ -269,6 +272,8 @@ function ManagerDashboard() {
                       {renderMetricCard('qtd_pesq_telefone', 'Qtd Pesquisa Telefone', metrics.qtd_pesq_telefone)}
                       {renderMetricCard('pesquisa_ticket', 'Pesquisa Ticket', metrics.pesquisa_ticket)}
                       {renderMetricCard('qtd_pesq_ticket', 'Qtd Pesquisa Ticket', metrics.qtd_pesq_ticket)}
+                      {renderMetricCard('nota_qualidade', 'Nota Qualidade', metrics.nota_qualidade, true)}
+                      {renderMetricCard('qtd_avaliacoes', 'Qtd Avaliações', metrics.qtd_avaliacoes)}
                     </div>
                   </section>
 

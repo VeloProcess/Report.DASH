@@ -40,6 +40,12 @@ app.use((req, res, next) => {
 initializeDatabase();
 
 // Rotas públicas
+// Teste direto antes de usar o router
+app.post('/api/auth/login-test', (req, res) => {
+  console.log('✅ Rota de teste /api/auth/login-test chamada');
+  res.json({ test: 'ok', message: 'Rota de teste funcionando' });
+});
+
 app.use('/api/auth', authRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Sistema de Feedback funcionando' });

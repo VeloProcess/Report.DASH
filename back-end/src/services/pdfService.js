@@ -175,9 +175,10 @@ export const generateFeedbackPDF = async (operator, feedback) => {
  * @param {Object} operator - Dados do operador
  * @param {Object} indicators - Métricas/indicadores do operador
  * @param {string} month - Mês de referência (opcional)
+ * @param {Object} managerFeedback - Feedback do gestor (opcional)
  * @returns {Promise<Buffer>} Buffer do PDF
  */
-export const generateMetricsPDF = async (operator, indicators, month = null) => {
+export const generateMetricsPDF = async (operator, indicators, month = null, managerFeedback = null) => {
   return new Promise((resolve, reject) => {
     try {
       const chunks = [];
@@ -310,6 +311,42 @@ export const generateMetricsPDF = async (operator, indicators, month = null) => 
         
         addMetric('Treinamento', indicators.treinamento);
         addMetric('% Treinamento', indicators.percent_treinamento);
+        doc.moveDown();
+      }
+
+      // Seção: Feedback do Gestor
+      if (managerFeedback && managerFeedback.feedback_text) {
+        doc.moveDown();
+        doc.fontSize(16).font('Helvetica-Bold').fillColor(COLORS.blue1).text('FEEDBACK DO GESTOR');
+        doc.fillColor(COLORS.black);
+        doc.moveDown(0.5);
+        
+        // Data e gestor
+        const feedbackDate = managerFeedback.created_at 
+          ? new Date(managerFeedback.created_at).toLocaleDateString('pt-BR')
+          : new Date().toLocaleDateString('pt-BR');
+        doc.fontSize(10).font('Helvetica-Oblique').fillColor(COLORS.blue2);
+        doc.text(`Por: ${managerFeedback.manager_name || 'Gestor'} | ${feedbackDate}`, { indent: 20 });
+        doc.fillColor(COLORS.black);
+        doc.moveDown(0.3);
+        
+        // Texto do feedback
+        doc.fontSize(11).font('Helvetica');
+        const feedbackLines = doc.heightOfString(managerFeedback.feedback_text, {
+          width: doc.page.width - 100,
+          indent: 20
+        });
+        
+        // Verificar se precisa de nova página
+        if (doc.y + feedbackLines > doc.page.height - 100) {
+          doc.addPage();
+        }
+        
+        doc.text(managerFeedback.feedback_text, {
+          indent: 20,
+          align: 'left',
+          width: doc.page.width - 100
+        });
         doc.moveDown();
       }
 

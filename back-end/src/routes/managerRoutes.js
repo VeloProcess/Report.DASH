@@ -9,6 +9,7 @@ import {
   getAvailableMonths
 } from '../services/metricsService.js';
 import { getLatestIndicatorByOperatorId, getLatestFeedbackByOperatorId } from '../database.js';
+import { getManagerFeedbackByOperatorAndMonth, getOperatorById } from '../database.js';
 import { exportToPDF } from '../services/exportService.js';
 import fs from 'fs';
 import path from 'path';
@@ -166,6 +167,10 @@ router.get('/operators/:operatorId/metrics', async (req, res) => {
     let metricsData = getMetricsByEmail(operatorEmail, month);
     let indicators = null;
     
+    // Buscar feedback do gestor para o mês selecionado
+    const currentYear = new Date().getFullYear();
+    const managerFeedback = month ? await getManagerFeedbackByOperatorAndMonth(operatorId, month, currentYear) : null;
+    
     if (metricsData) {
       indicators = convertMetricsToDashboardFormat(metricsData, month);
       if (indicators) {
@@ -183,6 +188,7 @@ router.get('/operators/:operatorId/metrics', async (req, res) => {
           },
           month: month || 'atual',
           availableMonths: availableMonths,
+          managerFeedback: managerFeedback || null,
         });
       }
     }
@@ -201,6 +207,7 @@ router.get('/operators/:operatorId/metrics', async (req, res) => {
           position: operator.position,
           team: operator.team,
         },
+        managerFeedback: managerFeedback || null,
       });
     }
     
@@ -214,6 +221,7 @@ router.get('/operators/:operatorId/metrics', async (req, res) => {
         position: operator.position,
         team: operator.team,
       },
+      managerFeedback: managerFeedback || null,
     });
   } catch (error) {
     console.error('Erro ao buscar métricas do operador:', error);

@@ -6,6 +6,7 @@ import {
   exportManagerPDF
 } from '../services/api';
 import MetricCard from '../components/MetricCard';
+import ManagerFeedbackModal from '../components/ManagerFeedbackModal';
 import './ManagerDashboard.css';
 
 // Explicações das métricas (mesmas do Dashboard)
@@ -48,6 +49,8 @@ function ManagerDashboard() {
   const [loading, setLoading] = useState(true);
   const [loadingMetrics, setLoadingMetrics] = useState(false);
   const [exporting, setExporting] = useState({ pdf: false });
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [selectedOperatorForFeedback, setSelectedOperatorForFeedback] = useState(null);
   
   // Meses fixos disponíveis
   const FIXED_MONTHS = ['Dezembro', 'Novembro', 'Outubro'];
@@ -178,20 +181,37 @@ function ManagerDashboard() {
                 <div
                   key={operator.id}
                   className={`operator-card ${selectedOperator?.id === operator.id ? 'selected' : ''}`}
-                  onClick={() => setSelectedOperator(operator)}
                 >
-                  <div className="operator-card-header">
-                    <h3>{operator.name}</h3>
-                    {operator.hasMetrics && (
-                      <span className="has-data-badge">✓ Dados</span>
-                    )}
+                  <div 
+                    className="operator-card-clickable"
+                    onClick={() => setSelectedOperator(operator)}
+                  >
+                    <div className="operator-card-header">
+                      <h3>{operator.name}</h3>
+                      {operator.hasMetrics && (
+                        <span className="has-data-badge">✓ Dados</span>
+                      )}
+                    </div>
+                    <div className="operator-card-info">
+                      <p><strong>Cargo:</strong> {operator.position || 'N/A'}</p>
+                      <p><strong>Equipe:</strong> {operator.team || 'N/A'}</p>
+                      {operator.email && (
+                        <p><strong>Email:</strong> {operator.email}</p>
+                      )}
+                    </div>
                   </div>
-                  <div className="operator-card-info">
-                    <p><strong>Cargo:</strong> {operator.position || 'N/A'}</p>
-                    <p><strong>Equipe:</strong> {operator.team || 'N/A'}</p>
-                    {operator.email && (
-                      <p><strong>Email:</strong> {operator.email}</p>
-                    )}
+                  <div className="operator-card-actions">
+                    <button
+                      className="btn-feedback"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedOperatorForFeedback(operator);
+                        setFeedbackModalOpen(true);
+                      }}
+                      title="Aplicar Feedback"
+                    >
+                      📝 Aplicar Feedback
+                    </button>
                   </div>
                 </div>
               ))
@@ -328,6 +348,22 @@ function ManagerDashboard() {
           )}
         </div>
       </div>
+
+      {/* Modal de Feedback */}
+      <ManagerFeedbackModal
+        operator={selectedOperatorForFeedback}
+        isOpen={feedbackModalOpen}
+        onClose={() => {
+          setFeedbackModalOpen(false);
+          setSelectedOperatorForFeedback(null);
+        }}
+        onSave={() => {
+          // Recarregar métricas se o operador selecionado for o mesmo
+          if (selectedOperator && selectedOperatorForFeedback?.id === selectedOperator.id) {
+            loadOperatorMetrics();
+          }
+        }}
+      />
     </div>
   );
 }

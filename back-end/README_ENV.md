@@ -29,9 +29,24 @@ SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=seu_email@gmail.com
 SMTP_PASS=sua_senha_de_app
+
+# Supabase (para armazenamento de feedbacks de gestores)
+SUPABASE_URL=https://wouqpkddfvksofnxgtff.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvdXFwa2RkZnZrc29mbnhndGZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1MTU4MTAsImV4cCI6MjA4MjA5MTgxMH0.3DzMYz_6TG-BUKAGC4Pjx7BM8kabf57_vTDk3jNilJA
+# SUPABASE_SERVICE_ROLE_KEY= (opcional, use se tiver - permite bypass de RLS)
 ```
 
 ## 🔑 Como Obter as Chaves
+
+### Supabase:
+1. Acesse: https://supabase.com/dashboard
+2. Selecione seu projeto
+3. Vá em **Settings** > **API**
+4. Copie:
+   - **Project URL** → `SUPABASE_URL`
+   - **anon public** key → `SUPABASE_ANON_KEY`
+   - **service_role** key (opcional, para operações administrativas) → `SUPABASE_SERVICE_ROLE_KEY`
+5. Execute o script SQL em `back-end/scripts/create_supabase_table.sql` no SQL Editor do Supabase
 
 ### Groq (Principal):
 1. Acesse: https://console.groq.com/

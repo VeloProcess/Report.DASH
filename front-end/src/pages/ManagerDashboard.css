@@ -66,12 +66,13 @@
 }
 
 .operator-card {
-  padding: 16px;
+  padding: 0;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
-  cursor: pointer;
   transition: all 0.2s;
   background: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .operator-card:hover {
@@ -83,6 +84,36 @@
   border-color: #1694ff;
   background: #f0f7ff;
   box-shadow: 0 2px 8px rgba(22, 148, 255, 0.3);
+}
+
+.operator-card-clickable {
+  padding: 16px;
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+.operator-card-actions {
+  padding: 12px 16px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-feedback {
+  background: #1694ff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+}
+
+.btn-feedback:hover {
+  background: #1634ff;
 }
 
 .operator-card-header {

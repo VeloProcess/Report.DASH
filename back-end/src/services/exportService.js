@@ -1,4 +1,4 @@
-import { getLatestIndicatorByOperatorId, getLatestFeedbackByOperatorId } from '../database.js';
+import { getLatestIndicatorByOperatorId, getLatestFeedbackByOperatorId, getManagerFeedbackByOperatorAndMonth } from '../database.js';
 import { generateFeedbackPDF, generateMetricsPDF } from './pdfService.js';
 import ExcelJS from 'exceljs';
 import { getOperatorByEmail } from '../utils/operatorUtils.js';
@@ -31,6 +31,16 @@ export const exportToPDF = async (userData, month = null) => {
       console.log(`✅ Operador encontrado: ${operator.name}`);
     }
 
+    // Buscar feedback do gestor para o mês selecionado
+    const currentYear = new Date().getFullYear();
+    const managerFeedback = month && userData.operatorId && userData.operatorId !== 0
+      ? await getManagerFeedbackByOperatorAndMonth(userData.operatorId, month, currentYear)
+      : null;
+    
+    if (managerFeedback) {
+      console.log(`✅ Feedback do gestor encontrado para ${month}/${currentYear}`);
+    }
+
     // PRIORIDADE 1: Tentar buscar métricas do Metrics.json
     console.log('🔍 Buscando métricas no Metrics.json...');
     const metricsData = getMetricsByEmail(userData.email, month);
@@ -40,7 +50,7 @@ export const exportToPDF = async (userData, month = null) => {
       if (indicators) {
         console.log('✅ Métricas convertidas com sucesso, gerando PDF...');
         console.log(`📊 Métricas disponíveis: ${Object.keys(indicators).filter(k => indicators[k] !== null).length} campos`);
-        return await generateMetricsPDF(operator, indicators, month);
+        return await generateMetricsPDF(operator, indicators, month, managerFeedback);
       } else {
         console.log('⚠️ Métricas encontradas mas conversão retornou null');
       }
@@ -54,7 +64,7 @@ export const exportToPDF = async (userData, month = null) => {
       const indicators = getLatestIndicatorByOperatorId(userData.operatorId);
       if (indicators) {
         console.log('✅ Indicadores encontrados no sistema antigo, gerando PDF...');
-        return await generateMetricsPDF(operator, indicators, month);
+        return await generateMetricsPDF(operator, indicators, month, managerFeedback);
       } else {
         console.log('⚠️ Nenhum indicador encontrado no sistema antigo');
       }

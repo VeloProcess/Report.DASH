@@ -82,6 +82,30 @@ export const exportManagerPDF = (operatorId, month = null) => {
   const params = month ? { month } : {};
   return api.get(`/manager/operators/${operatorId}/export/pdf`, { responseType: 'blob', params });
 };
+
+// Feedback de Gestores
+export const getManagerFeedback = (operatorId, month = null, year = null) => {
+  const params = {};
+  if (month) params.month = month;
+  if (year) params.year = year;
+  return api.get(`/manager/feedback/${operatorId}`, { params });
+};
+export const saveManagerFeedback = (operatorId, month, year, feedbackText) => {
+  return api.post('/manager/feedback', {
+    operatorId,
+    month,
+    year,
+    feedbackText,
+  });
+};
+export const updateManagerFeedback = (feedbackId, feedbackText) => {
+  return api.put(`/manager/feedback/${feedbackId}`, {
+    feedbackText,
+  });
+};
+export const deleteManagerFeedback = (feedbackId) => {
+  return api.delete(`/manager/feedback/${feedbackId}`);
+};
 export const exportCSV = (month = null) => {
   const params = month ? { month } : {};
   return api.get('/export/csv', { responseType: 'blob', params });

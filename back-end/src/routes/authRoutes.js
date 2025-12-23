@@ -11,9 +11,13 @@ const router = express.Router();
  */
 router.post('/login', async (req, res) => {
   try {
+    console.log('🔐 Recebida requisição POST /api/auth/login');
+    console.log('📦 Body recebido:', { hasToken: !!req.body.token });
+    
     const { token } = req.body;
 
     if (!token) {
+      console.log('❌ Token não fornecido');
       return res.status(400).json({ 
         error: 'Token Google não fornecido' 
       });

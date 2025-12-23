@@ -30,6 +30,12 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Middleware de debug para todas as requisições
+app.use((req, res, next) => {
+  console.log(`📥 ${req.method} ${req.path}`);
+  next();
+});
+
 // Inicializar banco de dados
 initializeDatabase();
 
@@ -38,6 +44,13 @@ app.use('/api/auth', authRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Sistema de Feedback funcionando' });
 });
+
+// Debug: Log de todas as rotas registradas
+console.log('📋 Rotas registradas:');
+console.log('  - POST /api/auth/login');
+console.log('  - GET /api/auth/me');
+console.log('  - POST /api/auth/logout');
+console.log('  - GET /api/health');
 
 // Rotas protegidas (requerem autenticação)
 app.use('/api/operators', operatorRoutes);

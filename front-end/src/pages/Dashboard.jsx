@@ -49,10 +49,13 @@ function Dashboard() {
   const [operator, setOperator] = useState(null);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState({ pdf: false, csv: false, xlsx: false });
-  const [selectedMonth, setSelectedMonth] = useState('');
-  const [availableMonths, setAvailableMonths] = useState([]);
+  // Meses fixos disponíveis
+  const FIXED_MONTHS = ['Dezembro', 'Novembro', 'Outubro'];
+  const [selectedMonth, setSelectedMonth] = useState('Dezembro'); // Padrão: Dezembro (mês vigente)
+  const [availableMonths, setAvailableMonths] = useState(FIXED_MONTHS);
 
   useEffect(() => {
+    // Tentar carregar meses da API, mas usar os fixos como fallback
     loadAvailableMonths();
   }, []);
 
@@ -63,14 +66,30 @@ function Dashboard() {
   const loadAvailableMonths = async () => {
     try {
       const response = await getDashboardMonths();
-      if (response.data.success) {
-        setAvailableMonths(response.data.months);
-        if (!selectedMonth && response.data.months.length > 0) {
-          setSelectedMonth(response.data.months[0]); // Select the latest month by default
+      if (response.data.success && response.data.months && response.data.months.length > 0) {
+        // Usar meses da API se disponíveis, mas garantir que Dezembro está na lista
+        const apiMonths = response.data.months;
+        const allMonths = [...new Set([...FIXED_MONTHS, ...apiMonths])];
+        setAvailableMonths(allMonths);
+        
+        // Se Dezembro não estiver selecionado e estiver disponível, manter Dezembro
+        if (!selectedMonth || selectedMonth === '') {
+          setSelectedMonth('Dezembro');
+        }
+      } else {
+        // Se API não retornar meses, usar os fixos
+        setAvailableMonths(FIXED_MONTHS);
+        if (!selectedMonth || selectedMonth === '') {
+          setSelectedMonth('Dezembro');
         }
       }
     } catch (error) {
       console.error('Erro ao carregar meses disponíveis:', error);
+      // Em caso de erro, usar meses fixos
+      setAvailableMonths(FIXED_MONTHS);
+      if (!selectedMonth || selectedMonth === '') {
+        setSelectedMonth('Dezembro');
+      }
     }
   };
 
@@ -179,11 +198,11 @@ function Dashboard() {
           <h1>Dashboard de Métricas</h1>
           {operator ? (
             <p className="dashboard-subtitle">
-              {operator.name} | {operator.position} | {selectedMonth || operator.reference_month}
+              {operator.name} | {operator.position} | Período: {selectedMonth || 'Dezembro'}
             </p>
           ) : (
             <p className="dashboard-subtitle">
-              Olá, {user?.operatorName || user?.email}!
+              Olá, {user?.operatorName || user?.email} | Período: {selectedMonth || 'Dezembro'}
             </p>
           )}
           {user && !operator && (
@@ -193,8 +212,12 @@ function Dashboard() {
           )}
         </div>
         <div className="dashboard-actions">
-          {availableMonths.length > 0 && (
+          <div className="period-selector-wrapper">
+            <label htmlFor="period-selector" className="period-label">
+              Selecione o período:
+            </label>
             <select
+              id="period-selector"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="month-selector"
@@ -205,7 +228,7 @@ function Dashboard() {
                 </option>
               ))}
             </select>
-          )}
+          </div>
           {metrics && (
             <>
               <button 

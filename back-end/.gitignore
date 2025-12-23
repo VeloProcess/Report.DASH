@@ -7,6 +7,9 @@ data/indicators.json
 # Manter operators.json e Metrics.json no Git
 !data/operators.json
 !data/Metrics.json
+# Manter logos no Git
+!assets/logo-basico.png
+!assets/logo-natalino.png
 *.log
 .DS_Store
 

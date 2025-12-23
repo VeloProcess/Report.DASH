@@ -2,7 +2,17 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { initializeDatabase } from './database.js';
-import authRoutes from './routes/authRoutes.js';
+
+// Importar rotas com tratamento de erro
+let authRoutes;
+try {
+  authRoutes = (await import('./routes/authRoutes.js')).default;
+  console.log('✅ authRoutes importado com sucesso');
+} catch (error) {
+  console.error('❌ Erro ao importar authRoutes:', error);
+  throw error;
+}
+
 import operatorRoutes from './routes/operatorRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
 import logRoutes from './routes/logRoutes.js';
@@ -40,13 +50,20 @@ app.use((req, res, next) => {
 initializeDatabase();
 
 // Rotas públicas
-// Teste direto antes de usar o router
+console.log('🔍 Verificando authRoutes:', typeof authRoutes, authRoutes ? 'existe' : 'não existe');
+if (authRoutes) {
+  console.log('✅ authRoutes está definido, registrando rotas...');
+  app.use('/api/auth', authRoutes);
+  console.log('✅ Rotas /api/auth registradas');
+} else {
+  console.error('❌ authRoutes não está definido!');
+}
+
+// Rota de teste direta
 app.post('/api/auth/login-test', (req, res) => {
   console.log('✅ Rota de teste /api/auth/login-test chamada');
   res.json({ test: 'ok', message: 'Rota de teste funcionando' });
 });
-
-app.use('/api/auth', authRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Sistema de Feedback funcionando' });
 });

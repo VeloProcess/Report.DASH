@@ -10,17 +10,26 @@ router.use(authenticateToken);
 /**
  * GET /api/export/pdf
  * Exporta dados do operador autenticado em PDF
+ * Query params:
+ *   - month (opcional): "Outubro", "Novembro", "Dezembro" - retorna métricas do mês específico
  */
 router.get('/pdf', async (req, res) => {
   try {
-    const pdfBuffer = await exportToPDF(req.user);
+    const month = req.query.month || null; // Mês solicitado via query param
+    console.log(`📄 Exportando PDF para operador: ${req.user.operatorName}, mês: ${month || 'padrão'}`);
+    
+    const pdfBuffer = await exportToPDF(req.user, month);
+    
+    const monthSuffix = month ? `_${month}` : '';
+    const filename = `feedback_${req.user.operatorName.replace(/\s+/g, '_')}${monthSuffix}.pdf`;
     
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="feedback_${req.user.operatorName.replace(/\s+/g, '_')}.pdf"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     
     res.send(pdfBuffer);
   } catch (error) {
-    console.error('Erro ao exportar PDF:', error);
+    console.error('❌ Erro ao exportar PDF:', error);
+    console.error('Stack:', error.stack);
     res.status(500).json({ 
       error: 'Erro ao exportar PDF',
       details: error.message 

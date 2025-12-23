@@ -1,31 +1,76 @@
 import { getLatestIndicatorByOperatorId, getLatestFeedbackByOperatorId } from '../database.js';
-import { generateFeedbackPDF } from './pdfService.js';
+import { generateFeedbackPDF, generateMetricsPDF } from './pdfService.js';
 import ExcelJS from 'exceljs';
 import { getOperatorByEmail } from '../utils/operatorUtils.js';
+import { getMetricsByEmail, convertMetricsToDashboardFormat } from './metricsService.js';
 
 /**
  * Exporta dados do operador autenticado em formato PDF
  * @param {Object} userData - Dados do usuário autenticado { email, operatorId, operatorName }
+ * @param {string} month - Mês específico (opcional): "Outubro", "Novembro", "Dezembro"
  * @returns {Promise<Buffer>} Buffer do PDF
  */
-export const exportToPDF = async (userData) => {
+export const exportToPDF = async (userData, month = null) => {
   try {
+    console.log(`📄 Iniciando exportação PDF para: ${userData.email}, mês: ${month || 'padrão'}`);
+    
     const operator = getOperatorByEmail(userData.email);
     
     if (!operator) {
-      throw new Error('Operador não encontrado');
+      console.log('⚠️ Operador não encontrado, usando dados básicos do usuário');
+      // Se não encontrar operador, usar dados básicos do usuário
+      const basicOperator = {
+        id: userData.operatorId || 0,
+        name: userData.operatorName || userData.email,
+        position: 'Não Cadastrado',
+        team: 'N/A',
+        reference_month: month || 'Dezembro',
+      };
+      
+      // Tentar buscar métricas do Metrics.json
+      const metricsData = getMetricsByEmail(userData.email, month);
+      if (metricsData) {
+        const indicators = convertMetricsToDashboardFormat(metricsData, month);
+        if (indicators) {
+          console.log('✅ Métricas encontradas no Metrics.json, gerando PDF com métricas');
+          return await generateMetricsPDF(basicOperator, indicators, month);
+        }
+      }
+      
+      throw new Error('Nenhum dado encontrado para exportação');
     }
 
+    console.log(`✅ Operador encontrado: ${operator.name}`);
+
+    // PRIORIDADE 1: Tentar buscar métricas do Metrics.json
+    const metricsData = getMetricsByEmail(userData.email, month);
+    if (metricsData) {
+      const indicators = convertMetricsToDashboardFormat(metricsData, month);
+      if (indicators) {
+        console.log('✅ Métricas encontradas no Metrics.json, gerando PDF com métricas');
+        return await generateMetricsPDF(operator, indicators, month);
+      }
+    }
+
+    // PRIORIDADE 2: Tentar buscar feedback (sistema antigo)
     const feedback = getLatestFeedbackByOperatorId(userData.operatorId);
-    
-    if (!feedback) {
-      throw new Error('Feedback não encontrado para este operador');
+    if (feedback) {
+      console.log('✅ Feedback encontrado, gerando PDF com feedback');
+      const pdfBuffer = await generateFeedbackPDF(operator, feedback);
+      return pdfBuffer;
     }
 
-    const pdfBuffer = await generateFeedbackPDF(operator, feedback);
-    return pdfBuffer;
+    // PRIORIDADE 3: Tentar buscar indicadores (sistema antigo)
+    const indicators = getLatestIndicatorByOperatorId(userData.operatorId);
+    if (indicators) {
+      console.log('✅ Indicadores encontrados, gerando PDF com indicadores');
+      return await generateMetricsPDF(operator, indicators, month);
+    }
+
+    throw new Error('Nenhum dado encontrado para exportação. Certifique-se de que as métricas foram cadastradas.');
   } catch (error) {
-    console.error('Erro ao exportar PDF:', error);
+    console.error('❌ Erro ao exportar PDF:', error);
+    console.error('Stack:', error.stack);
     throw new Error(`Erro ao exportar PDF: ${error.message}`);
   }
 };

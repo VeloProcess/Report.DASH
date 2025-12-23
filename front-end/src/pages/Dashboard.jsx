@@ -5,9 +5,7 @@ import {
   getDashboardFeedback,
   getDashboardOperator,
   getDashboardMonths,
-  exportPDF,
-  exportCSV,
-  exportXLSX
+  exportPDF
 } from '../services/api';
 import MetricCard from '../components/MetricCard';
 import './Dashboard.css';
@@ -48,7 +46,7 @@ function Dashboard() {
   const [feedback, setFeedback] = useState(null);
   const [operator, setOperator] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [exporting, setExporting] = useState({ pdf: false, csv: false, xlsx: false });
+  const [exporting, setExporting] = useState({ pdf: false });
   // Meses fixos disponíveis
   const FIXED_MONTHS = ['Dezembro', 'Novembro', 'Outubro'];
   const [selectedMonth, setSelectedMonth] = useState('Dezembro'); // Padrão: Dezembro (mês vigente)
@@ -118,33 +116,13 @@ function Dashboard() {
     }
   };
 
-  const handleExport = async (format) => {
+  const handleExportPDF = async () => {
     try {
-      setExporting({ ...exporting, [format]: true });
+      setExporting({ pdf: true });
       
-      let response;
-      let filename;
-      let mimeType;
-
-      switch (format) {
-        case 'pdf':
-          response = await exportPDF(selectedMonth);
-          filename = `feedback_${user.operatorName.replace(/\s+/g, '_')}${selectedMonth ? `_${selectedMonth}` : ''}.pdf`;
-          mimeType = 'application/pdf';
-          break;
-        case 'csv':
-          response = await exportCSV(selectedMonth);
-          filename = `dados_${user.operatorName.replace(/\s+/g, '_')}${selectedMonth ? `_${selectedMonth}` : ''}.csv`;
-          mimeType = 'text/csv';
-          break;
-        case 'xlsx':
-          response = await exportXLSX(selectedMonth);
-          filename = `dados_${user.operatorName.replace(/\s+/g, '_')}${selectedMonth ? `_${selectedMonth}` : ''}.xlsx`;
-          mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-          break;
-        default:
-          return;
-      }
+      const response = await exportPDF(selectedMonth);
+      const filename = `feedback_${user.operatorName.replace(/\s+/g, '_')}${selectedMonth ? `_${selectedMonth}` : ''}.pdf`;
+      const mimeType = 'application/pdf';
 
       // Criar link de download
       const url = window.URL.createObjectURL(new Blob([response.data], { type: mimeType }));
@@ -155,11 +133,13 @@ function Dashboard() {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
+      
+      alert('PDF exportado com sucesso!');
     } catch (error) {
-      console.error(`Erro ao exportar ${format}:`, error);
-      alert(`Erro ao exportar ${format.toUpperCase()}`);
+      console.error('Erro ao exportar PDF:', error);
+      alert('Erro ao exportar PDF. Tente novamente.');
     } finally {
-      setExporting({ ...exporting, [format]: false });
+      setExporting({ pdf: false });
     }
   };
 
@@ -230,29 +210,13 @@ function Dashboard() {
             </select>
           </div>
           {metrics && (
-            <>
-              <button 
-                onClick={() => handleExport('pdf')} 
-                className="btn btn-export"
-                disabled={exporting.pdf}
-              >
-                {exporting.pdf ? 'Exportando...' : '📄 PDF'}
-              </button>
-              <button 
-                onClick={() => handleExport('csv')} 
-                className="btn btn-export"
-                disabled={exporting.csv}
-              >
-                {exporting.csv ? 'Exportando...' : '📊 CSV'}
-              </button>
-              <button 
-                onClick={() => handleExport('xlsx')} 
-                className="btn btn-export"
-                disabled={exporting.xlsx}
-              >
-                {exporting.xlsx ? 'Exportando...' : '📈 XLSX'}
-              </button>
-            </>
+            <button 
+              onClick={handleExportPDF} 
+              className="btn btn-export"
+              disabled={exporting.pdf}
+            >
+              {exporting.pdf ? 'Exportando...' : '📄 Exportar PDF'}
+            </button>
           )}
           <button onClick={handleLogout} className="btn btn-logout">
             Sair

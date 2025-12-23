@@ -64,12 +64,21 @@ export const findOperatorByEmail = (email) => {
  * @returns {string} Token JWT
  */
 export const createSessionToken = (userData) => {
+  // Verificar se é gestor (com tratamento de erro caso isManager não esteja disponível)
+  let managerStatus = false;
+  try {
+    managerStatus = isManager(userData.email);
+  } catch (error) {
+    console.error('⚠️ Erro ao verificar status de gestor no token:', error);
+    managerStatus = false; // Por padrão, não é gestor
+  }
+  
   return jwt.sign(
     {
       email: userData.email,
       operatorId: userData.operatorId,
       operatorName: userData.operatorName,
-      isManager: isManager(userData.email),
+      isManager: managerStatus,
     },
     JWT_SECRET,
     { expiresIn: '24h' }
@@ -97,49 +106,61 @@ export const verifySessionToken = (token) => {
  * @returns {Promise<Object>} { token, user: { email, operatorId, operatorName } }
  */
 export const processLogin = async (googleToken) => {
-  // Validar token Google
-  const googleUser = await verifyGoogleToken(googleToken);
-  
-  console.log(`🔐 Processando login para email: ${googleUser.email}`);
-  
-  // Buscar operador pelo email
-  const operator = findOperatorByEmail(googleUser.email);
-  
-  // Permitir login mesmo sem operador cadastrado (mas sem dados)
-  let operatorId = null;
-  let operatorName = googleUser.name || googleUser.email.split('@')[0];
-  
-  if (operator) {
-    operatorId = operator.id;
-    operatorName = operator.name;
-    console.log(`✅ Operador encontrado: ID ${operatorId} - "${operatorName}"`);
-  } else {
-    console.log(`⚠️ Operador não encontrado, mas permitindo login para: ${googleUser.email}`);
-    // Criar um ID temporário baseado no email para manter compatibilidade
-    operatorId = 0; // ID especial para operadores não cadastrados
-  }
-  
-  const managerStatus = isManager(googleUser.email);
-  
-  // Criar token de sessão
-  const sessionToken = createSessionToken({
-    email: googleUser.email,
-    operatorId: operatorId,
-    operatorName: operatorName,
-  });
-  
-  return {
-    token: sessionToken,
-    user: {
+  try {
+    // Validar token Google
+    const googleUser = await verifyGoogleToken(googleToken);
+    
+    console.log(`🔐 Processando login para email: ${googleUser.email}`);
+    
+    // Buscar operador pelo email
+    const operator = findOperatorByEmail(googleUser.email);
+    
+    // Permitir login mesmo sem operador cadastrado (mas sem dados)
+    let operatorId = null;
+    let operatorName = googleUser.name || googleUser.email.split('@')[0];
+    
+    if (operator) {
+      operatorId = operator.id;
+      operatorName = operator.name;
+      console.log(`✅ Operador encontrado: ID ${operatorId} - "${operatorName}"`);
+    } else {
+      console.log(`⚠️ Operador não encontrado, mas permitindo login para: ${googleUser.email}`);
+      // Criar um ID temporário baseado no email para manter compatibilidade
+      operatorId = 0; // ID especial para operadores não cadastrados
+    }
+    
+    // Verificar se é gestor (com tratamento de erro caso isManager não esteja disponível)
+    let managerStatus = false;
+    try {
+      managerStatus = isManager(googleUser.email);
+    } catch (error) {
+      console.error('⚠️ Erro ao verificar status de gestor:', error);
+      managerStatus = false; // Por padrão, não é gestor
+    }
+    
+    // Criar token de sessão
+    const sessionToken = createSessionToken({
       email: googleUser.email,
       operatorId: operatorId,
       operatorName: operatorName,
-      name: operatorName,
-      position: operator?.position || null,
-      team: operator?.team || null,
-      hasOperatorData: !!operator,
-      isManager: managerStatus,
-    },
-  };
+    });
+    
+    return {
+      token: sessionToken,
+      user: {
+        email: googleUser.email,
+        operatorId: operatorId,
+        operatorName: operatorName,
+        name: operatorName,
+        position: operator?.position || null,
+        team: operator?.team || null,
+        hasOperatorData: !!operator,
+        isManager: managerStatus,
+      },
+    };
+  } catch (error) {
+    console.error('❌ Erro completo no processLogin:', error);
+    throw error;
+  }
 };
 

@@ -237,11 +237,23 @@
 
   .dashboard-actions {
     width: 100%;
+    flex-direction: column;
+  }
+
+  .period-selector-wrapper {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .month-selector {
+    flex: 1;
+    min-width: auto;
   }
 
   .btn-export,
   .btn-logout {
     flex: 1;
+    width: 100%;
   }
 
   .metrics-grid {

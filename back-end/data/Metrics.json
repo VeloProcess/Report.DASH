@@ -1,0 +1,2501 @@
+{
+  "dimas.nascimento@velotax.com.br": {
+    "login": {
+      "email": "dimas.nascimento@velotax.com.br",
+      "nome": "Dimas Henrique Gonçalves do Nascimento",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 372,
+              "tma": "00:06:34",
+              "nota_telefone": 4.88,
+              "quantidade_notas": 172
+            },
+            "tickets": {
+              "quantidade": 127,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.9,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "174:00:00",
+              "total_cumprido": "173:58:03",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "24:30:00",
+              "pausa_realizada": "37:01:07",
+              "pausa_almoco_escalada": "16:20:00",
+              "pausa_almoco_realizada": "16:42:14",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "06:43:15",
+              "pausa_feedback": "13:16:10",
+              "pausa_treinamento": "00:19:28"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 391,
+              "tma": "00:06:32",
+              "nota_telefone": 4.62,
+              "quantidade_notas": 180
+            },
+            "tickets": {
+              "quantidade": 412,
+              "tmt": "00:00:00",
+              "nota_ticket": 3.7,
+              "quantidade_notas": 6
+            },
+            "qualidade": {
+              "nota": 0.86,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "174:00:00",
+              "total_cumprido": "178:59:08",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "26:00:00",
+              "pausa_realizada": "42:37:12",
+              "pausa_almoco_escalada": "17:00:00",
+              "pausa_almoco_realizada": "17:30:55",
+              "pausa_10_escalada": "10:00:00",
+              "pausa_10_realizada": "00:06:58",
+              "pausa_banheiro": "04:50:11",
+              "pausa_feedback": "19:02:35",
+              "pausa_treinamento": "01:06:33"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 254,
+              "tma": "00:04:54",
+              "nota_telefone": 4.96,
+              "quantidade_notas": 103
+            },
+            "tickets": {
+              "quantidade": 90,
+              "tmt": "02:29:48",
+              "nota_ticket": 2.83,
+              "quantidade_notas": 12
+            },
+            "qualidade": {
+              "nota": 0.88,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "143:00:00",
+              "total_cumprido": "158:16:48",
+              "abs": 0,
+              "atrasos": 2,
+              "pausa_escalada": "24:30:00",
+              "pausa_realizada": "23:42:48",
+              "pausa_almoco_escalada": "16:00:00",
+              "pausa_almoco_realizada": "14:47:36",
+              "pausa_10_escalada": "08:30:00",
+              "pausa_10_realizada": "05:00:23",
+              "pausa_banheiro": "02:06:02",
+              "pausa_feedback": "01:43:35",
+              "pausa_treinamento": "00:05:12"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "gabrielli.assuncao@velotax.com.br": {
+    "login": {
+      "email": "gabrielli.assuncao@velotax.com.br",
+      "nome": "Gabrielli Ribeiro de Assunção",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 369,
+              "tma": "00:05:23",
+              "nota_telefone": 4.76,
+              "quantidade_notas": 195
+            },
+            "tickets": {
+              "quantidade": 203,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.68,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "171:15:10",
+              "abs": 1,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "28:14:14",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "17:53:59",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "07:27:44",
+              "pausa_feedback": "02:52:31",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 408,
+              "tma": "00:05:11",
+              "nota_telefone": 4.77,
+              "quantidade_notas": 217
+            },
+            "tickets": {
+              "quantidade": 490,
+              "tmt": "00:00:00",
+              "nota_ticket": 3.1,
+              "quantidade_notas": 10
+            },
+            "qualidade": {
+              "nota": 0.63,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "193:53:58",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "42:05:05",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "19:21:00",
+              "pausa_10_escalada": "09:30:00",
+              "pausa_10_realizada": "00:07:45",
+              "pausa_banheiro": "07:57:09",
+              "pausa_feedback": "14:09:51",
+              "pausa_treinamento": "00:29:20"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 250,
+              "tma": "00:03:37",
+              "nota_telefone": 4.8,
+              "quantidade_notas": 106
+            },
+            "tickets": {
+              "quantidade": 163,
+              "tmt": "02:46:06",
+              "nota_ticket": 3.71,
+              "quantidade_notas": 14
+            },
+            "qualidade": {
+              "nota": 1,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "157:00:00",
+              "total_cumprido": "155:32:33",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "24:00:00",
+              "pausa_realizada": "25:23:41",
+              "pausa_almoco_escalada": "16:00:00",
+              "pausa_almoco_realizada": "15:46:09",
+              "pausa_10_escalada": "08:00:00",
+              "pausa_10_realizada": "05:21:48",
+              "pausa_banheiro": "02:18:35",
+              "pausa_feedback": "01:52:17",
+              "pausa_treinamento": "00:04:52"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "igor.siqueira@velotax.com.br": {
+    "login": {
+      "email": "igor.siqueira@velotax.com.br",
+      "nome": "Igor Leme de Siqueira",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 175,
+              "tma": "00:05:46",
+              "nota_telefone": 4.61,
+              "quantidade_notas": 77
+            },
+            "tickets": {
+              "quantidade": 6,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.85,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "159:54:03",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "35:25:11",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "14:31:33",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "08:59:27",
+              "pausa_feedback": "11:52:38",
+              "pausa_treinamento": "00:00:47"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 376,
+              "tma": "00:05:50",
+              "nota_telefone": 4.78,
+              "quantidade_notas": 178
+            },
+            "tickets": {
+              "quantidade": 58,
+              "tmt": "00:00:00",
+              "nota_ticket": 3,
+              "quantidade_notas": 2
+            },
+            "qualidade": {
+              "nota": 0.85,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "181:42:22",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "30:14:49",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "17:34:18",
+              "pausa_10_escalada": "09:30:00",
+              "pausa_10_realizada": "00:06:24",
+              "pausa_banheiro": "08:02:26",
+              "pausa_feedback": "03:44:38",
+              "pausa_treinamento": "00:47:03"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 154,
+              "tma": "00:04:39",
+              "nota_telefone": 4.89,
+              "quantidade_notas": 81
+            },
+            "tickets": {
+              "quantidade": 39,
+              "tmt": "01:19:44",
+              "nota_ticket": 2,
+              "quantidade_notas": 4
+            },
+            "qualidade": {
+              "nota": 0.97,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "157:00:00",
+              "total_cumprido": "115:53:22",
+              "abs": 4,
+              "atrasos": 8,
+              "pausa_escalada": "16:30:00",
+              "pausa_realizada": "16:02:31",
+              "pausa_almoco_escalada": "11:00:00",
+              "pausa_almoco_realizada": "09:54:40",
+              "pausa_10_escalada": "05:30:00",
+              "pausa_10_realizada": "02:57:26",
+              "pausa_banheiro": "02:03:54",
+              "pausa_feedback": "00:27:58",
+              "pausa_treinamento": "00:04:37"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "juliana.rofino@velotax.com.br": {
+    "login": {
+      "email": "juliana.rofino@velotax.com.br",
+      "nome": "Juliana Aparecida Rofino",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 378,
+              "tma": "00:05:20",
+              "nota_telefone": 4.81,
+              "quantidade_notas": 143
+            },
+            "tickets": {
+              "quantidade": 136,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.89,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "174:00:00",
+              "total_cumprido": "165:51:42",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "24:30:00",
+              "pausa_realizada": "24:17:27",
+              "pausa_almoco_escalada": "16:20:00",
+              "pausa_almoco_realizada": "15:29:57",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "05:43:07",
+              "pausa_feedback": "02:41:56",
+              "pausa_treinamento": "00:22:27"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 404,
+              "tma": "00:05:10",
+              "nota_telefone": 4.69,
+              "quantidade_notas": 176
+            },
+            "tickets": {
+              "quantidade": 184,
+              "tmt": "00:00:00",
+              "nota_ticket": 2.6,
+              "quantidade_notas": 5
+            },
+            "qualidade": {
+              "nota": 0.81,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "174:00:00",
+              "total_cumprido": "172:26:26",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "26:00:00",
+              "pausa_realizada": "25:14:36",
+              "pausa_almoco_escalada": "17:00:00",
+              "pausa_almoco_realizada": "15:59:21",
+              "pausa_10_escalada": "10:00:00",
+              "pausa_10_realizada": "00:29:43",
+              "pausa_banheiro": "05:04:53",
+              "pausa_feedback": "02:35:31",
+              "pausa_treinamento": "01:05:08"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 186,
+              "tma": "00:03:59",
+              "nota_telefone": 4.97,
+              "quantidade_notas": 90
+            },
+            "tickets": {
+              "quantidade": 71,
+              "tmt": "03:36:53",
+              "nota_ticket": 3,
+              "quantidade_notas": 9
+            },
+            "qualidade": {
+              "nota": 0.9,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "133:00:00",
+              "total_cumprido": "136:30:55",
+              "abs": 0,
+              "atrasos": 11,
+              "pausa_escalada": "20:00:00",
+              "pausa_realizada": "20:03:58",
+              "pausa_almoco_escalada": "13:00:00",
+              "pausa_almoco_realizada": "13:10:56",
+              "pausa_10_escalada": "07:00:00",
+              "pausa_10_realizada": "05:00:14",
+              "pausa_banheiro": "01:16:42",
+              "pausa_feedback": "00:30:13",
+              "pausa_treinamento": "00:05:53"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "laura.almeida@velotax.com.br": {
+    "login": {
+      "email": "laura.almeida@velotax.com.br",
+      "nome": "Laura Porto de Almeida",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 369,
+              "tma": "00:04:38",
+              "nota_telefone": 4.73,
+              "quantidade_notas": 114
+            },
+            "tickets": {
+              "quantidade": 44,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.83,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "164:13:33",
+              "abs": 1,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "24:48:08",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "15:53:58",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "07:10:23",
+              "pausa_feedback": "01:43:47",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 380,
+              "tma": "00:04:49",
+              "nota_telefone": 4.79,
+              "quantidade_notas": 66
+            },
+            "tickets": {
+              "quantidade": 167,
+              "tmt": "00:00:00",
+              "nota_ticket": 3.7,
+              "quantidade_notas": 3
+            },
+            "qualidade": {
+              "nota": 0.96,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "170:54:23",
+              "abs": 1,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "28:10:50",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "17:59:14",
+              "pausa_10_escalada": "09:30:00",
+              "pausa_10_realizada": "00:16:16",
+              "pausa_banheiro": "06:24:25",
+              "pausa_feedback": "03:16:56",
+              "pausa_treinamento": "00:13:59"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 179,
+              "tma": "00:04:17",
+              "nota_telefone": 4.86,
+              "quantidade_notas": 56
+            },
+            "tickets": {
+              "quantidade": 61,
+              "tmt": "02:54:35",
+              "nota_ticket": 4,
+              "quantidade_notas": 4
+            },
+            "qualidade": {
+              "nota": 0.92,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "157:00:00",
+              "total_cumprido": "129:21:48",
+              "abs": 2,
+              "atrasos": 10,
+              "pausa_escalada": "21:00:00",
+              "pausa_realizada": "21:10:24",
+              "pausa_almoco_escalada": "14:00:00",
+              "pausa_almoco_realizada": "14:14:18",
+              "pausa_10_escalada": "07:00:00",
+              "pausa_10_realizada": "04:09:09",
+              "pausa_banheiro": "02:07:54",
+              "pausa_feedback": "00:39:03",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "laura.guedes@velotax.com.br": {
+    "login": {
+      "email": "laura.guedes@velotax.com.br",
+      "nome": "Laura Ketheleen de Freitas Guedes",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 311,
+              "tma": "00:05:17",
+              "nota_telefone": 4.77,
+              "quantidade_notas": 89
+            },
+            "tickets": {
+              "quantidade": 90,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.8,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "174:00:00",
+              "total_cumprido": "163:58:26",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "24:30:00",
+              "pausa_realizada": "23:47:21",
+              "pausa_almoco_escalada": "16:20:00",
+              "pausa_almoco_realizada": "15:32:54",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "05:56:17",
+              "pausa_feedback": "02:18:10",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 400,
+              "tma": "00:05:32",
+              "nota_telefone": 4.81,
+              "quantidade_notas": 107
+            },
+            "tickets": {
+              "quantidade": 99,
+              "tmt": "00:00:00",
+              "nota_ticket": 3.4,
+              "quantidade_notas": 5
+            },
+            "qualidade": {
+              "nota": 0.84,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "164:00:00",
+              "total_cumprido": "173:37:09",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "24:30:00",
+              "pausa_realizada": "30:38:55",
+              "pausa_almoco_escalada": "17:00:00",
+              "pausa_almoco_realizada": "19:43:12",
+              "pausa_10_escalada": "09:30:00",
+              "pausa_10_realizada": "00:43:15",
+              "pausa_banheiro": "06:58:11",
+              "pausa_feedback": "00:31:35",
+              "pausa_treinamento": "02:42:42"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 185,
+              "tma": "00:04:07",
+              "nota_telefone": 4.85,
+              "quantidade_notas": 48
+            },
+            "tickets": {
+              "quantidade": 52,
+              "tmt": "02:20:28",
+              "nota_ticket": 2.8,
+              "quantidade_notas": 5
+            },
+            "qualidade": {
+              "nota": 1,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "133:00:00",
+              "total_cumprido": "133:12:48",
+              "abs": 0,
+              "atrasos": 10,
+              "pausa_escalada": "20:00:00",
+              "pausa_realizada": "20:45:13",
+              "pausa_almoco_escalada": "13:00:00",
+              "pausa_almoco_realizada": "12:21:25",
+              "pausa_10_escalada": "07:00:00",
+              "pausa_10_realizada": "05:37:45",
+              "pausa_banheiro": "01:57:16",
+              "pausa_feedback": "00:43:02",
+              "pausa_treinamento": "00:05:45"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "marcelo.silva@velotax.com.br": {
+    "login": {
+      "email": "marcelo.silva@velotax.com.br",
+      "nome": "Marcelo Rodrigo Izael da Silva",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 335,
+              "tma": "00:04:45",
+              "nota_telefone": 4.78,
+              "quantidade_notas": 233
+            },
+            "tickets": {
+              "quantidade": 457,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.87,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "155:48:00",
+              "total_cumprido": "155:32:00",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "25:20:00",
+              "pausa_realizada": "27:58:41",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "18:44:53",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "07:17:54",
+              "pausa_feedback": "01:55:54",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 428,
+              "tma": "00:05:02",
+              "nota_telefone": 4.69,
+              "quantidade_notas": 290
+            },
+            "tickets": {
+              "quantidade": 334,
+              "tmt": "00:00:00",
+              "nota_ticket": 3.8,
+              "quantidade_notas": 10
+            },
+            "qualidade": {
+              "nota": 0.75,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "155:48:00",
+              "total_cumprido": "162:38:18",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "25:20:00",
+              "pausa_realizada": "30:44:53",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "19:20:22",
+              "pausa_10_escalada": "07:00:00",
+              "pausa_10_realizada": "00:23:23",
+              "pausa_banheiro": "07:26:07",
+              "pausa_feedback": "03:21:22",
+              "pausa_treinamento": "00:13:38"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 187,
+              "tma": "00:03:47",
+              "nota_telefone": 4.75,
+              "quantidade_notas": 129
+            },
+            "tickets": {
+              "quantidade": 132,
+              "tmt": "03:03:45",
+              "nota_ticket": 2.92,
+              "quantidade_notas": 12
+            },
+            "qualidade": {
+              "nota": 1,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "114:24:00",
+              "total_cumprido": "123:21:27",
+              "abs": 0,
+              "atrasos": 4,
+              "pausa_escalada": "18:00:00",
+              "pausa_realizada": "19:48:29",
+              "pausa_almoco_escalada": "13:00:00",
+              "pausa_almoco_realizada": "13:14:57",
+              "pausa_10_escalada": "05:00:00",
+              "pausa_10_realizada": "03:40:24",
+              "pausa_banheiro": "02:23:16",
+              "pausa_feedback": "00:25:44",
+              "pausa_treinamento": "00:04:08"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "marcos.pereira@velotax.com.br": {
+    "login": {
+      "email": "marcos.pereira@velotax.com.br",
+      "nome": "Marcos da Silva Pereira",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 269,
+              "tma": "00:06:27",
+              "nota_telefone": 4.69,
+              "quantidade_notas": 141
+            },
+            "tickets": {
+              "quantidade": 255,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.85,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "155:48:00",
+              "total_cumprido": "138:46:56",
+              "abs": 2,
+              "atrasos": 0,
+              "pausa_escalada": "25:20:00",
+              "pausa_realizada": "26:35:14",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "17:03:37",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "04:03:39",
+              "pausa_feedback": "05:27:58",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 330,
+              "tma": "00:06:33",
+              "nota_telefone": 4.71,
+              "quantidade_notas": 215
+            },
+            "tickets": {
+              "quantidade": 224,
+              "tmt": "00:00:00",
+              "nota_ticket": 4.3,
+              "quantidade_notas": 6
+            },
+            "qualidade": {
+              "nota": 0.88,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "155:48:00",
+              "total_cumprido": "156:10:23",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "25:20:00",
+              "pausa_realizada": "36:00:37",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "18:56:12",
+              "pausa_10_escalada": "07:00:00",
+              "pausa_10_realizada": "00:12:52",
+              "pausa_banheiro": "05:04:17",
+              "pausa_feedback": "11:21:32",
+              "pausa_treinamento": "00:25:44"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 192,
+              "tma": "00:05:29",
+              "nota_telefone": 4.81,
+              "quantidade_notas": 113
+            },
+            "tickets": {
+              "quantidade": 101,
+              "tmt": "02:35:25",
+              "nota_ticket": 3.33,
+              "quantidade_notas": 3
+            },
+            "qualidade": {
+              "nota": 0.95,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "136:36:00",
+              "total_cumprido": "123:10:52",
+              "abs": 0,
+              "atrasos": 11,
+              "pausa_escalada": "21:20:00",
+              "pausa_realizada": "24:54:06",
+              "pausa_almoco_escalada": "16:00:00",
+              "pausa_almoco_realizada": "15:58:19",
+              "pausa_10_escalada": "05:20:00",
+              "pausa_10_realizada": "02:45:52",
+              "pausa_banheiro": "01:51:55",
+              "pausa_feedback": "04:18:00",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "mariana.luz@velotax.com.br": {
+    "login": {
+      "email": "mariana.luz@velotax.com.br",
+      "nome": "Mariana Leao Cordeiro da Cruz",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 193,
+              "tma": "00:08:43",
+              "nota_telefone": 4.78,
+              "quantidade_notas": 122
+            },
+            "tickets": {
+              "quantidade": 92,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.9,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "174:00:00",
+              "total_cumprido": "163:25:50",
+              "abs": 1,
+              "atrasos": 0,
+              "pausa_escalada": "24:30:00",
+              "pausa_realizada": "29:35:17",
+              "pausa_almoco_escalada": "16:20:00",
+              "pausa_almoco_realizada": "14:26:06",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "09:10:24",
+              "pausa_feedback": "04:43:11",
+              "pausa_treinamento": "00:30:05"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 235,
+              "tma": "00:09:21",
+              "nota_telefone": 4.8,
+              "quantidade_notas": 120
+            },
+            "tickets": {
+              "quantidade": 48,
+              "tmt": "00:00:00",
+              "nota_ticket": 2.6,
+              "quantidade_notas": 5
+            },
+            "qualidade": {
+              "nota": 0.98,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "164:00:00",
+              "total_cumprido": "119:13:33",
+              "abs": 4,
+              "atrasos": 0,
+              "pausa_escalada": "24:30:00",
+              "pausa_realizada": "25:31:12",
+              "pausa_almoco_escalada": "16:00:00",
+              "pausa_almoco_realizada": "12:42:07",
+              "pausa_10_escalada": "09:30:00",
+              "pausa_10_realizada": "00:25:32",
+              "pausa_banheiro": "08:38:23",
+              "pausa_feedback": "03:53:46",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 33,
+              "tma": "00:10:14",
+              "nota_telefone": 4.91,
+              "quantidade_notas": 23
+            },
+            "tickets": {
+              "quantidade": 48,
+              "tmt": "02:15:55",
+              "nota_ticket": 3,
+              "quantidade_notas": 2
+            },
+            "qualidade": {
+              "nota": 0.93,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "157:00:00",
+              "total_cumprido": "137:55:24",
+              "abs": 0,
+              "atrasos": 5,
+              "pausa_escalada": "24:00:00",
+              "pausa_realizada": "21:12:52",
+              "pausa_almoco_escalada": "16:00:00",
+              "pausa_almoco_realizada": "13:09:45",
+              "pausa_10_escalada": "08:00:00",
+              "pausa_10_realizada": "04:56:28",
+              "pausa_banheiro": "01:30:20",
+              "pausa_feedback": "01:36:19",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "monike.silva@velotax.com.br": {
+    "login": {
+      "email": "monike.silva@velotax.com.br",
+      "nome": "Monike Samara Nascimento da Silva",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 355,
+              "tma": "00:05:19",
+              "nota_telefone": 4.81,
+              "quantidade_notas": 84
+            },
+            "tickets": {
+              "quantidade": 243,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.83,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "179:31:35",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "31:02:40",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "19:10:53",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "08:15:08",
+              "pausa_feedback": "03:36:39",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 389,
+              "tma": "00:06:05",
+              "nota_telefone": 4.75,
+              "quantidade_notas": 91
+            },
+            "tickets": {
+              "quantidade": 208,
+              "tmt": "00:00:00",
+              "nota_ticket": 3.1,
+              "quantidade_notas": 13
+            },
+            "qualidade": {
+              "nota": 1,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "181:37:21",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "27:18:06",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "18:33:56",
+              "pausa_10_escalada": "09:30:00",
+              "pausa_10_realizada": "00:10:12",
+              "pausa_banheiro": "06:25:58",
+              "pausa_feedback": "01:36:49",
+              "pausa_treinamento": "00:31:11"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 219,
+              "tma": "00:05:05",
+              "nota_telefone": 4.84,
+              "quantidade_notas": 79
+            },
+            "tickets": {
+              "quantidade": 75,
+              "tmt": "02:03:05",
+              "nota_ticket": 2.73,
+              "quantidade_notas": 11
+            },
+            "qualidade": {
+              "nota": 0.92,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "157:00:00",
+              "total_cumprido": "154:06:21",
+              "abs": 0,
+              "atrasos": 8,
+              "pausa_escalada": "24:00:00",
+              "pausa_realizada": "23:14:53",
+              "pausa_almoco_escalada": "16:00:00",
+              "pausa_almoco_realizada": "16:00:08",
+              "pausa_10_escalada": "08:00:00",
+              "pausa_10_realizada": "06:13:18",
+              "pausa_banheiro": "00:26:35",
+              "pausa_feedback": "00:29:13",
+              "pausa_treinamento": "00:04:27"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "murilo.caetano@velotax.com.br": {
+    "login": {
+      "email": "murilo.caetano@velotax.com.br",
+      "nome": "Murilo mazin cersozimo caetano",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 174,
+              "tma": "00:05:42",
+              "nota_telefone": 4.91,
+              "quantidade_notas": 59
+            },
+            "tickets": {
+              "quantidade": 12,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.62,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "181:11:51",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "36:25:29",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "17:54:28",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "11:28:49",
+              "pausa_feedback": "06:58:52",
+              "pausa_treinamento": "00:03:20"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 305,
+              "tma": "00:06:31",
+              "nota_telefone": 4.74,
+              "quantidade_notas": 136
+            },
+            "tickets": {
+              "quantidade": 120,
+              "tmt": "00:00:00",
+              "nota_ticket": 3.1,
+              "quantidade_notas": 8
+            },
+            "qualidade": {
+              "nota": 0.89,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "186:29:43",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "41:20:04",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "17:58:19",
+              "pausa_10_escalada": "09:30:00",
+              "pausa_10_realizada": "00:28:52",
+              "pausa_banheiro": "08:35:16",
+              "pausa_feedback": "10:26:25",
+              "pausa_treinamento": "01:16:09"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 219,
+              "tma": "00:05:23",
+              "nota_telefone": 4.74,
+              "quantidade_notas": 92
+            },
+            "tickets": {
+              "quantidade": 54,
+              "tmt": "01:43:29",
+              "nota_ticket": 3.17,
+              "quantidade_notas": 6
+            },
+            "qualidade": {
+              "nota": 0.87,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "157:00:00",
+              "total_cumprido": "151:03:00",
+              "abs": 0,
+              "atrasos": 10,
+              "pausa_escalada": "24:00:00",
+              "pausa_realizada": "26:23:03",
+              "pausa_almoco_escalada": "16:00:00",
+              "pausa_almoco_realizada": "15:05:11",
+              "pausa_10_escalada": "08:00:00",
+              "pausa_10_realizada": "06:05:32",
+              "pausa_banheiro": "01:46:25",
+              "pausa_feedback": "03:02:59",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "rodrigo.reis@velotax.com.br": {
+    "login": {
+      "email": "rodrigo.reis@velotax.com.br",
+      "nome": "Rodrigo Raimundo Reis",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 329,
+              "tma": "00:06:32",
+              "nota_telefone": 4.68,
+              "quantidade_notas": 78
+            },
+            "tickets": {
+              "quantidade": 14,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 1,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "148:59:03",
+              "abs": 1,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "23:12:22",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "12:34:57",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "06:24:27",
+              "pausa_feedback": "04:12:58",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 421,
+              "tma": "00:06:37",
+              "nota_telefone": 4.92,
+              "quantidade_notas": 72
+            },
+            "tickets": {
+              "quantidade": 102,
+              "tmt": "00:00:00",
+              "nota_ticket": 2.5,
+              "quantidade_notas": 13
+            },
+            "qualidade": {
+              "nota": 0.69,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "184:31:52",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "31:55:06",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "18:31:27",
+              "pausa_10_escalada": "09:30:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "05:26:33",
+              "pausa_feedback": "07:26:38",
+              "pausa_treinamento": "00:30:28"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 251,
+              "tma": "00:05:14",
+              "nota_telefone": 4.84,
+              "quantidade_notas": 86
+            },
+            "tickets": {
+              "quantidade": 68,
+              "tmt": "02:10:31",
+              "nota_ticket": 4,
+              "quantidade_notas": 10
+            },
+            "qualidade": {
+              "nota": 1,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "157:00:00",
+              "total_cumprido": "155:01:08",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "24:00:00",
+              "pausa_realizada": "21:44:11",
+              "pausa_almoco_escalada": "16:00:00",
+              "pausa_almoco_realizada": "13:50:27",
+              "pausa_10_escalada": "08:00:00",
+              "pausa_10_realizada": "04:31:17",
+              "pausa_banheiro": "02:03:48",
+              "pausa_feedback": "00:54:42",
+              "pausa_treinamento": "00:23:57"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "stephanie.oliveira@velotax.com.br": {
+    "login": {
+      "email": "stephanie.oliveira@velotax.com.br",
+      "nome": "Stephanie Monterani de Oliveira",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 101,
+              "tma": "00:07:58",
+              "nota_telefone": 4.81,
+              "quantidade_notas": 48
+            },
+            "tickets": {
+              "quantidade": 19,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.82,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "170:19:15",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "41:50:09",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "17:56:31",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "09:35:36",
+              "pausa_feedback": "14:18:02",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 241,
+              "tma": "00:07:52",
+              "nota_telefone": 4.79,
+              "quantidade_notas": 164
+            },
+            "tickets": {
+              "quantidade": 69,
+              "tmt": "00:00:00",
+              "nota_ticket": 3.5,
+              "quantidade_notas": 8
+            },
+            "qualidade": {
+              "nota": 0.74,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "166:44:17",
+              "abs": 1,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "37:41:11",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "17:53:49",
+              "pausa_10_escalada": "09:30:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "09:44:42",
+              "pausa_feedback": "09:17:03",
+              "pausa_treinamento": "00:45:37"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 209,
+              "tma": "00:05:25",
+              "nota_telefone": 4.86,
+              "quantidade_notas": 144
+            },
+            "tickets": {
+              "quantidade": 45,
+              "tmt": "02:13:53",
+              "nota_ticket": 3,
+              "quantidade_notas": 6
+            },
+            "qualidade": {
+              "nota": 0.78,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "157:00:00",
+              "total_cumprido": "142:55:04",
+              "abs": 1,
+              "atrasos": 14,
+              "pausa_escalada": "21:00:00",
+              "pausa_realizada": "30:00:36",
+              "pausa_almoco_escalada": "14:00:00",
+              "pausa_almoco_realizada": "15:34:23",
+              "pausa_10_escalada": "07:00:00",
+              "pausa_10_realizada": "03:10:32",
+              "pausa_banheiro": "06:45:25",
+              "pausa_feedback": "04:24:23",
+              "pausa_treinamento": "00:05:53"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "vinicius.assuncao@velotax.com.br": {
+    "login": {
+      "email": "vinicius.assuncao@velotax.com.br",
+      "nome": "Vinicius Nascimento de Assunção",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 183,
+              "tma": "00:05:43",
+              "nota_telefone": 4.76,
+              "quantidade_notas": 106
+            },
+            "tickets": {
+              "quantidade": 13,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0.97,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "184:13:39",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "39:57:19",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "19:18:32",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "05:04:05",
+              "pausa_feedback": "15:33:01",
+              "pausa_treinamento": "00:01:41"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 311,
+              "tma": "00:06:03",
+              "nota_telefone": 4.63,
+              "quantidade_notas": 127
+            },
+            "tickets": {
+              "quantidade": 104,
+              "tmt": "00:00:00",
+              "nota_ticket": 3.1,
+              "quantidade_notas": 10
+            },
+            "qualidade": {
+              "nota": 0.49,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "177:26:28",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "27:34:16",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "18:17:32",
+              "pausa_10_escalada": "09:30:00",
+              "pausa_10_realizada": "00:10:51",
+              "pausa_banheiro": "06:54:56",
+              "pausa_feedback": "01:28:49",
+              "pausa_treinamento": "00:24:31"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 226,
+              "tma": "00:05:03",
+              "nota_telefone": 4.86,
+              "quantidade_notas": 145
+            },
+            "tickets": {
+              "quantidade": 73,
+              "tmt": "01:31:59",
+              "nota_ticket": 3,
+              "quantidade_notas": 7
+            },
+            "qualidade": {
+              "nota": 1,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "157:00:00",
+              "total_cumprido": "151:28:34",
+              "abs": 0,
+              "atrasos": 5,
+              "pausa_escalada": "24:00:00",
+              "pausa_realizada": "22:48:16",
+              "pausa_almoco_escalada": "16:00:00",
+              "pausa_almoco_realizada": "14:03:02",
+              "pausa_10_escalada": "08:00:00",
+              "pausa_10_realizada": "05:10:33",
+              "pausa_banheiro": "01:55:59",
+              "pausa_feedback": "01:18:20",
+              "pausa_treinamento": "00:20:22"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "viviane.silva@velotax.com.br": {
+    "login": {
+      "email": "viviane.silva@velotax.com.br",
+      "nome": "Viviane Barros Silva",
+      "metricas_atualizadas_em": "23/12/2025, 12:14:00",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 269,
+              "tma": "00:04:16",
+              "nota_telefone": 4.74,
+              "quantidade_notas": 135
+            },
+            "tickets": {
+              "quantidade": 155,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 1,
+              "quantidade": 3
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "162:48:04",
+              "abs": 2,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "27:59:55",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "16:09:09",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "09:01:07",
+              "pausa_feedback": "02:49:39",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 330,
+              "tma": "00:05:06",
+              "nota_telefone": 4.76,
+              "quantidade_notas": 169
+            },
+            "tickets": {
+              "quantidade": 167,
+              "tmt": "00:00:00",
+              "nota_ticket": 3.6,
+              "quantidade_notas": 8
+            },
+            "qualidade": {
+              "nota": 0.96,
+              "quantidade": 4
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "186:00:00",
+              "total_cumprido": "165:22:39",
+              "abs": 1,
+              "atrasos": 0,
+              "pausa_escalada": "28:30:00",
+              "pausa_realizada": "30:35:56",
+              "pausa_almoco_escalada": "19:00:00",
+              "pausa_almoco_realizada": "17:01:39",
+              "pausa_10_escalada": "09:30:00",
+              "pausa_10_realizada": "00:17:46",
+              "pausa_banheiro": "09:56:55",
+              "pausa_feedback": "02:48:32",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 186,
+              "tma": "00:03:30",
+              "nota_telefone": 4.82,
+              "quantidade_notas": 97
+            },
+            "tickets": {
+              "quantidade": 78,
+              "tmt": "01:59:18",
+              "nota_ticket": 3.43,
+              "quantidade_notas": 7
+            },
+            "qualidade": {
+              "nota": 1,
+              "quantidade": 2
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "157:00:00",
+              "total_cumprido": "134:10:10",
+              "abs": 2,
+              "atrasos": 12,
+              "pausa_escalada": "21:00:00",
+              "pausa_realizada": "21:27:22",
+              "pausa_almoco_escalada": "14:00:00",
+              "pausa_almoco_realizada": "13:59:01",
+              "pausa_10_escalada": "07:00:00",
+              "pausa_10_realizada": "05:46:54",
+              "pausa_banheiro": "00:58:02",
+              "pausa_feedback": "00:37:15",
+              "pausa_treinamento": "00:06:10"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "gabriel.araujo@velotax.com.br": {
+    "login": {
+      "email": "gabriel.araujo@velotax.com.br",
+      "nome": "Gabriel Araujo",
+      "metricas_atualizadas_em": "23/12/2025, 11:24:05",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 0,
+              "tma": "00:00:00",
+              "nota_telefone": 0,
+              "quantidade_notas": 0
+            },
+            "tickets": {
+              "quantidade": 0,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0,
+              "quantidade": 0
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "00:00:00",
+              "total_cumprido": "00:00:00",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "00:00:00",
+              "pausa_realizada": "00:00:00",
+              "pausa_almoco_escalada": "00:00:00",
+              "pausa_almoco_realizada": "00:00:00",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "00:00:00",
+              "pausa_feedback": "00:00:00",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 0,
+              "tma": "00:00:00",
+              "nota_telefone": 0,
+              "quantidade_notas": 0
+            },
+            "tickets": {
+              "quantidade": 0,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0,
+              "quantidade": 0
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "00:00:00",
+              "total_cumprido": "00:00:00",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "00:00:00",
+              "pausa_realizada": "00:00:00",
+              "pausa_almoco_escalada": "00:00:00",
+              "pausa_almoco_realizada": "00:00:00",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "00:00:00",
+              "pausa_feedback": "00:00:00",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 0,
+              "tma": "00:00:00",
+              "nota_telefone": 0,
+              "quantidade_notas": 0
+            },
+            "tickets": {
+              "quantidade": 0,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0,
+              "quantidade": 0
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "00:00:00",
+              "total_cumprido": "00:00:00",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "00:00:00",
+              "pausa_realizada": "00:00:00",
+              "pausa_almoco_escalada": "00:00:00",
+              "pausa_almoco_realizada": "00:00:00",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "00:00:00",
+              "pausa_feedback": "00:00:00",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  },
+  "joao.silva@velotax.com.br": {
+    "login": {
+      "email": "joao.silva@velotax.com.br",
+      "nome": "joão Pedro",
+      "metricas_atualizadas_em": "23/12/2025, 11:24:05",
+      "meses": {
+        "Outubro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 0,
+              "tma": "00:00:00",
+              "nota_telefone": 0,
+              "quantidade_notas": 0
+            },
+            "tickets": {
+              "quantidade": 0,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0,
+              "quantidade": 0
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "00:00:00",
+              "total_cumprido": "00:00:00",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "00:00:00",
+              "pausa_realizada": "00:00:00",
+              "pausa_almoco_escalada": "00:00:00",
+              "pausa_almoco_realizada": "00:00:00",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "00:00:00",
+              "pausa_feedback": "00:00:00",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Novembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 0,
+              "tma": "00:00:00",
+              "nota_telefone": 0,
+              "quantidade_notas": 0
+            },
+            "tickets": {
+              "quantidade": 0,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0,
+              "quantidade": 0
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "00:00:00",
+              "total_cumprido": "00:00:00",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "00:00:00",
+              "pausa_realizada": "00:00:00",
+              "pausa_almoco_escalada": "00:00:00",
+              "pausa_almoco_realizada": "00:00:00",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "00:00:00",
+              "pausa_feedback": "00:00:00",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        },
+        "Dezembro": {
+          "dados": {
+            "chamadas": {
+              "ligacoes": 0,
+              "tma": "00:00:00",
+              "nota_telefone": 0,
+              "quantidade_notas": 0
+            },
+            "tickets": {
+              "quantidade": 0,
+              "tmt": "00:00:00",
+              "nota_ticket": 0,
+              "quantidade_notas": 0
+            },
+            "qualidade": {
+              "nota": 0,
+              "quantidade": 0
+            },
+            "pausas_tempo_logado": {
+              "total_escalado": "00:00:00",
+              "total_cumprido": "00:00:00",
+              "abs": 0,
+              "atrasos": 0,
+              "pausa_escalada": "00:00:00",
+              "pausa_realizada": "00:00:00",
+              "pausa_almoco_escalada": "00:00:00",
+              "pausa_almoco_realizada": "00:00:00",
+              "pausa_10_escalada": "00:00:00",
+              "pausa_10_realizada": "00:00:00",
+              "pausa_banheiro": "00:00:00",
+              "pausa_feedback": "00:00:00",
+              "pausa_treinamento": "00:00:00"
+            }
+          }
+        }
+      },
+      "dados": {
+        "chamadas": {
+          "ligacoes": 0,
+          "tma": "00:00:00",
+          "nota_telefone": 0,
+          "quantidade_notas": 0
+        },
+        "tickets": {
+          "quantidade": 0,
+          "tmt": "00:00:00",
+          "nota_ticket": 0,
+          "quantidade_notas": 0
+        },
+        "qualidade": {
+          "nota": 0,
+          "quantidade": 0
+        },
+        "pausas_tempo_logado": {
+          "total_escalado": "00:00:00",
+          "total_cumprido": "00:00:00",
+          "abs": 0,
+          "atrasos": 0,
+          "pausa_escalada": "00:00:00",
+          "pausa_realizada": "00:00:00",
+          "pausa_almoco_escalada": "00:00:00",
+          "pausa_almoco_realizada": "00:00:00",
+          "pausa_10_escalada": "00:00:00",
+          "pausa_10_realizada": "00:00:00",
+          "pausa_banheiro": "00:00:00",
+          "pausa_feedback": "00:00:00",
+          "pausa_treinamento": "00:00:00"
+        }
+      }
+    }
+  }
+}

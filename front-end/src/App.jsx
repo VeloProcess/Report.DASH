@@ -7,7 +7,7 @@ import ManagerDashboard from './pages/ManagerDashboard';
 import './styles/App.css';
 
 function AppRoutes() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
 
   if (loading) {
     return (
@@ -22,33 +22,33 @@ function AppRoutes() {
     );
   }
 
-        // Redirecionar gestores para dashboard de gestão
-        const isManager = user?.isManager || false;
-        const defaultRoute = isManager ? "/manager" : "/dashboard";
+  // Redirecionar gestores para dashboard de gestão
+  const isManager = user?.isManager || false;
+  const defaultRoute = isManager ? "/manager" : "/dashboard";
 
-        return (
-          <Routes>
-            <Route path="/login" element={isAuthenticated ? <Navigate to={defaultRoute} replace /> : <Login />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  {isManager ? <Navigate to="/manager" replace /> : <Dashboard />}
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/manager"
-              element={
-                <ProtectedRoute>
-                  {isManager ? <ManagerDashboard /> : <Navigate to="/dashboard" replace />}
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/" element={<Navigate to={isAuthenticated ? defaultRoute : "/login"} replace />} />
-            <Route path="*" element={<Navigate to={isAuthenticated ? defaultRoute : "/login"} replace />} />
-          </Routes>
-        );
+  return (
+    <Routes>
+      <Route path="/login" element={isAuthenticated ? <Navigate to={defaultRoute} replace /> : <Login />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            {isManager ? <Navigate to="/manager" replace /> : <Dashboard />}
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/manager"
+        element={
+          <ProtectedRoute>
+            {isManager ? <ManagerDashboard /> : <Navigate to="/dashboard" replace />}
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/" element={<Navigate to={isAuthenticated ? defaultRoute : "/login"} replace />} />
+      <Route path="*" element={<Navigate to={isAuthenticated ? defaultRoute : "/login"} replace />} />
+    </Routes>
+  );
 }
 
 function App() {

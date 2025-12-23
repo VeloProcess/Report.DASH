@@ -1,5 +1,6 @@
 import { verifySessionToken } from '../services/authService.js';
 import { createLog } from '../services/logService.js';
+import { isManager } from '../utils/managerUtils.js';
 
 /**
  * Middleware de autenticação
@@ -29,11 +30,16 @@ export const authenticateToken = async (req, res, next) => {
     }
 
     // Adicionar dados do usuário à requisição
+    // Se o token não tiver isManager (token antigo), verificar pelo email
+    const managerStatus = userData.isManager !== undefined 
+      ? userData.isManager 
+      : isManager(userData.email);
+    
     req.user = {
       email: userData.email,
       operatorId: userData.operatorId,
       operatorName: userData.operatorName,
-      isManager: userData.isManager || false,
+      isManager: managerStatus,
     };
 
     next();

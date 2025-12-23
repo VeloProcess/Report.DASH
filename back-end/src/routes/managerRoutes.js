@@ -45,12 +45,36 @@ const router = express.Router();
 
 // Middleware para verificar se é gestor
 const requireManager = (req, res, next) => {
-  if (!req.user || !req.user.isManager) {
+  console.log('🔍 Verificando acesso de gestor:', {
+    hasUser: !!req.user,
+    email: req.user?.email,
+    isManager: req.user?.isManager,
+    userData: req.user
+  });
+  
+  if (!req.user) {
     return res.status(403).json({
-      error: 'Acesso negado: Apenas gestores podem acessar esta funcionalidade',
-      code: 'NOT_MANAGER'
+      error: 'Acesso negado: Autenticação necessária',
+      code: 'NOT_AUTHENTICATED'
     });
   }
+  
+  // Verificar também diretamente pelo email caso o token não tenha isManager
+  const email = req.user.email;
+  if (!req.user.isManager && !isManager(email)) {
+    console.log('❌ Usuário não é gestor:', email);
+    return res.status(403).json({
+      error: 'Acesso negado: Apenas gestores podem acessar esta funcionalidade',
+      code: 'NOT_MANAGER',
+      debug: {
+        email: email,
+        isManagerInToken: req.user.isManager,
+        isManagerByEmail: isManager(email)
+      }
+    });
+  }
+  
+  console.log('✅ Acesso de gestor autorizado:', email);
   next();
 };
 

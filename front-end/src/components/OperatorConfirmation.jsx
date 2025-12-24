@@ -23,7 +23,8 @@ function OperatorConfirmation({ month, year }) {
         setSaved(!!response.data.confirmation.confirmed_at);
       }
     } catch (error) {
-      console.error('Erro ao carregar confirmação:', error);
+      console.error('Erro ao carregar confirmação (não crítico):', error);
+      // Continuar mesmo com erro - permitir que o usuário ainda possa confirmar
     } finally {
       setLoading(false);
     }

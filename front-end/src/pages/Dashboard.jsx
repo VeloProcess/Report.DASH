@@ -5,7 +5,8 @@ import {
   getDashboardFeedback,
   getDashboardOperator,
   getDashboardMonths,
-  exportPDF
+  exportPDF,
+  getOperatorFeedbacks
 } from '../services/api';
 import MetricCard from '../components/MetricCard';
 import OperatorConfirmation from '../components/OperatorConfirmation';
@@ -46,6 +47,7 @@ function Dashboard() {
   const [metrics, setMetrics] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [operator, setOperator] = useState(null);
+  const [managerFeedbacks, setManagerFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState({ pdf: false });
   // Meses fixos disponíveis
@@ -95,10 +97,12 @@ function Dashboard() {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const [metricsRes, feedbackRes, operatorRes] = await Promise.all([
+      const currentYear = new Date().getFullYear();
+      const [metricsRes, feedbackRes, operatorRes, managerFeedbacksRes] = await Promise.all([
         getDashboardMetrics(selectedMonth).catch(() => ({ data: { hasData: false } })),
         getDashboardFeedback().catch(() => ({ data: { hasData: false } })),
         getDashboardOperator().catch(() => null),
+        getOperatorFeedbacks(selectedMonth, currentYear).catch(() => ({ data: { success: false, feedbacks: [] } })),
       ]);
 
       if (metricsRes.data.hasData) {
@@ -109,6 +113,9 @@ function Dashboard() {
       }
       if (operatorRes) {
         setOperator(operatorRes.data);
+      }
+      if (managerFeedbacksRes.data.success) {
+        setManagerFeedbacks(managerFeedbacksRes.data.feedbacks || []);
       }
     } catch (error) {
       console.error('Erro ao carregar dados do dashboard:', error);
@@ -226,120 +233,155 @@ function Dashboard() {
         </div>
       </div>
 
-      {!metrics ? (
-        <div className="dashboard-empty">
-          <div className="empty-message">
-            <h2>😔 Ops!</h2>
-            <p>Infelizmente ainda não temos dados suficientes para criar seu dashboard.</p>
-            <p>Entre em contato com o suporte ou aguarde a notificação!</p>
+      {!metrics && managerFeedbacks.length === 0 ? (
+        <>
+          <div className="dashboard-empty">
+            <div className="empty-message">
+              <h2>😔 Ops!</h2>
+              <p>Infelizmente ainda não temos dados suficientes para criar seu dashboard.</p>
+              <p>Entre em contato com o suporte ou aguarde a notificação!</p>
+            </div>
           </div>
-        </div>
+          
+          {/* Seção: Confirmação de Leitura - sempre mostrar */}
+          <OperatorConfirmation 
+            month={selectedMonth} 
+            year={new Date().getFullYear()} 
+          />
+        </>
       ) : (
         <>
-          {/* Seção: Atendimento */}
-          <section className="metrics-section">
-            <h2>Atendimento</h2>
-            <div className="metrics-grid">
-              {renderMetricCard('calls', 'Ligações', metrics.calls)}
-              {renderMetricCard('tma', 'TMA', metrics.tma)}
-              {renderMetricCard('tickets', 'Tickets', metrics.tickets)}
-              {renderMetricCard('tmt', 'TMT', metrics.tmt)}
-            </div>
-          </section>
-
-          {/* Seção: Qualidade */}
-          <section className="metrics-section">
-            <h2>Qualidade</h2>
-            <div className="metrics-grid">
-              {renderMetricCard('quality_score', 'Pesquisa Telefone', metrics.quality_score)}
-              {renderMetricCard('qtd_pesq_telefone', 'Qtd Pesquisa Telefone', metrics.qtd_pesq_telefone)}
-              {renderMetricCard('pesquisa_ticket', 'Pesquisa Ticket', metrics.pesquisa_ticket)}
-              {renderMetricCard('qtd_pesq_ticket', 'Qtd Pesquisa Ticket', metrics.qtd_pesq_ticket)}
-              {renderMetricCard('nota_qualidade', 'Nota Qualidade', metrics.nota_qualidade, true)}
-              {renderMetricCard('qtd_avaliacoes', 'Qtd Avaliações', metrics.qtd_avaliacoes)}
-            </div>
-          </section>
-
-          {/* Seção: Disponibilidade */}
-          <section className="metrics-section">
-            <h2>Disponibilidade</h2>
-            <div className="metrics-grid">
-              {renderMetricCard('total_escalado', 'Total Escalado', metrics.total_escalado)}
-              {renderMetricCard('total_logado', 'Total Logado', metrics.total_logado)}
-              {renderMetricCard('percent_logado', '% Logado', metrics.percent_logado)}
-            </div>
-          </section>
-
-          {/* Seção: Pausas */}
-          <section className="metrics-section">
-            <h2>Pausas</h2>
-            <div className="metrics-grid">
-              {renderMetricCard('pausa_escalada', 'Pausa Escalada', metrics.pausa_escalada)}
-              {renderMetricCard('total_pausas', 'Total Pausas', metrics.total_pausas)}
-              {renderMetricCard('percent_pausas', '% Pausas', metrics.percent_pausas)}
-            </div>
-          </section>
-
-          {/* Seção: Intervalos */}
-          <section className="metrics-section">
-            <h2>Intervalos</h2>
-            <div className="metrics-grid">
-              {renderMetricCard('almoco_escalado', 'Almoço Escalado', metrics.almoco_escalado)}
-              {renderMetricCard('almoco_realizado', 'Almoço Realizado', metrics.almoco_realizado)}
-              {renderMetricCard('percent_almoco', '% Almoço', metrics.percent_almoco)}
-              {renderMetricCard('pausa_10_escalada', 'Pausa 10 Escalada', metrics.pausa_10_escalada)}
-              {renderMetricCard('pausa_10_realizado', 'Pausa 10 Realizado', metrics.pausa_10_realizado)}
-              {renderMetricCard('percent_pausa_10', '% Pausa 10', metrics.percent_pausa_10)}
-              {renderMetricCard('pausa_banheiro', 'Pausa Banheiro', metrics.pausa_banheiro)}
-              {renderMetricCard('percent_pausa_banheiro', '% Pausa Banheiro', metrics.percent_pausa_banheiro)}
-              {renderMetricCard('pausa_feedback', 'Pausa Feedback', metrics.pausa_feedback)}
-              {renderMetricCard('percent_pausa_feedback', '% Pausa Feedback', metrics.percent_pausa_feedback)}
-            </div>
-          </section>
-
-          {/* Seção: Desenvolvimento */}
-          <section className="metrics-section">
-            <h2>Desenvolvimento</h2>
-            <div className="metrics-grid">
-              {renderMetricCard('treinamento', 'Treinamento', metrics.treinamento)}
-              {renderMetricCard('percent_treinamento', '% Treinamento', metrics.percent_treinamento)}
-            </div>
-          </section>
-
-          {/* Seção: Feedback */}
-          {feedback && (
+          {/* Seção: Feedbacks de Gestores */}
+          {managerFeedbacks.length > 0 && (
             <section className="feedback-section">
-              <h2>Feedback</h2>
+              <h2>Feedbacks dos Gestores</h2>
               <div className="feedback-content">
-                {feedback.feedback_text && (
-                  <div className="feedback-item">
-                    <h3>Resumo Geral</h3>
-                    <p>{feedback.feedback_text}</p>
-                  </div>
-                )}
-                {feedback.positive_points && (
-                  <div className="feedback-item positive">
-                    <h3>Pontos Positivos</h3>
-                    <p>{feedback.positive_points}</p>
-                  </div>
-                )}
-                {feedback.attention_points && (
-                  <div className="feedback-item attention">
-                    <h3>Pontos de Atenção</h3>
-                    <p>{feedback.attention_points}</p>
-                  </div>
-                )}
-                {feedback.recommendations && (
-                  <div className="feedback-item recommendations">
-                    <h3>Recomendações</h3>
-                    <p>{feedback.recommendations}</p>
-                  </div>
-                )}
+                {managerFeedbacks
+                  .filter(fb => fb.month === selectedMonth)
+                  .map((feedback, index) => (
+                    <div key={index} className="feedback-item manager-feedback">
+                      <h3>
+                        Feedback - {feedback.month}/{feedback.year}
+                        {feedback.manager_name && (
+                          <span className="manager-name"> - {feedback.manager_name}</span>
+                        )}
+                      </h3>
+                      <p>{feedback.feedback_text}</p>
+                    </div>
+                  ))}
               </div>
             </section>
           )}
 
-          {/* Seção: Confirmação de Leitura */}
+          {/* Métricas - só mostrar se existirem */}
+          {metrics && (
+            <>
+              {/* Seção: Atendimento */}
+              <section className="metrics-section">
+                <h2>Atendimento</h2>
+                <div className="metrics-grid">
+                  {renderMetricCard('calls', 'Ligações', metrics.calls)}
+                  {renderMetricCard('tma', 'TMA', metrics.tma)}
+                  {renderMetricCard('tickets', 'Tickets', metrics.tickets)}
+                  {renderMetricCard('tmt', 'TMT', metrics.tmt)}
+                </div>
+              </section>
+
+              {/* Seção: Qualidade */}
+              <section className="metrics-section">
+                <h2>Qualidade</h2>
+                <div className="metrics-grid">
+                  {renderMetricCard('quality_score', 'Pesquisa Telefone', metrics.quality_score)}
+                  {renderMetricCard('qtd_pesq_telefone', 'Qtd Pesquisa Telefone', metrics.qtd_pesq_telefone)}
+                  {renderMetricCard('pesquisa_ticket', 'Pesquisa Ticket', metrics.pesquisa_ticket)}
+                  {renderMetricCard('qtd_pesq_ticket', 'Qtd Pesquisa Ticket', metrics.qtd_pesq_ticket)}
+                  {renderMetricCard('nota_qualidade', 'Nota Qualidade', metrics.nota_qualidade, true)}
+                  {renderMetricCard('qtd_avaliacoes', 'Qtd Avaliações', metrics.qtd_avaliacoes)}
+                </div>
+              </section>
+
+              {/* Seção: Disponibilidade */}
+              <section className="metrics-section">
+                <h2>Disponibilidade</h2>
+                <div className="metrics-grid">
+                  {renderMetricCard('total_escalado', 'Total Escalado', metrics.total_escalado)}
+                  {renderMetricCard('total_logado', 'Total Logado', metrics.total_logado)}
+                  {renderMetricCard('percent_logado', '% Logado', metrics.percent_logado)}
+                </div>
+              </section>
+
+              {/* Seção: Pausas */}
+              <section className="metrics-section">
+                <h2>Pausas</h2>
+                <div className="metrics-grid">
+                  {renderMetricCard('pausa_escalada', 'Pausa Escalada', metrics.pausa_escalada)}
+                  {renderMetricCard('total_pausas', 'Total Pausas', metrics.total_pausas)}
+                  {renderMetricCard('percent_pausas', '% Pausas', metrics.percent_pausas)}
+                </div>
+              </section>
+
+              {/* Seção: Intervalos */}
+              <section className="metrics-section">
+                <h2>Intervalos</h2>
+                <div className="metrics-grid">
+                  {renderMetricCard('almoco_escalado', 'Almoço Escalado', metrics.almoco_escalado)}
+                  {renderMetricCard('almoco_realizado', 'Almoço Realizado', metrics.almoco_realizado)}
+                  {renderMetricCard('percent_almoco', '% Almoço', metrics.percent_almoco)}
+                  {renderMetricCard('pausa_10_escalada', 'Pausa 10 Escalada', metrics.pausa_10_escalada)}
+                  {renderMetricCard('pausa_10_realizado', 'Pausa 10 Realizado', metrics.pausa_10_realizado)}
+                  {renderMetricCard('percent_pausa_10', '% Pausa 10', metrics.percent_pausa_10)}
+                  {renderMetricCard('pausa_banheiro', 'Pausa Banheiro', metrics.pausa_banheiro)}
+                  {renderMetricCard('percent_pausa_banheiro', '% Pausa Banheiro', metrics.percent_pausa_banheiro)}
+                  {renderMetricCard('pausa_feedback', 'Pausa Feedback', metrics.pausa_feedback)}
+                  {renderMetricCard('percent_pausa_feedback', '% Pausa Feedback', metrics.percent_pausa_feedback)}
+                </div>
+              </section>
+
+              {/* Seção: Desenvolvimento */}
+              <section className="metrics-section">
+                <h2>Desenvolvimento</h2>
+                <div className="metrics-grid">
+                  {renderMetricCard('treinamento', 'Treinamento', metrics.treinamento)}
+                  {renderMetricCard('percent_treinamento', '% Treinamento', metrics.percent_treinamento)}
+                </div>
+              </section>
+
+              {/* Seção: Feedback */}
+              {feedback && (
+                <section className="feedback-section">
+                  <h2>Feedback</h2>
+                  <div className="feedback-content">
+                    {feedback.feedback_text && (
+                      <div className="feedback-item">
+                        <h3>Resumo Geral</h3>
+                        <p>{feedback.feedback_text}</p>
+                      </div>
+                    )}
+                    {feedback.positive_points && (
+                      <div className="feedback-item positive">
+                        <h3>Pontos Positivos</h3>
+                        <p>{feedback.positive_points}</p>
+                      </div>
+                    )}
+                    {feedback.attention_points && (
+                      <div className="feedback-item attention">
+                        <h3>Pontos de Atenção</h3>
+                        <p>{feedback.attention_points}</p>
+                      </div>
+                    )}
+                    {feedback.recommendations && (
+                      <div className="feedback-item recommendations">
+                        <h3>Recomendações</h3>
+                        <p>{feedback.recommendations}</p>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              )}
+            </>
+          )}
+
+          {/* Seção: Confirmação de Leitura - sempre mostrar */}
           <OperatorConfirmation 
             month={selectedMonth} 
             year={new Date().getFullYear()} 

@@ -42,6 +42,83 @@ const loadEmailMapping = () => {
   return {};
 };
 
+// Função auxiliar para obter lista completa de operadores (do send_email.JSON + operators.json)
+// Remove duplicatas baseado no email (chave única)
+const getAllOperatorsComplete = () => {
+  const operatorsFromDB = getOperators();
+  const emailMapping = loadEmailMapping();
+  
+  // Criar um mapa de operadores do DB por email (chave única)
+  const operatorsByEmail = new Map();
+  operatorsFromDB.forEach(op => {
+    // Tentar encontrar email do operador no mapping
+    for (const [name, email] of Object.entries(emailMapping)) {
+      if (name.toLowerCase().trim() === op.name.toLowerCase().trim()) {
+        operatorsByEmail.set(email.toLowerCase(), op);
+        break;
+      }
+    }
+  });
+  
+  // Criar mapa de nomes normalizados para detectar duplicatas
+  const namesMap = new Map();
+  
+  // Criar lista completa de operadores baseada no send_email.JSON
+  const allOperators = [];
+  const processedEmails = new Set(); // Para evitar duplicatas por email
+  let nextId = Math.max(...operatorsFromDB.map(op => op.id || 0), 0) + 1;
+  
+  // Processar todos os operadores do send_email.JSON
+  for (const [name, email] of Object.entries(emailMapping)) {
+    const normalizedEmail = email.toLowerCase();
+    
+    // Pular se já processamos este email (duplicata)
+    if (processedEmails.has(normalizedEmail)) {
+      continue;
+    }
+    
+    processedEmails.add(normalizedEmail);
+    
+    // Verificar se já existe operador com este email no DB
+    const existingOperator = operatorsByEmail.get(normalizedEmail);
+    
+    if (existingOperator) {
+      // Operador existe no DB, usar dados do DB
+      const hasMetrics = !!getMetricsByEmail(email);
+      allOperators.push({
+        ...existingOperator,
+        email: email,
+        hasMetrics,
+      });
+    } else {
+      // Verificar se já existe operador com nome similar (normalizado)
+      const normalizedName = name.toLowerCase().trim();
+      
+      if (!namesMap.has(normalizedName)) {
+        // Operador não existe no DB e nome não está duplicado, criar entrada básica
+        const hasMetrics = !!getMetricsByEmail(email);
+        allOperators.push({
+          id: nextId++,
+          name: name,
+          position: 'Assistente de Atendimento', // Valor padrão
+          team: 'Equipe Atendimento', // Valor padrão
+          email: email,
+          hasMetrics,
+          reference_month: null,
+          created_at: new Date().toISOString()
+        });
+        
+        namesMap.set(normalizedName, true);
+      }
+    }
+  }
+  
+  // Ordenar por nome
+  allOperators.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+  
+  return allOperators;
+};
+
 const router = express.Router();
 
 // Middleware para verificar se é gestor
@@ -86,36 +163,16 @@ router.use(requireManager);
 /**
  * GET /api/manager/operators
  * Lista todos os operadores (apenas para gestores)
+ * Inclui TODOS os operadores do send_email.JSON, mesmo que não estejam no operators.json
  */
 router.get('/operators', async (req, res) => {
   try {
-    const operators = getOperators();
-    
-    // Buscar métricas de cada operador para mostrar se tem dados
-    const emailMapping = loadEmailMapping();
-    const operatorsWithData = operators.map(operator => {
-      // Tentar encontrar email no send_email.JSON
-      let operatorEmail = null;
-      for (const [name, email] of Object.entries(emailMapping)) {
-        if (name.toLowerCase().trim() === operator.name.toLowerCase().trim()) {
-          operatorEmail = email;
-          break;
-        }
-      }
-      
-      const hasMetrics = operatorEmail ? !!getMetricsByEmail(operatorEmail) : false;
-      
-      return {
-        ...operator,
-        email: operatorEmail,
-        hasMetrics,
-      };
-    });
+    const allOperators = getAllOperatorsComplete();
     
     res.json({
       success: true,
-      operators: operatorsWithData,
-      total: operatorsWithData.length,
+      operators: allOperators,
+      total: allOperators.length,
     });
   } catch (error) {
     console.error('Erro ao listar operadores:', error);
@@ -137,9 +194,9 @@ router.get('/operators/:operatorId/metrics', async (req, res) => {
     const operatorId = parseInt(req.params.operatorId);
     const month = req.query.month || null;
     
-    // Buscar operador
-    const operators = getOperators();
-    const operator = operators.find(op => op.id === operatorId);
+    // Buscar operador na lista completa (inclui todos do send_email.JSON)
+    const allOperators = getAllOperatorsComplete();
+    const operator = allOperators.find(op => op.id === operatorId);
     
     if (!operator) {
       return res.status(404).json({
@@ -147,15 +204,7 @@ router.get('/operators/:operatorId/metrics', async (req, res) => {
       });
     }
     
-    // Buscar email do operador
-    const emailMapping = loadEmailMapping();
-    let operatorEmail = null;
-    for (const [name, email] of Object.entries(emailMapping)) {
-      if (name.toLowerCase().trim() === operator.name.toLowerCase().trim()) {
-        operatorEmail = email;
-        break;
-      }
-    }
+    const operatorEmail = operator.email;
     
     if (!operatorEmail) {
       return res.status(404).json({
@@ -243,9 +292,9 @@ router.get('/operators/:operatorId/export/pdf', async (req, res) => {
     const operatorId = parseInt(req.params.operatorId);
     const month = req.query.month || null;
     
-    // Buscar operador
-    const operators = getOperators();
-    const operator = operators.find(op => op.id === operatorId);
+    // Buscar operador na lista completa (inclui todos do send_email.JSON)
+    const allOperators = getAllOperatorsComplete();
+    const operator = allOperators.find(op => op.id === operatorId);
     
     if (!operator) {
       return res.status(404).json({
@@ -253,15 +302,7 @@ router.get('/operators/:operatorId/export/pdf', async (req, res) => {
       });
     }
     
-    // Buscar email do operador
-    const emailMapping = loadEmailMapping();
-    let operatorEmail = null;
-    for (const [name, email] of Object.entries(emailMapping)) {
-      if (name.toLowerCase().trim() === operator.name.toLowerCase().trim()) {
-        operatorEmail = email;
-        break;
-      }
-    }
+    const operatorEmail = operator.email;
     
     if (!operatorEmail) {
       return res.status(404).json({

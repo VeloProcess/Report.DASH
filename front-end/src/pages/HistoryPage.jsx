@@ -1,0 +1,125 @@
+import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { getActionHistory, getMetricsHistory, getAIFeedbacks, getOperatorFeedbacks } from '../services/api';
+import HistoryTimeline from '../components/HistoryTimeline';
+import HistoryFilters from '../components/HistoryFilters';
+import './HistoryPage.css';
+
+function HistoryPage() {
+  const { user } = useAuth();
+  const [actions, setActions] = useState([]);
+  const [metricsHistory, setMetricsHistory] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [managerFeedbacks, setManagerFeedbacks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    selectedMonth: null,
+    startDate: null,
+    endDate: null,
+    actionType: null
+  });
+
+  useEffect(() => {
+    if (user) {
+      loadHistory();
+    }
+  }, [user, filters]);
+
+  const loadHistory = async () => {
+    try {
+      setLoading(true);
+
+      // Carregar histórico de ações
+      const actionsResponse = await getActionHistory(
+        filters.startDate,
+        filters.endDate,
+        filters.actionType
+      );
+      if (actionsResponse.data.success) {
+        setActions(actionsResponse.data.history || []);
+      }
+
+      // Carregar histórico de métricas
+      try {
+        const metricsResponse = await getMetricsHistory(
+          null,
+          filters.startDate,
+          filters.endDate
+        );
+        if (metricsResponse.data.success) {
+          setMetricsHistory(metricsResponse.data.history || []);
+        }
+      } catch (error) {
+        console.warn('Erro ao carregar histórico de métricas (não crítico):', error);
+        setMetricsHistory([]);
+      }
+
+      // Carregar feedbacks I.A
+      const feedbacksResponse = await getAIFeedbacks();
+      if (feedbacksResponse.data.success) {
+        setFeedbacks(feedbacksResponse.data.feedbacks || []);
+      }
+
+      // Carregar feedbacks de gestores
+      const currentYear = new Date().getFullYear();
+      try {
+        const month = filters.selectedMonth || null;
+        const year = month ? currentYear : null; // Só filtrar por ano se tiver mês selecionado
+        
+        const managerFeedbacksResponse = await getOperatorFeedbacks(month, year);
+        
+        if (managerFeedbacksResponse.data.success) {
+          setManagerFeedbacks(managerFeedbacksResponse.data.feedbacks || []);
+        } else {
+          setManagerFeedbacks([]);
+        }
+      } catch (error) {
+        console.warn('⚠️ Erro ao carregar feedbacks de gestores (não crítico):', error);
+        setManagerFeedbacks([]);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+
+  if (loading) {
+    return (
+      <div className="history-page-loading">
+        <div className="loading-spinner"></div>
+        <p>Carregando histórico...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="history-page">
+      <div className="history-header">
+        <h1>Histórico</h1>
+        <p className="history-subtitle">Visualize a evolução das suas métricas e ações</p>
+      </div>
+
+      <HistoryFilters 
+        filters={filters}
+        onFilterChange={handleFilterChange}
+      />
+
+      <div className="history-content">
+        <HistoryTimeline
+          actions={actions}
+          metricsHistory={metricsHistory}
+          feedbacks={feedbacks}
+          managerFeedbacks={managerFeedbacks}
+        />
+      </div>
+    </div>
+  );
+}
+
+export default HistoryPage;
+

@@ -345,6 +345,42 @@ export const getManagerFeedbacksByOperator = async (operatorId) => {
   }
 };
 
+/**
+ * Busca feedbacks criados por um gestor específico
+ * @param {string} managerEmail - Email do gestor
+ * @returns {Promise<Array>} Array de feedbacks criados pelo gestor
+ */
+export const getManagerFeedbacksByManager = async (managerEmail) => {
+  if (!supabase) {
+    console.warn('⚠️ Supabase não configurado. Retornando array vazio.');
+    return [];
+  }
+  
+  try {
+    const { data, error } = await supabase
+      .from('manager_feedbacks')
+      .select('*')
+      .eq('manager_email', managerEmail)
+      .order('year', { ascending: false })
+      .order('month', { ascending: false });
+    
+    if (error) {
+      console.error('Erro ao buscar feedbacks do gestor no Supabase:', error);
+      return [];
+    }
+    
+    // Ordenar manualmente por ano e mês (mais recente primeiro)
+    const monthOrder = { 'Dezembro': 12, 'Novembro': 11, 'Outubro': 10 };
+    return (data || []).sort((a, b) => {
+      if (a.year !== b.year) return b.year - a.year;
+      return (monthOrder[b.month] || 0) - (monthOrder[a.month] || 0);
+    });
+  } catch (error) {
+    console.error('Erro ao buscar feedbacks do gestor:', error);
+    return [];
+  }
+};
+
 // Inicializar banco de dados
 export const initializeDatabase = () => {
   initFile(operatorsFile);

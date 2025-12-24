@@ -8,6 +8,7 @@ import {
   exportPDF
 } from '../services/api';
 import MetricCard from '../components/MetricCard';
+import OperatorConfirmation from '../components/OperatorConfirmation';
 import './Dashboard.css';
 
 // Explicações das métricas
@@ -337,6 +338,12 @@ function Dashboard() {
               </div>
             </section>
           )}
+
+          {/* Seção: Confirmação de Leitura */}
+          <OperatorConfirmation 
+            month={selectedMonth} 
+            year={new Date().getFullYear()} 
+          />
         </>
       )}
     </div>

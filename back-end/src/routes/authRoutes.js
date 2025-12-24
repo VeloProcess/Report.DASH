@@ -28,6 +28,18 @@ router.post('/login', async (req, res) => {
 
     console.log(`✅ Login bem-sucedido para: ${result.user.email}`);
 
+    // Registrar ação de login no histórico
+    try {
+      const { logAction } = await import('../services/metricsSupabaseService.js');
+      await logAction(result.user.email, 'login', {
+        operatorId: result.user.operatorId,
+        operatorName: result.user.operatorName,
+        isManager: result.user.isManager
+      });
+    } catch (logError) {
+      console.warn('⚠️ Erro ao registrar login no histórico (não crítico):', logError.message);
+    }
+
     res.json({
       success: true,
       token: result.token,

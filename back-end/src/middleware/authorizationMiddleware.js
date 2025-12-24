@@ -4,6 +4,7 @@ import { createLog } from '../services/logService.js';
 /**
  * Middleware de autorização
  * Garante que o usuário só acesse seus próprios dados
+ * REGRA CRÍTICA: Email sempre vem do token, nunca do frontend
  */
 export const authorizeOperatorAccess = (req, res, next) => {
   try {
@@ -14,7 +15,29 @@ export const authorizeOperatorAccess = (req, res, next) => {
       });
     }
 
+    // Garantir que email sempre vem do token
+    if (!req.user.email) {
+      return res.status(401).json({ 
+        error: 'Email não encontrado no token de autenticação',
+        code: 'NO_EMAIL_IN_TOKEN'
+      });
+    }
+
     const { email, operatorId: authenticatedOperatorId } = req.user;
+    
+    // Remover qualquer email que possa ter vindo do frontend
+    if (req.body && req.body.email) {
+      console.warn(`⚠️ SECURITY: Tentativa de enviar email no body. Removendo. Email do token será usado: ${email}`);
+      delete req.body.email;
+    }
+    if (req.query && req.query.email) {
+      console.warn(`⚠️ SECURITY: Tentativa de enviar email no query. Removendo. Email do token será usado: ${email}`);
+      delete req.query.email;
+    }
+    if (req.params && req.params.email) {
+      console.warn(`⚠️ SECURITY: Tentativa de enviar email nos params. Removendo. Email do token será usado: ${email}`);
+      delete req.params.email;
+    }
 
     // Se houver operatorId nos parâmetros da rota, validar acesso
     if (req.params.operatorId) {

@@ -178,7 +178,7 @@ export const generateFeedbackPDF = async (operator, feedback) => {
  * @param {Object} managerFeedback - Feedback do gestor (opcional)
  * @returns {Promise<Buffer>} Buffer do PDF
  */
-export const generateMetricsPDF = async (operator, indicators, month = null, managerFeedback = null) => {
+export const generateMetricsPDF = async (operator, indicators, month = null, managerFeedback = null, aiFeedbacks = null) => {
   return new Promise((resolve, reject) => {
     try {
       const chunks = [];
@@ -346,6 +346,56 @@ export const generateMetricsPDF = async (operator, indicators, month = null, man
           indent: 20,
           align: 'left',
           width: doc.page.width - 100
+        });
+        doc.moveDown();
+      }
+
+      // Seção: Feedbacks I.A
+      if (aiFeedbacks && aiFeedbacks.length > 0) {
+        doc.moveDown();
+        doc.fontSize(16).font('Helvetica-Bold').fillColor(COLORS.blueDark).text('FEEDBACKS I.A');
+        doc.fillColor(COLORS.black);
+        doc.moveDown(0.5);
+
+        const metricLabels = {
+          chamadas: 'Chamadas',
+          tickets: 'Tickets',
+          qualidade: 'Qualidade',
+          pausas: 'Pausas e Disponibilidade'
+        };
+
+        aiFeedbacks.forEach((feedback, index) => {
+          if (index > 0) doc.moveDown(0.5);
+          
+          const metricLabel = metricLabels[feedback.metric_type] || feedback.metric_type;
+          const feedbackDate = feedback.generated_at 
+            ? new Date(feedback.generated_at).toLocaleDateString('pt-BR')
+            : new Date().toLocaleDateString('pt-BR');
+          
+          doc.fontSize(12).font('Helvetica-Bold').fillColor(COLORS.blue2);
+          doc.text(`${metricLabel}`, { indent: 20 });
+          doc.fontSize(10).font('Helvetica-Oblique').fillColor(COLORS.blueDark);
+          doc.text(`Gerado em: ${feedbackDate}`, { indent: 30 });
+          doc.fillColor(COLORS.black);
+          doc.moveDown(0.3);
+          
+          // Texto do feedback
+          doc.fontSize(11).font('Helvetica');
+          const aiFeedbackLines = doc.heightOfString(feedback.feedback_text, {
+            width: doc.page.width - 100,
+            indent: 20
+          });
+          
+          // Verificar se precisa de nova página
+          if (doc.y + aiFeedbackLines > doc.page.height - 100) {
+            doc.addPage();
+          }
+          
+          doc.text(feedback.feedback_text, {
+            indent: 20,
+            align: 'left',
+            width: doc.page.width - 100
+          });
         });
         doc.moveDown();
       }

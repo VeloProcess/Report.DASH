@@ -3,6 +3,7 @@ import { generateFeedbackPDF, generateMetricsPDF } from './pdfService.js';
 import ExcelJS from 'exceljs';
 import { getOperatorByEmail } from '../utils/operatorUtils.js';
 import { getMetricsByEmail, convertMetricsToDashboardFormat } from './metricsService.js';
+import { getMetrics as getSupabaseMetrics, getAIFeedbacks } from './metricsSupabaseService.js';
 
 /**
  * Exporta dados do operador autenticado em formato PDF
@@ -41,7 +42,31 @@ export const exportToPDF = async (userData, month = null) => {
       console.log(`✅ Feedback do gestor encontrado para ${month}/${currentYear}`);
     }
 
-    // PRIORIDADE 1: Tentar buscar métricas do Metrics.json
+    // PRIORIDADE 1: Tentar buscar métricas do Supabase
+    console.log('🔍 Buscando métricas no Supabase...');
+    try {
+      const supabaseMetrics = await getSupabaseMetrics(userData.email);
+      if (supabaseMetrics && supabaseMetrics.length > 0) {
+        console.log(`✅ ${supabaseMetrics.length} métricas encontradas no Supabase`);
+        
+        // Buscar feedbacks I.A do Supabase
+        const aiFeedbacks = await getAIFeedbacks(userData.email);
+        console.log(`✅ ${aiFeedbacks.length} feedbacks I.A encontrados`);
+        
+        // Converter métricas do Supabase para formato do dashboard
+        const indicators = convertSupabaseMetricsToDashboardFormat(supabaseMetrics);
+        if (indicators) {
+          console.log('✅ Métricas do Supabase convertidas, gerando PDF...');
+          return await generateMetricsPDF(operator, indicators, month, managerFeedback, aiFeedbacks);
+        }
+      } else {
+        console.log('⚠️ Nenhuma métrica encontrada no Supabase');
+      }
+    } catch (supabaseError) {
+      console.log('⚠️ Erro ao buscar métricas do Supabase (não crítico):', supabaseError.message);
+    }
+
+    // PRIORIDADE 2: Tentar buscar métricas do Metrics.json
     console.log('🔍 Buscando métricas no Metrics.json...');
     const metricsData = getMetricsByEmail(userData.email, month);
     if (metricsData) {
@@ -58,7 +83,7 @@ export const exportToPDF = async (userData, month = null) => {
       console.log('⚠️ Nenhuma métrica encontrada no Metrics.json');
     }
 
-    // PRIORIDADE 2: Tentar buscar indicadores (sistema antigo)
+    // PRIORIDADE 3: Tentar buscar indicadores (sistema antigo)
     if (userData.operatorId && userData.operatorId !== 0) {
       console.log('🔍 Buscando indicadores no sistema antigo...');
       const indicators = getLatestIndicatorByOperatorId(userData.operatorId);
@@ -70,7 +95,7 @@ export const exportToPDF = async (userData, month = null) => {
       }
     }
 
-    // PRIORIDADE 3: Tentar buscar feedback (sistema antigo)
+    // PRIORIDADE 4: Tentar buscar feedback (sistema antigo)
     if (userData.operatorId && userData.operatorId !== 0) {
       console.log('🔍 Buscando feedback no sistema antigo...');
       const feedback = getLatestFeedbackByOperatorId(userData.operatorId);

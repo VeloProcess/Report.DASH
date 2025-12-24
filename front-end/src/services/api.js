@@ -106,6 +106,70 @@ export const updateManagerFeedback = (feedbackId, feedbackText) => {
 export const deleteManagerFeedback = (feedbackId) => {
   return api.delete(`/manager/feedback/${feedbackId}`);
 };
+
+// Métricas
+export const getMetrics = () => api.get('/metrics');
+export const getMetricByType = (metricType) => api.get(`/metrics/${metricType}`);
+export const saveMetric = (metricType, metricValue) => api.post('/metrics', { metricType, metricValue });
+export const saveMultipleMetrics = (metrics) => api.post('/metrics/batch', { metrics });
+export const getMetricsHistory = (metricType = null, startDate = null, endDate = null) => {
+  const params = {};
+  if (startDate) params.startDate = startDate;
+  if (endDate) params.endDate = endDate;
+  const url = metricType ? `/metrics/history/${metricType}` : '/metrics/history';
+  return api.get(url, { params });
+};
+export const createMetricsSnapshot = (metricType, snapshotDate = null) => 
+  api.post('/metrics/snapshot', { metricType, snapshotDate });
+
+// Checks de Métricas
+export const getMetricChecks = () => api.get('/metrics/checks/all');
+export const getMetricCheck = (metricType) => api.get(`/metrics/checks/${metricType}`);
+export const setMetricCheck = (metricType, checked) => 
+  api.post('/metrics/checks', { metricType, checked });
+
+// Feedbacks I.A
+export const getAIFeedbacks = (metricType = null) => {
+  const url = metricType ? `/metrics/feedback/${metricType}` : '/metrics/feedback';
+  return api.get(url);
+};
+export const getLatestAIFeedback = (metricType) => api.get(`/metrics/feedback/${metricType}/latest`);
+export const generateAIFeedback = (metricType, forceRegenerate = false) => 
+  api.post('/metrics/generate-feedback', { metricType, forceRegenerate });
+
+// Histórico de Ações
+export const getActionHistory = (startDate = null, endDate = null, actionType = null) => {
+  const params = {};
+  if (startDate) params.startDate = startDate;
+  if (endDate) params.endDate = endDate;
+  if (actionType) params.actionType = actionType;
+  return api.get('/history', { params });
+};
+
+// Confirmações de Operadores
+export const getOperatorConfirmation = (month, year = null) => {
+  const params = { month };
+  if (year) params.year = year;
+  return api.get('/operator/confirmation', { params });
+};
+
+export const saveOperatorConfirmation = (month, year, understood, observations = '') => {
+  return api.post('/operator/confirmation', {
+    month,
+    year,
+    understood,
+    observations
+  });
+};
+
+// Feedbacks de Gestores para o Operador
+export const getOperatorFeedbacks = (month = null, year = null) => {
+  const params = {};
+  if (month) params.month = month;
+  if (year) params.year = year;
+  return api.get('/operator/feedbacks', { params });
+};
+
 export const exportCSV = (month = null) => {
   const params = month ? { month } : {};
   return api.get('/export/csv', { responseType: 'blob', params });

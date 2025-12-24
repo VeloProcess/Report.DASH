@@ -11,6 +11,10 @@ import exportRoutes from './routes/exportRoutes.js';
 import googleSheetsRoutes from './routes/googleSheetsRoutes.js';
 import managerRoutes from './routes/managerRoutes.js';
 import managerFeedbackRoutes from './routes/managerFeedbackRoutes.js';
+import metricsRoutes from './routes/metricsRoutes.js';
+import historyRoutes from './routes/historyRoutes.js';
+import operatorConfirmationsRoutes from './routes/operatorConfirmationsRoutes.js';
+import operatorFeedbackRoutes from './routes/operatorFeedbackRoutes.js';
 
 dotenv.config();
 
@@ -78,6 +82,21 @@ app.use('/api/export', exportRoutes);
 app.use('/api/sheets', googleSheetsRoutes);
 app.use('/api/manager', managerRoutes);
 app.use('/api/manager', managerFeedbackRoutes);
+app.use('/api/metrics', metricsRoutes);
+app.use('/api/history', historyRoutes);
+app.use('/api/operator/confirmation', operatorConfirmationsRoutes);
+app.use('/api/operator/feedbacks', operatorFeedbackRoutes);
+
+// Debug: Log de rotas de métricas registradas
+console.log('📋 Rotas de métricas registradas:');
+console.log('  - GET /api/metrics');
+console.log('  - GET /api/metrics/history');
+console.log('  - GET /api/metrics/history/:metricType');
+console.log('  - GET /api/metrics/feedback');
+console.log('  - GET /api/metrics/feedback/:metricType');
+console.log('  - GET /api/metrics/feedback/:metricType/latest');
+console.log('📋 Rotas de histórico registradas:');
+console.log('  - GET /api/history');
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);

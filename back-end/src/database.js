@@ -255,12 +255,79 @@ export const getManagerFeedbackByOperatorAndMonth = async (operatorId, month, ye
   }
 };
 
+// Função auxiliar para gerar código de feedback
+const generateFeedbackCode = async () => {
+  try {
+    // Buscar o maior número existente
+    const { data: existingFeedbacks, error: fetchError } = await supabase
+      .from('manager_feedbacks')
+      .select('feedback_code')
+      .not('feedback_code', 'is', null)
+      .order('id', { ascending: false })
+      .limit(100);
+    
+    if (fetchError) {
+      console.warn('⚠️ Erro ao buscar feedbacks existentes para gerar código:', fetchError.message);
+      // Se houver erro, usar timestamp como fallback
+      return `FB${Date.now().toString().slice(-8)}`;
+    }
+    
+    let maxNum = 0;
+    if (existingFeedbacks && existingFeedbacks.length > 0) {
+      for (const fb of existingFeedbacks) {
+        if (fb.feedback_code && fb.feedback_code.match(/^FB(\d+)$/)) {
+          const num = parseInt(fb.feedback_code.substring(2));
+          if (num > maxNum) maxNum = num;
+        }
+      }
+    }
+    
+    const nextNum = maxNum + 1;
+    return `FB${nextNum.toString().padStart(5, '0')}`;
+  } catch (error) {
+    console.warn('⚠️ Erro ao gerar código de feedback:', error.message);
+    // Fallback: usar timestamp
+    return `FB${Date.now().toString().slice(-8)}`;
+  }
+};
+
 export const saveManagerFeedback = async (feedback) => {
   if (!supabase) {
     throw new Error('Supabase não configurado. Configure SUPABASE_ANON_KEY ou SUPABASE_SERVICE_ROLE_KEY no .env');
   }
   
+  console.log(`💾 saveManagerFeedback chamado:`, {
+    operator_id: feedback.operator_id,
+    month: feedback.month,
+    year: feedback.year,
+    manager_email: feedback.manager_email
+  });
+  
   try {
+    // Verificar se já existe um feedback para este operador/mês/ano
+    const { data: existingFeedback, error: checkError } = await supabase
+      .from('manager_feedbacks')
+      .select('id, feedback_code')
+      .eq('operator_id', feedback.operator_id)
+      .eq('month', feedback.month)
+      .eq('year', feedback.year)
+      .single();
+    
+    let feedbackCode = null;
+    
+    if (existingFeedback) {
+      // Se já existe, usar o código existente ou gerar um novo se não tiver
+      feedbackCode = existingFeedback.feedback_code;
+      if (!feedbackCode) {
+        console.log('⚠️ Feedback existente sem código, gerando...');
+        feedbackCode = await generateFeedbackCode();
+      }
+    } else {
+      // Se não existe, gerar novo código
+      feedbackCode = await generateFeedbackCode();
+      console.log(`✅ Código gerado para novo feedback: ${feedbackCode}`);
+    }
+    
     // Usar UPSERT (INSERT ... ON CONFLICT UPDATE) para criar ou atualizar
     const { data, error } = await supabase
       .from('manager_feedbacks')
@@ -271,6 +338,7 @@ export const saveManagerFeedback = async (feedback) => {
         feedback_text: feedback.feedback_text,
         manager_email: feedback.manager_email,
         manager_name: feedback.manager_name,
+        feedback_code: feedbackCode, // Incluir código gerado
       }, {
         onConflict: 'operator_id,month,year',
         ignoreDuplicates: false
@@ -279,13 +347,49 @@ export const saveManagerFeedback = async (feedback) => {
       .single();
     
     if (error) {
-      console.error('Erro ao salvar feedback no Supabase:', error);
+      console.error('❌ Erro ao salvar feedback no Supabase:', error);
+      console.error('❌ Detalhes do erro:', JSON.stringify(error, null, 2));
+      
+      // Se o erro for relacionado à coluna feedback_code não existir, tentar sem ela
+      if (error.message && error.message.includes('feedback_code')) {
+        console.log('⚠️ Tentando salvar sem feedback_code (coluna pode não existir)...');
+        const { data: dataWithoutCode, error: errorWithoutCode } = await supabase
+          .from('manager_feedbacks')
+          .upsert({
+            operator_id: feedback.operator_id,
+            month: feedback.month,
+            year: feedback.year,
+            feedback_text: feedback.feedback_text,
+            manager_email: feedback.manager_email,
+            manager_name: feedback.manager_name,
+          }, {
+            onConflict: 'operator_id,month,year',
+            ignoreDuplicates: false
+          })
+          .select()
+          .single();
+        
+        if (errorWithoutCode) {
+          throw errorWithoutCode;
+        }
+        
+        console.log(`✅ Feedback salvo sem código (coluna não existe ainda)`);
+        return dataWithoutCode;
+      }
+      
       throw error;
     }
     
+    console.log(`✅ Feedback salvo com sucesso:`, {
+      id: data?.id,
+      feedback_code: data?.feedback_code,
+      operator_id: data?.operator_id
+    });
+    
     return data;
   } catch (error) {
-    console.error('Erro ao salvar feedback:', error);
+    console.error('❌ Erro ao salvar feedback:', error);
+    console.error('❌ Stack trace:', error.stack);
     throw error;
   }
 };

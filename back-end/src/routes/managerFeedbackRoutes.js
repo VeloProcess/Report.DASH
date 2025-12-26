@@ -265,10 +265,14 @@ router.post('/feedback', async (req, res) => {
       feedback: feedback,
     });
   } catch (error) {
-    console.error('Erro ao salvar feedback:', error);
+    console.error('❌ Erro ao salvar feedback na rota:', error);
+    console.error('❌ Stack trace:', error.stack);
+    console.error('❌ Detalhes completos:', JSON.stringify(error, null, 2));
     res.status(500).json({
       error: 'Erro ao salvar feedback',
-      details: error.message
+      details: error.message,
+      code: error.code || error.error?.code,
+      hint: error.hint || error.error?.hint
     });
   }
 });

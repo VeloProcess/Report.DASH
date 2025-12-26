@@ -1,4 +1,26 @@
 import supabase from './supabaseService.js';
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+// Criar cliente Supabase com service role key para bypassar RLS
+// Isso garante que operações do backend funcionem mesmo se RLS estiver habilitado
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://wouqpkddfvksofnxgtff.supabase.co';
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+// Cliente com service role key (bypassa RLS)
+const supabaseAdmin = SUPABASE_SERVICE_ROLE_KEY 
+  ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
+  : null;
+
+// Usar cliente admin se disponível, senão usar o cliente padrão
+const supabaseClient = supabaseAdmin || supabase;
 
 /**
  * Serviço para gerenciar confirmações de operadores
@@ -11,13 +33,13 @@ import supabase from './supabaseService.js';
  * @returns {Promise<Object|null>} Confirmação ou null
  */
 export const getOperatorConfirmationByFeedbackId = async (feedbackId) => {
-  if (!supabase) {
+  if (!supabaseClient) {
     console.warn('⚠️ Supabase não configurado. Retornando null.');
     return null;
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('operator_confirmations')
       .select('*')
       .eq('feedback_id', feedbackId)
@@ -44,13 +66,13 @@ export const getOperatorConfirmationByFeedbackId = async (feedbackId) => {
  * @deprecated Use getOperatorConfirmationByFeedbackId instead
  */
 export const getOperatorConfirmation = async (email, month, year) => {
-  if (!supabase) {
+  if (!supabaseClient) {
     console.warn('⚠️ Supabase não configurado. Retornando null.');
     return null;
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('operator_confirmations')
       .select('*')
       .eq('email', email)
@@ -81,8 +103,8 @@ export const getOperatorConfirmation = async (email, month, year) => {
  * @returns {Promise<Object>} Confirmação salva
  */
 export const saveOperatorConfirmationByFeedbackId = async (feedbackId, email, month, year, understood, observations = '') => {
-  if (!supabase) {
-    throw new Error('Supabase não configurado. Configure SUPABASE_URL e SUPABASE_ANON_KEY no arquivo .env');
+  if (!supabaseClient) {
+    throw new Error('Supabase não configurado. Configure SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no arquivo .env');
   }
 
   if (!feedbackId) {
@@ -111,7 +133,7 @@ export const saveOperatorConfirmationByFeedbackId = async (feedbackId, email, mo
     if (existingConfirmation) {
       // Se já existe, fazer UPDATE
       console.log(`📝 Fazendo UPDATE da confirmação para feedback_id=${feedbackId}`);
-      const result = await supabase
+      const result = await supabaseClient
         .from('operator_confirmations')
         .update(confirmationData)
         .eq('feedback_id', feedbackId)
@@ -123,7 +145,7 @@ export const saveOperatorConfirmationByFeedbackId = async (feedbackId, email, mo
     } else {
       // Se não existe, fazer INSERT
       console.log(`➕ Fazendo INSERT da confirmação para feedback_id=${feedbackId}`);
-      const result = await supabase
+      const result = await supabaseClient
         .from('operator_confirmations')
         .insert(confirmationData)
         .select()
@@ -157,8 +179,8 @@ export const saveOperatorConfirmationByFeedbackId = async (feedbackId, email, mo
  * @deprecated Use saveOperatorConfirmationByFeedbackId instead
  */
 export const saveOperatorConfirmation = async (email, month, year, understood, observations = '') => {
-  if (!supabase) {
-    throw new Error('Supabase não configurado. Configure SUPABASE_URL e SUPABASE_ANON_KEY no arquivo .env');
+  if (!supabaseClient) {
+    throw new Error('Supabase não configurado. Configure SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no arquivo .env');
   }
 
   try {
@@ -178,7 +200,7 @@ export const saveOperatorConfirmation = async (email, month, year, understood, o
     
     if (existingConfirmation) {
       // Se já existe, fazer UPDATE
-      const result = await supabase
+      const result = await supabaseClient
         .from('operator_confirmations')
         .update(confirmationData)
         .eq('email', email)
@@ -191,7 +213,7 @@ export const saveOperatorConfirmation = async (email, month, year, understood, o
       error = result.error;
     } else {
       // Se não existe, fazer INSERT
-      const result = await supabase
+      const result = await supabaseClient
         .from('operator_confirmations')
         .insert(confirmationData)
         .select()
@@ -219,13 +241,13 @@ export const saveOperatorConfirmation = async (email, month, year, understood, o
  * @returns {Promise<boolean>} True se excluído com sucesso
  */
 export const deleteOperatorConfirmationByFeedbackId = async (feedbackId) => {
-  if (!supabase) {
+  if (!supabaseClient) {
     console.warn('⚠️ Supabase não configurado. Não é possível excluir confirmação.');
     return false;
   }
 
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('operator_confirmations')
       .delete()
       .eq('feedback_id', feedbackId);
@@ -251,13 +273,13 @@ export const deleteOperatorConfirmationByFeedbackId = async (feedbackId) => {
  * @deprecated Use deleteOperatorConfirmationByFeedbackId instead
  */
 export const deleteOperatorConfirmation = async (email, month, year) => {
-  if (!supabase) {
+  if (!supabaseClient) {
     console.warn('⚠️ Supabase não configurado. Não é possível excluir confirmação.');
     return false;
   }
 
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('operator_confirmations')
       .delete()
       .eq('email', email)

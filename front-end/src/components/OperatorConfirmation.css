@@ -1,11 +1,11 @@
 .operator-confirmation {
   background: white;
-  border-radius: 8px;
-  padding: 20px;
-  margin-top: 30px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 24px;
+  margin-top: 32px;
+  margin-bottom: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
   position: relative;
   z-index: 1;
   display: block;
@@ -24,9 +24,10 @@
 
 .confirmation-header h3 {
   margin: 0;
-  color: #2c3e50;
-  font-size: 18px;
-  font-weight: 600;
+  color: #1e293b;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .saved-indicator {
@@ -78,8 +79,8 @@
 
 .checkbox-text {
   font-size: 16px;
-  font-weight: 500;
-  color: #2c3e50;
+  font-weight: 600;
+  color: #1e293b;
 }
 
 .confirmation-observations {
@@ -91,7 +92,7 @@
 .observations-label {
   font-size: 14px;
   font-weight: 600;
-  color: #2c3e50;
+  color: #1e293b;
 }
 
 .observations-textarea {
@@ -121,18 +122,21 @@
 .btn-save-confirmation {
   align-self: flex-start;
   padding: 10px 20px;
-  background: #1694ff;
+  background: #2563eb;
   color: white;
   border: none;
   border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.2);
 }
 
 .btn-save-confirmation:hover:not(:disabled) {
-  background: #1480e6;
+  background: #1d4ed8;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.25);
+  transform: translateY(-1px);
 }
 
 .btn-save-confirmation:disabled {

@@ -1,8 +1,9 @@
 .history-timeline {
   background: white;
-  border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
 }
 
 .timeline-empty {
@@ -27,12 +28,12 @@
   position: absolute;
   left: -6px;
   top: 0;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: #1694ff;
-  border: 2px solid white;
-  box-shadow: 0 0 0 2px #1694ff;
+  background: #2563eb;
+  border: 3px solid white;
+  box-shadow: 0 0 0 2px #2563eb;
 }
 
 .timeline-item-action .timeline-marker {
@@ -127,12 +128,12 @@
 }
 
 .timeline-item-manager_feedback .timeline-marker {
-  background: #f39c12;
-  box-shadow: 0 0 0 2px #f39c12;
+  background: #f59e0b;
+  box-shadow: 0 0 0 2px #f59e0b;
 }
 
 .timeline-item-manager_feedback .event-feedback {
-  border-left-color: #f39c12;
+  border-left-color: #f59e0b;
 }
 
 .unconfirmed-badge {

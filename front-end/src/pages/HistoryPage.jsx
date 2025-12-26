@@ -100,8 +100,8 @@ function HistoryPage() {
   return (
     <div className="history-page">
       <div className="history-header">
-        <h1>Histórico</h1>
-        <p className="history-subtitle">Visualize a evolução das suas métricas e ações</p>
+        <h1>Histórico de Feedbacks</h1>
+        <p className="history-subtitle">Visualize os feedbacks dos gestores</p>
       </div>
 
       <HistoryFilters 
@@ -111,9 +111,9 @@ function HistoryPage() {
 
       <div className="history-content">
         <HistoryTimeline
-          actions={actions}
-          metricsHistory={metricsHistory}
-          feedbacks={feedbacks}
+          actions={[]}
+          metricsHistory={[]}
+          feedbacks={[]}
           managerFeedbacks={managerFeedbacks}
         />
       </div>

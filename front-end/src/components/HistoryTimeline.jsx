@@ -1,4 +1,6 @@
-import { useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { saveOperatorConfirmation } from '../services/api';
 import './HistoryTimeline.css';
 
 const ACTION_LABELS = {
@@ -13,61 +15,89 @@ const ACTION_LABELS = {
 };
 
 function HistoryTimeline({ actions, metricsHistory, feedbacks, managerFeedbacks = [] }) {
+  const { user } = useAuth();
+  const isManager = user?.isManager || false;
+  
+  // Estado para gerenciar confirmações de cada feedback
+  const [confirmations, setConfirmations] = useState({});
+  const [savingStates, setSavingStates] = useState({});
+
+  // Inicializar confirmações quando os feedbacks mudarem
+  useEffect(() => {
+    const newConfirmations = {};
+    managerFeedbacks.forEach(feedback => {
+      const feedbackId = `${feedback.id || feedback.month}_${feedback.year}`;
+      newConfirmations[feedbackId] = {
+        understood: feedback.confirmed || false,
+        observations: feedback.observations || ''
+      };
+    });
+    setConfirmations(prev => {
+      // Só atualizar se houver mudanças
+      const hasChanges = Object.keys(newConfirmations).some(id => 
+        !prev[id] || 
+        prev[id].understood !== newConfirmations[id].understood ||
+        prev[id].observations !== newConfirmations[id].observations
+      );
+      return hasChanges ? { ...prev, ...newConfirmations } : prev;
+    });
+  }, [managerFeedbacks]);
+
   // Combinar todos os eventos em uma timeline ordenada
+  // APENAS feedbacks de gestores devem aparecer (sem logs de login, ações, métricas, etc)
   const timeline = useMemo(() => {
     const events = [];
 
-    // Adicionar ações (filtrar ações técnicas que não devem ser exibidas)
-    actions
-      .filter(action => action.action !== 'view_history') // Não mostrar ações de visualização
-      .forEach(action => {
-        events.push({
-          type: 'action',
-          date: new Date(action.action_date),
-          data: action,
-          label: ACTION_LABELS[action.action] || action.action
-        });
-      });
-
-    // Adicionar snapshots de métricas
-    metricsHistory.forEach(snapshot => {
-      events.push({
-        type: 'metric_snapshot',
-        date: new Date(snapshot.created_at),
-        data: snapshot,
-        label: `Snapshot de métricas - ${snapshot.metric_type}`
-      });
-    });
-
-    // Adicionar feedbacks I.A
-    feedbacks.forEach(feedback => {
-      events.push({
-        type: 'feedback',
-        date: new Date(feedback.generated_at),
-        data: feedback,
-        label: `Feedback I.A - ${feedback.metric_type}`
-      });
-    });
-
-    // Adicionar feedbacks de gestores
+    // APENAS adicionar feedbacks de gestores
     managerFeedbacks.forEach(feedback => {
       // Se tiver operator_name, significa que é um gestor vendo seus próprios feedbacks
       const label = feedback.operator_name 
         ? `Feedback para ${feedback.operator_name} - ${feedback.month}/${feedback.year}`
         : `Feedback do Gestor - ${feedback.month}/${feedback.year}`;
       
+      const feedbackId = `${feedback.id || feedback.month}_${feedback.year}`;
+      
       events.push({
         type: 'manager_feedback',
         date: new Date(feedback.created_at),
         data: feedback,
         label: label,
-        confirmed: feedback.confirmed || false
+        confirmed: feedback.confirmed || false,
+        feedbackId: feedbackId
       });
     });
 
     // Ordenar por data (mais recente primeiro)
     return events.sort((a, b) => b.date - a.date);
-  }, [actions, metricsHistory, feedbacks, managerFeedbacks]);
+  }, [managerFeedbacks]);
+
+  const handleConfirmationChange = async (feedbackId, understood, observations = '') => {
+    const feedback = managerFeedbacks.find(fb => `${fb.id || fb.month}_${fb.year}` === feedbackId);
+    if (!feedback) return;
+
+    setSavingStates(prev => ({ ...prev, [feedbackId]: true }));
+    
+    try {
+      const response = await saveOperatorConfirmation(
+        feedback.month,
+        feedback.year,
+        understood,
+        observations
+      );
+      
+      if (response.data.success) {
+        setConfirmations(prev => ({
+          ...prev,
+          [feedbackId]: { understood, observations }
+        }));
+      }
+    } catch (error) {
+      console.error('Erro ao salvar confirmação:', error);
+      alert('Erro ao salvar confirmação. Tente novamente.');
+    } finally {
+      setSavingStates(prev => ({ ...prev, [feedbackId]: false }));
+    }
+  };
 
   const formatDate = (date) => {
     return new Date(date).toLocaleString('pt-BR', {
@@ -80,114 +110,162 @@ function HistoryTimeline({ actions, metricsHistory, feedbacks, managerFeedbacks 
   };
 
   const renderEventContent = (event) => {
-    switch (event.type) {
-      case 'action':
-        return (
-          <div className="timeline-event-content">
-            <div className="event-label">{event.label}</div>
-            {event.data.context && Object.keys(event.data.context).length > 0 && (
-              <div className="event-context">
-                <pre>{JSON.stringify(event.data.context, null, 2)}</pre>
-              </div>
-            )}
-          </div>
-        );
-
-      case 'metric_snapshot':
-        return (
-          <div className="timeline-event-content">
-            <div className="event-label">{event.label}</div>
-            <div className="event-metrics">
-              <strong>Tipo:</strong> {event.data.metric_type}<br />
-              <strong>Data do snapshot:</strong> {event.data.snapshot_date}
-            </div>
-          </div>
-        );
-
-      case 'feedback':
-        return (
-          <div className="timeline-event-content">
-            <div className="event-label">{event.label}</div>
-            <div className="event-feedback">
-              <p>{event.data.feedback_text}</p>
-            </div>
-          </div>
-        );
-
-      case 'manager_feedback':
-        // Verificar se é um gestor vendo seu próprio feedback ou um operador vendo feedback recebido
-        const isManagerView = event.data.operator_name !== undefined;
+    // Apenas renderizar feedbacks de gestores
+    if (event.type === 'manager_feedback') {
+        // Usar o contexto de autenticação para determinar se é gestor ou operador
+        // Se o usuário é gestor, não mostrar checkbox (ele está vendo feedbacks que criou)
+        // Se o usuário é operador, mostrar checkbox (ele está vendo feedbacks recebidos)
+        const feedbackId = event.feedbackId;
+        const confirmation = confirmations[feedbackId] || { understood: event.confirmed || false, observations: event.data.observations || '' };
+        const isSaving = savingStates[feedbackId] || false;
+        
+        console.log('🔍 Renderizando feedback:', { 
+          feedbackId, 
+          isManager, 
+          confirmation, 
+          hasCheckbox: !isManager 
+        });
         
         return (
           <div className="timeline-event-content">
             <div className="event-label">
-              {isManagerView 
+              {isManager && event.data.operator_name
                 ? `Feedback para ${event.data.operator_name} - ${event.data.month}/${event.data.year}`
                 : event.label
               }
-              {!isManagerView && !event.confirmed && (
+              {!isManager && !confirmation.understood && (
                 <span className="unconfirmed-badge">⚠️ Não confirmado</span>
               )}
             </div>
             <div className="event-feedback">
               <p>{event.data.feedback_text}</p>
-              {isManagerView ? (
+              {isManager && event.data.operator_name ? (
                 // Gestor vendo: mostrar para qual operador foi o feedback
                 <div className="feedback-operator">
                   <strong>Para:</strong> {event.data.operator_name}
                 </div>
               ) : (
-                // Operador vendo: mostrar quem foi o gestor
-                event.data.manager_name && (
-                  <div className="feedback-manager">
-                    <strong>Gestor:</strong> {event.data.manager_name}
+                <>
+                  {/* Operador vendo: mostrar quem foi o gestor */}
+                  {event.data.manager_name && (
+                    <div className="feedback-manager">
+                      <strong>Gestor:</strong> {event.data.manager_name}
+                    </div>
+                  )}
+                  
+                  {/* Checkbox e campo de observações para operadores */}
+                  <div className="feedback-confirmation-section" style={{
+                    marginTop: '20px',
+                    paddingTop: '20px',
+                    borderTop: '1px solid #e0e0e0'
+                  }}>
+                    <div className="confirmation-checkbox" style={{ 
+                      display: 'flex', 
+                      alignItems: 'center',
+                      marginBottom: '15px'
+                    }}>
+                      <label 
+                        htmlFor={`checkbox-${feedbackId}`}
+                        style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          cursor: 'pointer',
+                          userSelect: 'none'
+                        }}
+                      >
+                        <input
+                          id={`checkbox-${feedbackId}`}
+                          type="checkbox"
+                          checked={confirmation.understood}
+                          onChange={(e) => {
+                            console.log('✅ Checkbox clicado no histórico:', e.target.checked);
+                            handleConfirmationChange(feedbackId, e.target.checked, confirmation.observations);
+                          }}
+                          disabled={isSaving}
+                          style={{ 
+                            width: '20px', 
+                            height: '20px', 
+                            marginRight: '12px', 
+                            cursor: isSaving ? 'not-allowed' : 'pointer',
+                            accentColor: '#1694ff',
+                            flexShrink: 0
+                          }}
+                        />
+                        <span style={{ fontSize: '16px', fontWeight: 500, color: '#2c3e50' }}>
+                          Compreendi
+                        </span>
+                      </label>
+                    </div>
+
+                    <div className="confirmation-observations" style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      gap: '8px'
+                    }}>
+                      <label 
+                        htmlFor={`observations-${feedbackId}`}
+                        style={{ fontSize: '14px', fontWeight: 600, color: '#2c3e50' }}
+                      >
+                        Observações (pontos que discorda ou algo específico):
+                      </label>
+                      <textarea
+                        id={`observations-${feedbackId}`}
+                        value={confirmation.observations}
+                        onChange={(e) => {
+                          console.log('✅ Textarea alterado no histórico:', e.target.value);
+                          setConfirmations(prev => ({
+                            ...prev,
+                            [feedbackId]: { ...confirmation, observations: e.target.value }
+                          }));
+                        }}
+                        onBlur={() => {
+                          console.log('✅ Salvando observações no histórico');
+                          handleConfirmationChange(feedbackId, confirmation.understood, confirmation.observations);
+                        }}
+                        placeholder="Digite suas observações aqui..."
+                        disabled={isSaving}
+                        rows="3"
+                        style={{ 
+                          width: '100%', 
+                          padding: '10px', 
+                          border: '1px solid #ddd', 
+                          borderRadius: '6px',
+                          fontSize: '14px',
+                          fontFamily: 'inherit',
+                          resize: 'vertical',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                      {isSaving && (
+                        <span style={{ fontSize: '12px', color: '#666', fontStyle: 'italic' }}>
+                          Salvando...
+                        </span>
+                      )}
+                    </div>
                   </div>
-                )
-              )}
-              {!isManagerView && event.confirmed && event.data.confirmationDate && (
-                <div className="feedback-confirmed">
-                  ✓ Confirmado em {new Date(event.data.confirmationDate).toLocaleDateString('pt-BR')}
-                </div>
-              )}
-              {!isManagerView && event.data.observations && (
-                <div className="feedback-observations">
-                  <strong>Observações:</strong> {event.data.observations}
-                </div>
+                  
+                  {confirmation.understood && event.data.confirmationDate && (
+                    <div className="feedback-confirmed" style={{ marginTop: '10px', color: '#27ae60', fontSize: '14px' }}>
+                      ✓ Confirmado em {new Date(event.data.confirmationDate).toLocaleDateString('pt-BR')}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
         );
-
-      default:
-        return <div>{event.label}</div>;
     }
+    
+    // Fallback (não deve acontecer, mas por segurança)
+    return <div>{event.label}</div>;
   };
 
   if (timeline.length === 0) {
-    // Verificar se realmente não há conteúdo relevante
-    const hasRelevantContent = 
-      managerFeedbacks.length > 0 || 
-      metricsHistory.length > 0 || 
-      feedbacks.length > 0 ||
-      actions.some(a => a.action !== 'view_history');
-    
-    if (!hasRelevantContent) {
-      return (
-        <div className="timeline-empty">
-          <p>Nenhum histórico encontrado para o período selecionado.</p>
-          <p className="timeline-empty-hint">
-            💡 Os feedbacks de gestores, métricas históricas e outras ações aparecerão aqui quando disponíveis.
-          </p>
-        </div>
-      );
-    }
-    
-    // Se chegou aqui, há conteúdo mas foi filtrado pelo período selecionado
     return (
       <div className="timeline-empty">
-        <p>Nenhum histórico encontrado para o período selecionado.</p>
+        <p>Nenhum feedback encontrado para o período selecionado.</p>
         <p className="timeline-empty-hint">
-          Tente selecionar um período diferente ou limpar os filtros.
+          💡 Os feedbacks dos gestores aparecerão aqui quando forem adicionados.
         </p>
       </div>
     );

@@ -3,6 +3,10 @@ import { getOperatorConfirmation, saveOperatorConfirmation } from '../services/a
 import './OperatorConfirmation.css';
 
 function OperatorConfirmation({ month, year }) {
+  // Garantir valores padrão
+  const currentMonth = month || 'Dezembro';
+  const currentYear = year || new Date().getFullYear();
+  
   const [understood, setUnderstood] = useState(false);
   const [observations, setObservations] = useState('');
   const [loading, setLoading] = useState(false);
@@ -10,13 +14,14 @@ function OperatorConfirmation({ month, year }) {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
+    console.log('🔍 OperatorConfirmation montado:', { month: currentMonth, year: currentYear });
     loadConfirmation();
-  }, [month, year]);
+  }, [currentMonth, currentYear]);
 
   const loadConfirmation = async () => {
     try {
       setLoading(true);
-      const response = await getOperatorConfirmation(month, year || new Date().getFullYear());
+      const response = await getOperatorConfirmation(currentMonth, currentYear);
       if (response.data.success && response.data.confirmation) {
         setUnderstood(response.data.confirmation.understood || false);
         setObservations(response.data.confirmation.observations || '');
@@ -34,8 +39,8 @@ function OperatorConfirmation({ month, year }) {
     try {
       setSaving(true);
       const response = await saveOperatorConfirmation(
-        month,
-        year || new Date().getFullYear(),
+        currentMonth,
+        currentYear,
         understood,
         observations
       );
@@ -56,8 +61,8 @@ function OperatorConfirmation({ month, year }) {
     // Salvar automaticamente quando marcar/desmarcar
     try {
       await saveOperatorConfirmation(
-        month,
-        year || new Date().getFullYear(),
+        currentMonth,
+        currentYear,
         checked,
         observations
       );
@@ -68,53 +73,146 @@ function OperatorConfirmation({ month, year }) {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="operator-confirmation">
-        <div className="confirmation-loading">Carregando...</div>
-      </div>
-    );
-  }
+  console.log('🔍 OperatorConfirmation renderizando:', { 
+    loading, 
+    understood, 
+    observations, 
+    month: currentMonth, 
+    year: currentYear,
+    componentVisible: true
+  });
 
+  // SEMPRE renderizar o componente, mesmo durante loading
   return (
-    <div className="operator-confirmation">
-      <div className="confirmation-header">
-        <h3>Confirmação de Leitura</h3>
-        {saved && <span className="saved-indicator">✓ Salvo</span>}
+    <div 
+      className="operator-confirmation" 
+      style={{ 
+        display: 'block', 
+        visibility: 'visible', 
+        opacity: 1,
+        background: 'white',
+        borderRadius: '8px',
+        padding: '20px',
+        marginTop: '30px',
+        marginBottom: '30px',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        border: '2px solid #e0e0e0',
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box'
+      }}
+    >
+      <div className="confirmation-header" style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        marginBottom: '20px',
+        paddingBottom: '15px',
+        borderBottom: '2px solid #f0f0f0'
+      }}>
+        <h3 style={{ margin: 0, color: '#2c3e50', fontSize: '18px', fontWeight: 600 }}>
+          Confirmação de Leitura
+        </h3>
+        {saved && <span style={{ color: '#27ae60', fontSize: '14px', fontWeight: 600 }}>✓ Salvo</span>}
       </div>
       
-      <div className="confirmation-content">
-        <div className="confirmation-checkbox">
-          <label className="checkbox-label">
+      <div className="confirmation-content" style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: '20px'
+      }}>
+        <div className="confirmation-checkbox" style={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          minHeight: '30px'
+        }}>
+          <label 
+            htmlFor="compreendi-checkbox"
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              cursor: 'pointer',
+              userSelect: 'none',
+              width: '100%'
+            }}
+          >
             <input
+              id="compreendi-checkbox"
               type="checkbox"
               checked={understood}
-              onChange={(e) => handleUnderstoodChange(e.target.checked)}
-              className="checkbox-input"
+              onChange={(e) => {
+                console.log('✅ Checkbox clicado:', e.target.checked);
+                handleUnderstoodChange(e.target.checked);
+              }}
+              style={{ 
+                width: '20px', 
+                height: '20px', 
+                marginRight: '12px', 
+                cursor: 'pointer',
+                accentColor: '#1694ff',
+                flexShrink: 0
+              }}
             />
-            <span className="checkbox-text">Compreendi</span>
+            <span style={{ fontSize: '16px', fontWeight: 500, color: '#2c3e50' }}>
+              Compreendi
+            </span>
           </label>
         </div>
 
-        <div className="confirmation-observations">
-          <label htmlFor="observations" className="observations-label">
+        <div className="confirmation-observations" style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '8px',
+          width: '100%'
+        }}>
+          <label 
+            htmlFor="observations-textarea" 
+            style={{ fontSize: '14px', fontWeight: 600, color: '#2c3e50' }}
+          >
             Observações (pontos que discorda ou algo específico):
           </label>
           <textarea
-            id="observations"
+            id="observations-textarea"
             value={observations}
-            onChange={(e) => setObservations(e.target.value)}
+            onChange={(e) => {
+              console.log('✅ Textarea alterado:', e.target.value);
+              setObservations(e.target.value);
+            }}
             onBlur={handleSave}
             placeholder="Digite suas observações aqui..."
-            className="observations-textarea"
             rows="4"
+            style={{ 
+              width: '100%', 
+              padding: '12px', 
+              border: '1px solid #ddd', 
+              borderRadius: '6px',
+              fontSize: '14px',
+              fontFamily: 'inherit',
+              resize: 'vertical',
+              boxSizing: 'border-box'
+            }}
           />
         </div>
 
         <button
-          onClick={handleSave}
+          onClick={(e) => {
+            e.preventDefault();
+            console.log('✅ Botão salvar clicado');
+            handleSave();
+          }}
           disabled={saving}
-          className="btn-save-confirmation"
+          style={{ 
+            alignSelf: 'flex-start',
+            padding: '10px 20px', 
+            background: saving ? '#ccc' : '#1694ff', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '6px',
+            fontSize: '14px',
+            fontWeight: 600,
+            cursor: saving ? 'not-allowed' : 'pointer',
+            minWidth: '150px'
+          }}
         >
           {saving ? 'Salvando...' : 'Salvar Observações'}
         </button>

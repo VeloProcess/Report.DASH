@@ -80,8 +80,10 @@ app.use('/api/logs', logRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/sheets', googleSheetsRoutes);
-app.use('/api/manager', managerRoutes);
+// IMPORTANTE: managerFeedbackRoutes deve vir ANTES de managerRoutes para evitar conflitos
+// pois managerFeedbackRoutes tem rotas mais específicas (/feedback/:operatorId)
 app.use('/api/manager', managerFeedbackRoutes);
+app.use('/api/manager', managerRoutes);
 app.use('/api/metrics', metricsRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/operator/confirmation', operatorConfirmationsRoutes);
@@ -100,8 +102,13 @@ console.log('  - GET /api/history');
 
 // Debug: Log de rotas de manager registradas
 console.log('📋 Rotas de manager registradas:');
-console.log('  - GET /api/manager/operators');
 console.log('  - GET /api/manager/history/complete');
+console.log('  - GET /api/manager/feedback/by-id/:id');
+console.log('  - GET /api/manager/feedback/:operatorId');
+console.log('  - POST /api/manager/feedback');
+console.log('  - PUT /api/manager/feedback/:id');
+console.log('  - DELETE /api/manager/feedback/:id');
+console.log('  - GET /api/manager/operators');
 console.log('  - GET /api/manager/operators/:operatorId/metrics');
 console.log('  - GET /api/manager/operators/:operatorId/export/pdf');
 

@@ -32,6 +32,12 @@ const requireManager = (req, res, next) => {
   next();
 };
 
+// Middleware de debug para todas as requisições
+router.use((req, res, next) => {
+  console.log(`🔍 managerFeedbackRoutes: ${req.method} ${req.path}`);
+  next();
+});
+
 // Todas as rotas requerem autenticação e ser gestor
 router.use(authenticateToken);
 router.use(requireManager);

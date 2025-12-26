@@ -98,11 +98,17 @@ function Dashboard() {
     setLoading(true);
     try {
       const currentYear = new Date().getFullYear();
+      // IMPORTANTE: Para operadores, buscar TODOS os feedbacks (sem filtro de mês)
+      // Para gestores, pode filtrar por mês se necessário
+      const isManager = user?.isManager || false;
+      const monthForFeedbacks = isManager ? selectedMonth : null; // Operadores não filtram por mês
+      const yearForFeedbacks = null; // Não filtrar por ano para garantir que todos apareçam
+      
       const [metricsRes, feedbackRes, operatorRes, managerFeedbacksRes] = await Promise.all([
         getDashboardMetrics(selectedMonth).catch(() => ({ data: { hasData: false } })),
         getDashboardFeedback().catch(() => ({ data: { hasData: false } })),
         getDashboardOperator().catch(() => null),
-        getOperatorFeedbacks(selectedMonth, currentYear).catch(() => ({ data: { success: false, feedbacks: [] } })),
+        getOperatorFeedbacks(monthForFeedbacks, yearForFeedbacks).catch(() => ({ data: { success: false, feedbacks: [] } })),
       ]);
 
       if (metricsRes.data.hasData) {
@@ -256,10 +262,10 @@ function Dashboard() {
             <section className="feedback-section">
               <h2>Feedbacks dos Gestores</h2>
               <div className="feedback-content">
+                {/* IMPORTANTE: Mostrar TODOS os feedbacks para operadores, não filtrar por mês */}
                 {managerFeedbacks
-                  .filter(fb => fb.month === selectedMonth)
                   .map((feedback, index) => (
-                    <div key={index} className="feedback-item manager-feedback">
+                    <div key={`feedback-${feedback.id || index}`} className="feedback-item manager-feedback">
                       <h3>
                         Feedback - {feedback.month}/{feedback.year}
                         {feedback.manager_name && (
@@ -267,6 +273,12 @@ function Dashboard() {
                         )}
                       </h3>
                       <p>{feedback.feedback_text}</p>
+                      
+                      {/* Componente de confirmação para cada feedback individual */}
+                      <OperatorConfirmation 
+                        month={feedback.month} 
+                        year={feedback.year} 
+                      />
                     </div>
                   ))}
               </div>

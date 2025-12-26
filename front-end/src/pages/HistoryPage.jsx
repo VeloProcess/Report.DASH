@@ -61,10 +61,12 @@ function HistoryPage() {
       }
 
       // Carregar feedbacks de gestores
-      const currentYear = new Date().getFullYear();
+      // IMPORTANTE: Para operadores, sempre buscar TODOS os feedbacks (sem filtro de mês)
+      // Para gestores, pode filtrar por mês se selecionado
       try {
-        const month = filters.selectedMonth || null;
-        const year = month ? currentYear : null; // Só filtrar por ano se tiver mês selecionado
+        const isManager = user?.isManager || false;
+        const month = isManager ? (filters.selectedMonth || null) : null; // Operadores não filtram por mês
+        const year = null; // Não filtrar por ano para garantir que todos apareçam
         
         const managerFeedbacksResponse = await getOperatorFeedbacks(month, year);
         

@@ -46,6 +46,7 @@ function ManagerDashboard() {
   const [operators, setOperators] = useState([]);
   const [selectedOperator, setSelectedOperator] = useState(null);
   const [metrics, setMetrics] = useState(null);
+  const [operatorConfirmation, setOperatorConfirmation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingMetrics, setLoadingMetrics] = useState(false);
   const [exporting, setExporting] = useState({ pdf: false });
@@ -96,6 +97,9 @@ function ManagerDashboard() {
       } else {
         setMetrics(null);
       }
+      
+      // Armazenar confirmação do operador
+      setOperatorConfirmation(response.data.operatorConfirmation || null);
     } catch (error) {
       console.error('Erro ao carregar métricas:', error);
       setMetrics(null);
@@ -340,6 +344,104 @@ function ManagerDashboard() {
                     <div className="metrics-grid">
                       {renderMetricCard('treinamento', 'Treinamento', metrics.treinamento)}
                       {renderMetricCard('percent_treinamento', '% Treinamento', metrics.percent_treinamento)}
+                    </div>
+                  </section>
+                  
+                  {/* Seção: Status de Confirmação do Operador */}
+                  <section className="metrics-section-content" style={{ marginTop: '30px' }}>
+                    <h3>Status de Confirmação do Operador</h3>
+                    <div style={{
+                      backgroundColor: operatorConfirmation?.understood ? '#e8f5e9' : '#fff3e0',
+                      padding: '20px',
+                      borderRadius: '8px',
+                      border: `2px solid ${operatorConfirmation?.understood ? '#4caf50' : '#ff9800'}`,
+                      marginTop: '15px'
+                    }}>
+                      <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        marginBottom: '15px',
+                        gap: '10px'
+                      }}>
+                        <strong style={{ fontSize: '18px', color: '#2c3e50' }}>
+                          Status:
+                        </strong>
+                        {operatorConfirmation?.understood ? (
+                          <span style={{ 
+                            color: '#4caf50', 
+                            fontWeight: 600,
+                            fontSize: '18px'
+                          }}>
+                            ✓ Confirmado - Operador compreendeu o feedback
+                          </span>
+                        ) : (
+                          <span style={{ 
+                            color: '#ff9800', 
+                            fontWeight: 600,
+                            fontSize: '18px'
+                          }}>
+                            ⚠️ Não confirmado - Operador ainda não confirmou
+                          </span>
+                        )}
+                      </div>
+                      
+                      {operatorConfirmation?.confirmed_at && (
+                        <div style={{ 
+                          fontSize: '14px', 
+                          color: '#666',
+                          marginBottom: '15px'
+                        }}>
+                          Confirmado em: {new Date(operatorConfirmation.confirmed_at).toLocaleString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                      )}
+                      
+                      {operatorConfirmation?.observations && operatorConfirmation.observations.trim() !== '' && (
+                        <div style={{ 
+                          marginTop: '15px',
+                          paddingTop: '15px',
+                          borderTop: '1px solid #ddd'
+                        }}>
+                          <strong style={{ 
+                            fontSize: '16px', 
+                            color: '#2c3e50',
+                            display: 'block',
+                            marginBottom: '10px'
+                          }}>
+                            Observações do Operador:
+                          </strong>
+                          <div style={{ 
+                            fontSize: '14px', 
+                            color: '#333',
+                            backgroundColor: '#f5f5f5',
+                            padding: '15px',
+                            borderRadius: '6px',
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word',
+                            lineHeight: '1.6'
+                          }}>
+                            {operatorConfirmation.observations}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {(!operatorConfirmation?.observations || operatorConfirmation?.observations?.trim() === '') && (
+                        <div style={{ 
+                          fontSize: '14px', 
+                          color: '#999',
+                          fontStyle: 'italic',
+                          marginTop: '10px'
+                        }}>
+                          {operatorConfirmation?.understood 
+                            ? 'Nenhuma observação registrada pelo operador.' 
+                            : 'Aguardando confirmação do operador...'}
+                        </div>
+                      )}
                     </div>
                   </section>
                 </>

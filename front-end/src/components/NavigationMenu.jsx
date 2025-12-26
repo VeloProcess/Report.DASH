@@ -64,15 +64,26 @@ function NavigationMenu() {
             </Link>
           </li>
           {user?.isManager && (
-            <li>
-              <Link 
-                to="/manager" 
-                className={isActive('/manager') ? 'active' : ''}
-                onClick={closeMenu}
-              >
-                👥 Dashboard Gestor
-              </Link>
-            </li>
+            <>
+              <li>
+                <Link 
+                  to="/manager" 
+                  className={isActive('/manager') ? 'active' : ''}
+                  onClick={closeMenu}
+                >
+                  👥 Dashboard Gestor
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/complete-history" 
+                  className={isActive('/complete-history') ? 'active' : ''}
+                  onClick={closeMenu}
+                >
+                  📋 Histórico Completo
+                </Link>
+              </li>
+            </>
           )}
         </ul>
 

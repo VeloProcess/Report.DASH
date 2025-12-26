@@ -82,6 +82,7 @@ export const exportManagerPDF = (operatorId, month = null) => {
   const params = month ? { month } : {};
   return api.get(`/manager/operators/${operatorId}/export/pdf`, { responseType: 'blob', params });
 };
+export const getCompleteHistory = () => api.get('/manager/history/complete');
 
 // Feedback de Gestores
 export const getManagerFeedback = (operatorId, month = null, year = null) => {

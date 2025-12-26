@@ -122,6 +122,38 @@ export const getOperatorByEmail = (email) => {
 };
 
 /**
+ * Busca o email do operador pelo ID
+ * @param {number|string} operatorId - ID do operador
+ * @returns {string|null} Email do operador ou null se não encontrado
+ */
+export const getOperatorEmailById = (operatorId) => {
+  const operators = getOperators();
+  const operator = operators.find(op => op.id === parseInt(operatorId));
+  
+  if (!operator) {
+    return null;
+  }
+  
+  // Buscar email no send_email.JSON pelo nome do operador
+  const emailMapping = loadEmailMapping();
+  const operatorName = operator.name;
+  
+  // Buscar email pelo nome
+  for (const [name, email] of Object.entries(emailMapping)) {
+    if (name.toLowerCase().trim() === operatorName.toLowerCase().trim()) {
+      return email;
+    }
+  }
+  
+  // Se não encontrou no mapping, verificar se o operador tem email direto
+  if (operator.email) {
+    return operator.email;
+  }
+  
+  return null;
+};
+
+/**
  * Valida se um operadorId pertence ao email autenticado
  * @param {string} email - Email autenticado
  * @param {number|string} operatorId - ID do operador a validar

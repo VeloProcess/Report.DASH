@@ -140,10 +140,111 @@ function HistoryTimeline({ actions, metricsHistory, feedbacks, managerFeedbacks 
             <div className="event-feedback">
               <p>{event.data.feedback_text}</p>
               {isManager && event.data.operator_name ? (
-                // Gestor vendo: mostrar para qual operador foi o feedback
-                <div className="feedback-operator">
-                  <strong>Para:</strong> {event.data.operator_name}
-                </div>
+                // Gestor vendo: mostrar para qual operador foi o feedback + status de confirmação
+                <>
+                  <div className="feedback-operator" style={{ marginBottom: '15px' }}>
+                    <strong>Para:</strong> {event.data.operator_name}
+                    {event.data.operator_email && (
+                      <span style={{ marginLeft: '10px', fontSize: '14px', color: '#666' }}>
+                        ({event.data.operator_email})
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Status de confirmação do operador */}
+                  <div className="manager-confirmation-status" style={{
+                    marginTop: '20px',
+                    paddingTop: '20px',
+                    borderTop: '1px solid #e0e0e0',
+                    backgroundColor: (event.data.confirmed || confirmation.understood) ? '#e8f5e9' : '#fff3e0',
+                    padding: '15px',
+                    borderRadius: '6px',
+                    border: `2px solid ${(event.data.confirmed || confirmation.understood) ? '#4caf50' : '#ff9800'}`
+                  }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      marginBottom: '10px',
+                      gap: '10px'
+                    }}>
+                      <strong style={{ fontSize: '16px', color: '#2c3e50' }}>
+                        Status de Confirmação:
+                      </strong>
+                      {(event.data.confirmed || confirmation.understood) ? (
+                        <span style={{ 
+                          color: '#4caf50', 
+                          fontWeight: 600,
+                          fontSize: '16px'
+                        }}>
+                          ✓ Confirmado
+                        </span>
+                      ) : (
+                        <span style={{ 
+                          color: '#ff9800', 
+                          fontWeight: 600,
+                          fontSize: '16px'
+                        }}>
+                          ⚠️ Não confirmado
+                        </span>
+                      )}
+                    </div>
+                    
+                    {(event.data.confirmationDate || event.data.confirmation_date) && (
+                      <div style={{ 
+                        fontSize: '14px', 
+                        color: '#666',
+                        marginBottom: '10px'
+                      }}>
+                        Confirmado em: {new Date(event.data.confirmationDate || event.data.confirmation_date).toLocaleString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </div>
+                    )}
+                    
+                    {(event.data.observations || confirmation.observations) && (event.data.observations || confirmation.observations).trim() !== '' && (
+                      <div style={{ 
+                        marginTop: '15px',
+                        paddingTop: '15px',
+                        borderTop: '1px solid #ddd'
+                      }}>
+                        <strong style={{ 
+                          fontSize: '14px', 
+                          color: '#2c3e50',
+                          display: 'block',
+                          marginBottom: '8px'
+                        }}>
+                          Observações do Operador:
+                        </strong>
+                        <div style={{ 
+                          fontSize: '14px', 
+                          color: '#333',
+                          backgroundColor: '#f5f5f5',
+                          padding: '12px',
+                          borderRadius: '4px',
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word'
+                        }}>
+                          {event.data.observations || confirmation.observations}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {(!event.data.observations && !confirmation.observations) || ((event.data.observations || confirmation.observations || '').trim() === '') && (
+                      <div style={{ 
+                        fontSize: '14px', 
+                        color: '#999',
+                        fontStyle: 'italic',
+                        marginTop: '10px'
+                      }}>
+                        Nenhuma observação registrada pelo operador.
+                      </div>
+                    )}
+                  </div>
+                </>
               ) : (
                 <>
                   {/* Operador vendo: mostrar quem foi o gestor */}

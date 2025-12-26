@@ -98,6 +98,13 @@ console.log('  - GET /api/metrics/feedback/:metricType/latest');
 console.log('📋 Rotas de histórico registradas:');
 console.log('  - GET /api/history');
 
+// Debug: Log de rotas de manager registradas
+console.log('📋 Rotas de manager registradas:');
+console.log('  - GET /api/manager/operators');
+console.log('  - GET /api/manager/history/complete');
+console.log('  - GET /api/manager/operators/:operatorId/metrics');
+console.log('  - GET /api/manager/operators/:operatorId/export/pdf');
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });

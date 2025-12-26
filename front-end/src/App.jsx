@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ManagerDashboard from './pages/ManagerDashboard';
 import HistoryPage from './pages/HistoryPage';
+import CompleteHistoryPage from './pages/CompleteHistoryPage';
 import NavigationMenu from './components/NavigationMenu';
 import './styles/App.css';
 
@@ -54,6 +55,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <HistoryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/complete-history"
+          element={
+            <ProtectedRoute>
+              {isManager ? <CompleteHistoryPage /> : <Navigate to="/dashboard" replace />}
             </ProtectedRoute>
           }
         />

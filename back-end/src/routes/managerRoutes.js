@@ -9,8 +9,9 @@ import {
   getAvailableMonths
 } from '../services/metricsService.js';
 import { getLatestIndicatorByOperatorId, getLatestFeedbackByOperatorId } from '../database.js';
-import { getManagerFeedbackByOperatorAndMonth, getOperatorById } from '../database.js';
+import { getManagerFeedbackByOperatorAndMonth, getOperatorById, getManagerFeedbacks } from '../database.js';
 import { exportToPDF } from '../services/exportService.js';
+import { getOperatorEmailById } from '../utils/operatorUtils.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -220,6 +221,13 @@ router.get('/operators/:operatorId/metrics', async (req, res) => {
     const currentYear = new Date().getFullYear();
     const managerFeedback = month ? await getManagerFeedbackByOperatorAndMonth(operatorId, month, currentYear) : null;
     
+    // Buscar confirmação do operador para o mês selecionado
+    let operatorConfirmation = null;
+    if (month && operatorEmail) {
+      const { getOperatorConfirmation } = await import('../services/operatorConfirmationsService.js');
+      operatorConfirmation = await getOperatorConfirmation(operatorEmail, month, currentYear);
+    }
+    
     if (metricsData) {
       indicators = convertMetricsToDashboardFormat(metricsData, month);
       if (indicators) {
@@ -238,6 +246,7 @@ router.get('/operators/:operatorId/metrics', async (req, res) => {
           month: month || 'atual',
           availableMonths: availableMonths,
           managerFeedback: managerFeedback || null,
+          operatorConfirmation: operatorConfirmation || null,
         });
       }
     }
@@ -257,6 +266,7 @@ router.get('/operators/:operatorId/metrics', async (req, res) => {
           team: operator.team,
         },
         managerFeedback: managerFeedback || null,
+        operatorConfirmation: operatorConfirmation || null,
       });
     }
     
@@ -271,6 +281,7 @@ router.get('/operators/:operatorId/metrics', async (req, res) => {
         team: operator.team,
       },
       managerFeedback: managerFeedback || null,
+      operatorConfirmation: operatorConfirmation || null,
     });
   } catch (error) {
     console.error('Erro ao buscar métricas do operador:', error);

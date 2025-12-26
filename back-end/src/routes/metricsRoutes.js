@@ -227,6 +227,16 @@ router.post('/feedback', async (req, res) => {
 
     const feedback = await saveAIFeedback(email, metricType, feedbackText);
     
+    // Resetar check da métrica quando um novo feedback é salvo
+    // Isso garante que cada feedback tenha um check único
+    try {
+      await setMetricCheck(email, metricType, false);
+      console.log(`✅ Check resetado para métrica ${metricType} após salvar novo feedback`);
+    } catch (checkError) {
+      console.warn(`⚠️ Erro ao resetar check (não crítico):`, checkError.message);
+      // Não bloquear o salvamento do feedback se o reset do check falhar
+    }
+    
     // Registrar ação
     await logAction(email, 'save_ai_feedback', { metricType });
 

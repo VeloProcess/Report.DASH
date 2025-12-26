@@ -10,6 +10,7 @@ import {
 } from '../services/api';
 import MetricCard from '../components/MetricCard';
 import OperatorConfirmation from '../components/OperatorConfirmation';
+import MonthComparison from '../components/MonthComparison';
 import './Dashboard.css';
 
 // Explicações das métricas
@@ -248,12 +249,6 @@ function Dashboard() {
               <p>Entre em contato com o suporte ou aguarde a notificação!</p>
             </div>
           </div>
-          
-          {/* Seção: Confirmação de Leitura - sempre mostrar */}
-          <OperatorConfirmation 
-            month={selectedMonth} 
-            year={new Date().getFullYear()} 
-          />
         </>
       ) : (
         <>
@@ -276,6 +271,7 @@ function Dashboard() {
                       
                       {/* Componente de confirmação para cada feedback individual */}
                       <OperatorConfirmation 
+                        feedbackId={feedback.id}
                         month={feedback.month} 
                         year={feedback.year} 
                       />
@@ -288,6 +284,9 @@ function Dashboard() {
           {/* Métricas - só mostrar se existirem */}
           {metrics && (
             <>
+              {/* Seção: Comparativo entre Meses - sempre mostrar quando há métricas */}
+              <MonthComparison currentMonth={selectedMonth} />
+
               {/* Seção: Atendimento */}
               <section className="metrics-section">
                 <h2>Atendimento</h2>
@@ -391,13 +390,7 @@ function Dashboard() {
                 </section>
               )}
             </>
-          )}
-
-          {/* Seção: Confirmação de Leitura - sempre mostrar */}
-          <OperatorConfirmation 
-            month={selectedMonth} 
-            year={new Date().getFullYear()} 
-          />
+              )}
         </>
       )}
     </div>

@@ -13,6 +13,7 @@ import {
   convertMetricsToDashboardFormat,
   getAvailableMonths
 } from '../services/metricsService.js';
+import { compareMonthsForTopics } from '../services/monthComparisonService.js';
 
 const router = express.Router();
 
@@ -267,6 +268,52 @@ router.get('/operator', async (req, res) => {
     console.error('Erro ao buscar dados do operador:', error);
     res.status(500).json({ 
       error: 'Erro ao buscar dados do operador',
+      details: error.message 
+    });
+  }
+});
+
+/**
+ * GET /api/dashboard/comparison
+ * Retorna comparação entre meses para os tópicos específicos
+ * Query params:
+ *   - month (opcional): "Outubro", "Novembro", "Dezembro" - mês atual para comparação
+ */
+router.get('/comparison', async (req, res) => {
+  try {
+    // Se operatorEmail for fornecido (gestor visualizando operador), usar esse email
+    // Caso contrário, usar o email do usuário autenticado
+    const email = req.query.operatorEmail || req.user.email;
+    const month = req.query.month || 'Dezembro';
+    
+    // Verificar se é gestor tentando ver outro operador
+    const isManagerViewingOperator = req.query.operatorEmail && req.user.isManager;
+    
+    console.log(`📊 Buscando comparação de meses para: ${email}, Mês: ${month}${isManagerViewingOperator ? ' (visualização de gestor)' : ''}`);
+    
+    const comparison = compareMonthsForTopics(email, month);
+    
+    console.log(`📊 Resultado da comparação:`, comparison ? 'Dados encontrados' : 'null');
+    
+    if (!comparison) {
+      console.log(`⚠️ Comparação retornou null - dados insuficientes`);
+      return res.json({
+        success: false,
+        message: 'Dados insuficientes para comparação. É necessário ter dados de pelo menos 2 meses.'
+      });
+    }
+    
+    console.log(`✅ Comparação calculada com ${Object.keys(comparison.comparison || {}).length} tópicos`);
+    
+    res.json({
+      success: true,
+      comparison
+    });
+  } catch (error) {
+    console.error('❌ Erro ao buscar comparação:', error);
+    console.error('Stack:', error.stack);
+    res.status(500).json({ 
+      error: 'Erro ao buscar comparação',
       details: error.message 
     });
   }

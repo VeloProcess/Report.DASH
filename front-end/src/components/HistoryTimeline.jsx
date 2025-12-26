@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { saveOperatorConfirmation } from '../services/api';
+import { saveOperatorConfirmation, deleteManagerFeedback } from '../services/api';
 import './HistoryTimeline.css';
 
 const ACTION_LABELS = {
@@ -14,21 +14,25 @@ const ACTION_LABELS = {
   create_snapshot: 'Snapshot criado'
 };
 
-function HistoryTimeline({ actions, metricsHistory, feedbacks, managerFeedbacks = [] }) {
+function HistoryTimeline({ actions, metricsHistory, feedbacks, managerFeedbacks = [], onFeedbackDeleted }) {
   const { user } = useAuth();
   const isManager = user?.isManager || false;
   
   // Estado para gerenciar confirmações de cada feedback
   const [confirmations, setConfirmations] = useState({});
   const [savingStates, setSavingStates] = useState({});
+  const [deletingStates, setDeletingStates] = useState({});
 
   // Inicializar confirmações quando os feedbacks mudarem
   useEffect(() => {
     const newConfirmations = {};
     managerFeedbacks.forEach(feedback => {
       const feedbackId = `${feedback.id || feedback.month}_${feedback.year}`;
+      // Garantir que confirmed seja sempre um boolean explícito
+      // Se não houver confirmação ou se for null/undefined, considerar como false
+      const isConfirmed = feedback.confirmed === true || feedback.confirmed === 1 || feedback.confirmed === 'true';
       newConfirmations[feedbackId] = {
-        understood: feedback.confirmed || false,
+        understood: isConfirmed,
         observations: feedback.observations || ''
       };
     });
@@ -57,12 +61,15 @@ function HistoryTimeline({ actions, metricsHistory, feedbacks, managerFeedbacks 
       
       const feedbackId = `${feedback.id || feedback.month}_${feedback.year}`;
       
+      // Garantir que confirmed seja sempre um boolean explícito
+      const isConfirmed = feedback.confirmed === true || feedback.confirmed === 1 || feedback.confirmed === 'true';
+      
       events.push({
         type: 'manager_feedback',
         date: new Date(feedback.created_at),
         data: feedback,
         label: label,
-        confirmed: feedback.confirmed || false,
+        confirmed: isConfirmed,
         feedbackId: feedbackId
       });
     });
@@ -73,12 +80,13 @@ function HistoryTimeline({ actions, metricsHistory, feedbacks, managerFeedbacks 
 
   const handleConfirmationChange = async (feedbackId, understood, observations = '') => {
     const feedback = managerFeedbacks.find(fb => `${fb.id || fb.month}_${fb.year}` === feedbackId);
-    if (!feedback) return;
+    if (!feedback || !feedback.id) return;
 
     setSavingStates(prev => ({ ...prev, [feedbackId]: true }));
     
     try {
       const response = await saveOperatorConfirmation(
+        feedback.id, // Usar feedback.id (número) em vez de month/year
         feedback.month,
         feedback.year,
         understood,
@@ -99,6 +107,45 @@ function HistoryTimeline({ actions, metricsHistory, feedbacks, managerFeedbacks 
     }
   };
 
+  const handleDeleteFeedback = async (feedbackId) => {
+    const feedback = managerFeedbacks.find(fb => `${fb.id || fb.month}_${fb.year}` === feedbackId);
+    if (!feedback || !feedback.id) return;
+
+    const confirmDelete = window.confirm(
+      'Tem certeza que deseja excluir este feedback? Esta ação não pode ser desfeita.'
+    );
+
+    if (!confirmDelete) return;
+
+    setDeletingStates(prev => ({ ...prev, [feedbackId]: true }));
+
+    try {
+      const response = await deleteManagerFeedback(feedback.id);
+      
+      if (response.data && response.data.success) {
+        // Chamar callback para atualizar a lista
+        if (onFeedbackDeleted) {
+          await onFeedbackDeleted();
+        }
+        
+        // Forçar atualização da página após um pequeno delay para garantir que o backend processou
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+        
+        alert('Feedback excluído com sucesso! A página será atualizada.');
+      } else {
+        throw new Error(response.data?.error || 'Erro ao excluir feedback');
+      }
+    } catch (error) {
+      console.error('Erro ao excluir feedback:', error);
+      const errorMessage = error.response?.data?.error || error.message || 'Erro ao excluir feedback. Tente novamente.';
+      alert(`Erro ao excluir feedback: ${errorMessage}`);
+    } finally {
+      setDeletingStates(prev => ({ ...prev, [feedbackId]: false }));
+    }
+  };
+
   const formatDate = (date) => {
     return new Date(date).toLocaleString('pt-BR', {
       day: '2-digit',
@@ -116,7 +163,12 @@ function HistoryTimeline({ actions, metricsHistory, feedbacks, managerFeedbacks 
         // Se o usuário é gestor, não mostrar checkbox (ele está vendo feedbacks que criou)
         // Se o usuário é operador, mostrar checkbox (ele está vendo feedbacks recebidos)
         const feedbackId = event.feedbackId;
-        const confirmation = confirmations[feedbackId] || { understood: event.confirmed || false, observations: event.data.observations || '' };
+        // Garantir que sempre use um boolean explícito para understood
+        const eventConfirmed = event.confirmed === true || event.confirmed === 1 || event.confirmed === 'true';
+        const confirmation = confirmations[feedbackId] || { 
+          understood: eventConfirmed, 
+          observations: event.data.observations || '' 
+        };
         const isSaving = savingStates[feedbackId] || false;
         
         console.log('🔍 Renderizando feedback:', { 
@@ -126,15 +178,54 @@ function HistoryTimeline({ actions, metricsHistory, feedbacks, managerFeedbacks 
           hasCheckbox: !isManager 
         });
         
+        const isDeleting = deletingStates[feedbackId] || false;
+        // Mostrar botão de excluir apenas para gestores que criaram o feedback
+        const canDelete = isManager && event.data.manager_email === user?.email;
+        
         return (
           <div className="timeline-event-content">
-            <div className="event-label">
-              {isManager && event.data.operator_name
-                ? `Feedback para ${event.data.operator_name} - ${event.data.month}/${event.data.year}`
-                : event.label
-              }
-              {!isManager && !confirmation.understood && (
-                <span className="unconfirmed-badge">⚠️ Não confirmado</span>
+            <div className="event-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                {isManager && event.data.operator_name
+                  ? `Feedback para ${event.data.operator_name} - ${event.data.month}/${event.data.year}`
+                  : event.label
+                }
+                {!isManager && !confirmation.understood && (
+                  <span className="unconfirmed-badge">⚠️ Não confirmado</span>
+                )}
+              </div>
+              {canDelete && (
+                <button
+                  onClick={() => handleDeleteFeedback(feedbackId)}
+                  disabled={isDeleting}
+                  className="btn-delete-feedback"
+                  style={{
+                    padding: '6px 12px',
+                    backgroundColor: '#e74c3c',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: isDeleting ? 'not-allowed' : 'pointer',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    opacity: isDeleting ? 0.6 : 1,
+                    transition: 'all 0.2s',
+                    marginLeft: '10px'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isDeleting) {
+                      e.target.style.backgroundColor = '#c0392b';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isDeleting) {
+                      e.target.style.backgroundColor = '#e74c3c';
+                    }
+                  }}
+                  title="Excluir feedback"
+                >
+                  {isDeleting ? 'Excluindo...' : '🗑️ Excluir'}
+                </button>
               )}
             </div>
             <div className="event-feedback">

@@ -1,0 +1,153 @@
+.month-comparison {
+  width: 100%;
+  /* Removido background e padding pois já está dentro de .metrics-section */
+}
+
+.comparison-title {
+  margin: 0 0 24px 0;
+  color: #1e293b;
+  font-size: 24px;
+  font-weight: 700;
+  border-bottom: 3px solid #2563eb;
+  padding-bottom: 12px;
+  letter-spacing: -0.01em;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comparison-subtitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  border-bottom: none;
+  padding: 0;
+}
+
+.month-comparison-loading {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+}
+
+.comparison-empty {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+  font-size: 14px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.comparison-card {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 20px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.comparison-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.comparison-card.status-up {
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+
+.comparison-card.status-down {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.comparison-card.status-maintain {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.comparison-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.comparison-header h3 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-badge.status-up {
+  background: #10b981;
+  color: white;
+}
+
+.status-badge.status-down {
+  background: #ef4444;
+  color: white;
+}
+
+.status-badge.status-maintain {
+  background: #f59e0b;
+  color: white;
+}
+
+.comparison-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+}
+
+.comparison-percent {
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  color: #1e293b;
+}
+
+.comparison-card.status-up .comparison-percent {
+  color: #10b981;
+}
+
+.comparison-card.status-down .comparison-percent {
+  color: #ef4444;
+}
+
+.comparison-card.status-maintain .comparison-percent {
+  color: #f59e0b;
+}
+
+
+@media (max-width: 768px) {
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .comparison-title {
+    font-size: 20px;
+  }
+}
+

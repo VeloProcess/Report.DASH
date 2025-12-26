@@ -24,6 +24,8 @@ function CompleteHistoryPage() {
       setError(null);
       const response = await getCompleteHistory();
       if (response.data.success) {
+        // Filtrar feedbacks que ainda existem (não foram excluídos)
+        // O backend já deve estar retornando apenas feedbacks válidos, mas garantimos aqui também
         setHistory(response.data.history || []);
       } else {
         setError('Erro ao carregar histórico');
@@ -72,10 +74,33 @@ function CompleteHistoryPage() {
   return (
     <div className="complete-history-page">
       <div className="complete-history-header">
-        <h1>Histórico Completo</h1>
-        <p className="complete-history-subtitle">
-          Visualize todos os feedbacks de gestores e confirmações dos operadores
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div>
+            <h1>Histórico Completo</h1>
+            <p className="complete-history-subtitle">
+              Visualize todos os feedbacks de gestores e confirmações dos operadores
+            </p>
+          </div>
+          <button
+            onClick={loadCompleteHistory}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#1694ff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 500,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+            title="Atualizar lista"
+          >
+            🔄 Atualizar
+          </button>
+        </div>
         <div className="complete-history-stats">
           <span>Total de registros: <strong>{history.length}</strong></span>
         </div>

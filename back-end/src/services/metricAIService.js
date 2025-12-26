@@ -1,5 +1,5 @@
 import { generateFeedback } from '../integrations/ai/aiService.js';
-import { getMetricByType, getMetricsHistory, saveAIFeedback, logAction } from './metricsSupabaseService.js';
+import { getMetricByType, getMetricsHistory, saveAIFeedback, logAction, setMetricCheck } from './metricsSupabaseService.js';
 import { getOperatorByEmail } from '../utils/operatorUtils.js';
 
 /**
@@ -185,6 +185,16 @@ O feedback deve ser direto, profissional e focado em desenvolvimento.
 
     // Salvar feedback no Supabase
     await saveAIFeedback(email, metricType, feedbackText);
+    
+    // Resetar check da métrica quando um novo feedback é gerado
+    // Isso garante que cada feedback tenha um check único
+    try {
+      await setMetricCheck(email, metricType, false);
+      console.log(`✅ Check resetado para métrica ${metricType} após gerar novo feedback`);
+    } catch (checkError) {
+      console.warn(`⚠️ Erro ao resetar check (não crítico):`, checkError.message);
+      // Não bloquear a geração do feedback se o reset do check falhar
+    }
     
     // Registrar ação
     await logAction(email, 'generate_ai_feedback', { metricType });

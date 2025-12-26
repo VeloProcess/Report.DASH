@@ -3,7 +3,10 @@ import { authenticateToken } from '../middleware/authMiddleware.js';
 import { enforceEmailFromToken } from '../middleware/emailValidationMiddleware.js';
 import { getManagerFeedbacksByOperator, getManagerFeedbacksByManager, getOperators } from '../database.js';
 import { getOperatorNameByEmail, getOperatorEmailById } from '../utils/operatorUtils.js';
-import { getOperatorConfirmation } from '../services/operatorConfirmationsService.js';
+import { 
+  getOperatorConfirmation,
+  getOperatorConfirmationByFeedbackId 
+} from '../services/operatorConfirmationsService.js';
 import { isManager } from '../utils/managerUtils.js';
 
 const router = express.Router();
@@ -98,48 +101,28 @@ router.get('/', async (req, res) => {
     // Se for operador, não filtrar - retornar TODOS os feedbacks recebidos
     console.log(`📊 Feedbacks após filtro: ${filteredFeedbacks.length} (userIsManager: ${userIsManager}, month: ${month}, year: ${year})`);
     
-    // Buscar confirmações para cada feedback
+    // Buscar confirmações para cada feedback usando feedback_id
     const feedbacksWithConfirmation = await Promise.all(
       filteredFeedbacks.map(async (feedback) => {
+        // Buscar confirmação por feedback_id (novo método)
+        const confirmation = await getOperatorConfirmationByFeedbackId(feedback.id);
+        
         if (userIsManager) {
-          // Gestor: buscar confirmação do operador que recebeu o feedback
+          // Gestor: buscar email do operador para referência
           const operatorEmail = getOperatorEmailById(feedback.operator_id);
           
-          if (operatorEmail) {
-            const confirmation = await getOperatorConfirmation(
-              operatorEmail,
-              feedback.month,
-              feedback.year
-            );
-            
-            return {
-              ...feedback,
-              operator_email: operatorEmail, // Adicionar email do operador para referência
-              confirmed: confirmation ? confirmation.understood : false,
-              confirmationDate: confirmation ? confirmation.confirmed_at : null,
-              observations: confirmation ? confirmation.observations : null
-            };
-          }
-          
-          // Se não encontrou email do operador, retornar feedback sem confirmação
           return {
             ...feedback,
-            operator_email: null,
-            confirmed: false,
-            confirmationDate: null,
-            observations: null
+            operator_email: operatorEmail || null,
+            confirmed: confirmation && confirmation.understood === true ? true : false,
+            confirmationDate: confirmation ? confirmation.confirmed_at : null,
+            observations: confirmation ? confirmation.observations : null
           };
         } else {
-          // Operador: buscar sua própria confirmação
-          const confirmation = await getOperatorConfirmation(
-            email,
-            feedback.month,
-            feedback.year
-          );
-          
+          // Operador: retornar feedback com confirmação
           return {
             ...feedback,
-            confirmed: confirmation ? confirmation.understood : false,
+            confirmed: confirmation && confirmation.understood === true ? true : false,
             confirmationDate: confirmation ? confirmation.confirmed_at : null,
             observations: confirmation ? confirmation.observations : null
           };

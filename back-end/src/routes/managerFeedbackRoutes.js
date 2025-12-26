@@ -99,15 +99,10 @@ router.get('/history/complete', async (req, res) => {
           }
         }
         
-        // Buscar confirmação do operador
+        // Buscar confirmação do operador por feedback_id
         let confirmation = null;
-        if (operatorEmail) {
-          confirmation = await getOperatorConfirmation(
-            operatorEmail,
-            feedback.month,
-            feedback.year
-          );
-        }
+        const { getOperatorConfirmationByFeedbackId } = await import('../services/operatorConfirmationsService.js');
+        confirmation = await getOperatorConfirmationByFeedbackId(feedback.id);
         
         return {
           id: feedback.id,
@@ -241,6 +236,15 @@ router.post('/feedback', async (req, res) => {
       });
     }
     
+    // Verificar se já existe um feedback para este operador/mês/ano
+    // Se existir, é uma atualização. Se não existir, é um novo feedback.
+    const existingFeedback = await getManagerFeedbackByOperatorAndMonth(
+      parseInt(operatorId),
+      month,
+      parseInt(year)
+    );
+    const isNewFeedback = !existingFeedback;
+    
     // Salvar feedback
     const feedback = await saveManagerFeedback({
       operator_id: parseInt(operatorId),
@@ -251,9 +255,13 @@ router.post('/feedback', async (req, res) => {
       manager_name: req.user.operatorName || req.user.name,
     });
     
+    // Quando um NOVO feedback é criado (não atualização), não há confirmação anterior para excluir
+    // Cada feedback terá sua própria confirmação única vinculada ao feedback_id
+    // O código do feedback será gerado automaticamente pelo trigger SQL
+    
     res.status(201).json({
       success: true,
-      message: 'Feedback salvo com sucesso',
+      message: isNewFeedback ? 'Feedback criado com sucesso' : 'Feedback atualizado com sucesso',
       feedback: feedback,
     });
   } catch (error) {
@@ -329,11 +337,13 @@ router.put('/feedback/:id', async (req, res) => {
 router.delete('/feedback/:id', async (req, res) => {
   try {
     const feedbackId = parseInt(req.params.id);
+    console.log(`🗑️ Tentando excluir feedback ID: ${feedbackId}`);
     
     const allFeedbacks = await getManagerFeedbacks();
     const feedback = allFeedbacks.find(f => f.id === feedbackId);
     
     if (!feedback) {
+      console.log(`⚠️ Feedback ID ${feedbackId} não encontrado na lista`);
       return res.status(404).json({
         error: 'Feedback não encontrado'
       });
@@ -341,19 +351,55 @@ router.delete('/feedback/:id', async (req, res) => {
     
     // Verificar se o gestor é o autor do feedback
     if (feedback.manager_email !== req.user.email) {
+      console.log(`⚠️ Tentativa de excluir feedback de outro gestor. Email do usuário: ${req.user.email}, Email do feedback: ${feedback.manager_email}`);
       return res.status(403).json({
         error: 'Você não tem permissão para excluir este feedback'
       });
     }
     
+    console.log(`✅ Permissão confirmada. Excluindo feedback ID: ${feedbackId}`);
+    
+    // Buscar email do operador antes de excluir o feedback
+    const { getOperatorEmailById } = await import('../utils/operatorUtils.js');
+    const operatorEmail = getOperatorEmailById(feedback.operator_id);
+    
+    // Excluir feedback
     const deleted = await deleteManagerFeedback(feedbackId);
     
     if (deleted) {
+      // Excluir também a confirmação do operador vinculada a este feedback
+      // Isso garante que cada feedback tenha sua própria confirmação única
+      const { deleteOperatorConfirmationByFeedbackId } = await import('../services/operatorConfirmationsService.js');
+      try {
+        const confirmationDeleted = await deleteOperatorConfirmationByFeedbackId(feedbackId);
+        if (confirmationDeleted) {
+          console.log(`✅ Confirmação do operador também foi excluída para feedback ID ${feedbackId}`);
+        } else {
+          console.warn(`⚠️ Confirmação não encontrada ou já foi excluída para feedback ID ${feedbackId}`);
+        }
+      } catch (confirmationError) {
+        console.warn(`⚠️ Erro ao excluir confirmação (não crítico):`, confirmationError.message);
+        // Não bloquear a exclusão do feedback se a confirmação não for excluída
+      }
+      
+      // Verificar se realmente foi excluído
+      const verifyFeedbacks = await getManagerFeedbacks();
+      const stillExists = verifyFeedbacks.find(f => f.id === feedbackId);
+      
+      if (stillExists) {
+        console.error(`❌ Feedback ID ${feedbackId} ainda existe após exclusão!`);
+        return res.status(500).json({
+          error: 'Erro ao excluir feedback: feedback ainda existe após tentativa de exclusão'
+        });
+      }
+      
+      console.log(`✅ Feedback ID ${feedbackId} excluído com sucesso`);
       res.json({
         success: true,
         message: 'Feedback excluído com sucesso',
       });
     } else {
+      console.error(`❌ Erro ao excluir feedback ID ${feedbackId}`);
       res.status(500).json({
         error: 'Erro ao excluir feedback'
       });

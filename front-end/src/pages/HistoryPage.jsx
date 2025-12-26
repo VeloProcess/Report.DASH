@@ -117,6 +117,7 @@ function HistoryPage() {
           metricsHistory={[]}
           feedbacks={[]}
           managerFeedbacks={managerFeedbacks}
+          onFeedbackDeleted={loadHistory}
         />
       </div>
     </div>

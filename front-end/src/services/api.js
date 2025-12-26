@@ -54,6 +54,12 @@ export const getDashboardMonths = () => api.get('/dashboard/months');
 export const getDashboardFeedback = () => api.get('/dashboard/feedback');
 export const getDashboardHistory = () => api.get('/dashboard/history');
 export const getDashboardOperator = () => api.get('/dashboard/operator');
+export const getDashboardComparison = (month = null, operatorEmail = null) => {
+  const params = {};
+  if (month) params.month = month;
+  if (operatorEmail) params.operatorEmail = operatorEmail;
+  return api.get('/dashboard/comparison', { params });
+};
 
 // Indicadores
 export const createIndicators = (data) => api.post('/feedback/indicators', data);
@@ -148,14 +154,21 @@ export const getActionHistory = (startDate = null, endDate = null, actionType = 
 };
 
 // Confirmações de Operadores
-export const getOperatorConfirmation = (month, year = null) => {
-  const params = { month };
-  if (year) params.year = year;
+export const getOperatorConfirmation = (feedbackId, month = null, year = null) => {
+  const params = {};
+  if (feedbackId) {
+    params.feedbackId = feedbackId;
+  } else {
+    // Método antigo (deprecated) - usar apenas se feedbackId não for fornecido
+    if (month) params.month = month;
+    if (year) params.year = year;
+  }
   return api.get('/operator/confirmation', { params });
 };
 
-export const saveOperatorConfirmation = (month, year, understood, observations = '') => {
+export const saveOperatorConfirmation = (feedbackId, month, year, understood, observations = '') => {
   return api.post('/operator/confirmation', {
+    feedbackId,
     month,
     year,
     understood,

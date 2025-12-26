@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getOperatorConfirmation, saveOperatorConfirmation } from '../services/api';
 import './OperatorConfirmation.css';
 
-function OperatorConfirmation({ month, year }) {
+function OperatorConfirmation({ feedbackId, month, year }) {
   // Garantir valores padrão
   const currentMonth = month || 'Dezembro';
   const currentYear = year || new Date().getFullYear();
@@ -14,14 +14,21 @@ function OperatorConfirmation({ month, year }) {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    console.log('🔍 OperatorConfirmation montado:', { month: currentMonth, year: currentYear });
-    loadConfirmation();
-  }, [currentMonth, currentYear]);
+    console.log('🔍 OperatorConfirmation montado:', { feedbackId, month: currentMonth, year: currentYear });
+    if (feedbackId) {
+      loadConfirmation();
+    }
+  }, [feedbackId, currentMonth, currentYear]);
 
   const loadConfirmation = async () => {
+    if (!feedbackId) {
+      console.warn('⚠️ feedbackId não fornecido, não é possível carregar confirmação');
+      return;
+    }
+    
     try {
       setLoading(true);
-      const response = await getOperatorConfirmation(currentMonth, currentYear);
+      const response = await getOperatorConfirmation(feedbackId);
       if (response.data.success && response.data.confirmation) {
         setUnderstood(response.data.confirmation.understood || false);
         setObservations(response.data.confirmation.observations || '');
@@ -36,9 +43,15 @@ function OperatorConfirmation({ month, year }) {
   };
 
   const handleSave = async () => {
+    if (!feedbackId) {
+      alert('Erro: ID do feedback não fornecido. Não é possível salvar a confirmação.');
+      return;
+    }
+    
     try {
       setSaving(true);
       const response = await saveOperatorConfirmation(
+        feedbackId,
         currentMonth,
         currentYear,
         understood,
@@ -57,10 +70,16 @@ function OperatorConfirmation({ month, year }) {
   };
 
   const handleUnderstoodChange = async (checked) => {
+    if (!feedbackId) {
+      console.warn('⚠️ feedbackId não fornecido, não é possível salvar confirmação');
+      return;
+    }
+    
     setUnderstood(checked);
     // Salvar automaticamente quando marcar/desmarcar
     try {
       await saveOperatorConfirmation(
+        feedbackId,
         currentMonth,
         currentYear,
         checked,
@@ -74,6 +93,7 @@ function OperatorConfirmation({ month, year }) {
   };
 
   console.log('🔍 OperatorConfirmation renderizando:', { 
+    feedbackId,
     loading, 
     understood, 
     observations, 
@@ -81,6 +101,11 @@ function OperatorConfirmation({ month, year }) {
     year: currentYear,
     componentVisible: true
   });
+  
+  // Não renderizar se não tiver feedbackId
+  if (!feedbackId) {
+    return null;
+  }
 
   // SEMPRE renderizar o componente, mesmo durante loading
   return (

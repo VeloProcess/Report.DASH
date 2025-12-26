@@ -7,6 +7,7 @@ import {
 } from '../services/api';
 import MetricCard from '../components/MetricCard';
 import ManagerFeedbackModal from '../components/ManagerFeedbackModal';
+import MonthComparison from '../components/MonthComparison';
 import './ManagerDashboard.css';
 
 // Explicações das métricas (mesmas do Dashboard)
@@ -277,6 +278,14 @@ function ManagerDashboard() {
                 </div>
               ) : (
                 <>
+                  {/* Seção: Comparativo entre Meses */}
+                  {selectedOperator && selectedOperator.email && (
+                    <MonthComparison 
+                      currentMonth={selectedMonth} 
+                      operatorEmail={selectedOperator.email}
+                    />
+                  )}
+
                   {/* Seção: Atendimento */}
                   <section className="metrics-section-content">
                     <h3>Atendimento</h3>

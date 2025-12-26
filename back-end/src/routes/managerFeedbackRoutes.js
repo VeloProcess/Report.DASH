@@ -36,6 +36,15 @@ const requireManager = (req, res, next) => {
 router.use(authenticateToken);
 router.use(requireManager);
 
+// Log de rotas registradas
+console.log('📋 Rotas de managerFeedbackRoutes registradas:');
+console.log('  - GET /api/manager/history/complete');
+console.log('  - GET /api/manager/feedback/by-id/:id');
+console.log('  - GET /api/manager/feedback/:operatorId');
+console.log('  - POST /api/manager/feedback');
+console.log('  - PUT /api/manager/feedback/:id');
+console.log('  - DELETE /api/manager/feedback/:id');
+
 /**
  * GET /api/manager/history/complete
  * Retorna histórico completo de todos os feedbacks de gestores com confirmações dos operadores
@@ -148,6 +157,44 @@ router.get('/history/complete', async (req, res) => {
 });
 
 /**
+ * GET /api/manager/feedback/by-id/:id
+ * Busca um feedback específico por ID
+ * Esta rota deve vir ANTES da rota /feedback/:operatorId para evitar conflitos
+ */
+router.get('/feedback/by-id/:id', async (req, res) => {
+  try {
+    const feedbackId = parseInt(req.params.id);
+    console.log(`📥 GET /api/manager/feedback/by-id/${feedbackId}`);
+    
+    if (!feedbackId || isNaN(feedbackId)) {
+      return res.status(400).json({
+        error: 'ID do feedback inválido'
+      });
+    }
+    
+    const allFeedbacks = await getManagerFeedbacks();
+    const feedback = allFeedbacks.find(f => f.id === feedbackId);
+    
+    if (!feedback) {
+      return res.status(404).json({
+        error: 'Feedback não encontrado'
+      });
+    }
+    
+    res.json({
+      success: true,
+      feedback: feedback
+    });
+  } catch (error) {
+    console.error('Erro ao buscar feedback por ID:', error);
+    res.status(500).json({
+      error: 'Erro ao buscar feedback',
+      details: error.message
+    });
+  }
+});
+
+/**
  * GET /api/manager/feedback/:operatorId
  * Busca feedbacks de um operador específico
  * Query params: month (opcional), year (opcional, padrão: ano atual)
@@ -156,10 +203,12 @@ router.get('/feedback/:operatorId', async (req, res) => {
   try {
     const operatorId = parseInt(req.params.operatorId);
     const { month, year } = req.query;
+    console.log(`📥 GET /api/manager/feedback/${operatorId}`, { month, year });
     
     // Verificar se operador existe
     const operator = getOperatorById(operatorId);
     if (!operator) {
+      console.log(`❌ Operador não encontrado: ${operatorId}`);
       return res.status(404).json({
         error: 'Operador não encontrado'
       });
@@ -205,6 +254,7 @@ router.get('/feedback/:operatorId', async (req, res) => {
  */
 router.post('/feedback', async (req, res) => {
   try {
+    console.log(`📥 POST /api/manager/feedback`, req.body);
     const { operatorId, month, year, feedbackText } = req.body;
     
     // Validações

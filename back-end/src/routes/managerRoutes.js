@@ -221,11 +221,12 @@ router.get('/operators/:operatorId/metrics', async (req, res) => {
     const currentYear = new Date().getFullYear();
     const managerFeedback = month ? await getManagerFeedbackByOperatorAndMonth(operatorId, month, currentYear) : null;
     
-    // Buscar confirmação do operador para o mês selecionado
+    // Buscar confirmação do operador vinculada ao feedback_id específico
     let operatorConfirmation = null;
-    if (month && operatorEmail) {
-      const { getOperatorConfirmation } = await import('../services/operatorConfirmationsService.js');
-      operatorConfirmation = await getOperatorConfirmation(operatorEmail, month, currentYear);
+    if (month && managerFeedback && managerFeedback.id) {
+      // IMPORTANTE: Buscar confirmação por feedback_id, não por email/month/year
+      const { getOperatorConfirmationByFeedbackId } = await import('../services/operatorConfirmationsService.js');
+      operatorConfirmation = await getOperatorConfirmationByFeedbackId(managerFeedback.id);
     }
     
     if (metricsData) {

@@ -297,6 +297,7 @@ export const saveManagerFeedback = async (feedback) => {
   }
   
   console.log(`💾 saveManagerFeedback chamado:`, {
+    id: feedback.id, // ID opcional para atualização
     operator_id: feedback.operator_id,
     month: feedback.month,
     year: feedback.year,
@@ -304,44 +305,67 @@ export const saveManagerFeedback = async (feedback) => {
   });
   
   try {
-    // Verificar se já existe um feedback para este operador/mês/ano
-    const { data: existingFeedback, error: checkError } = await supabase
-      .from('manager_feedbacks')
-      .select('id, feedback_code')
-      .eq('operator_id', feedback.operator_id)
-      .eq('month', feedback.month)
-      .eq('year', feedback.year)
-      .single();
-    
-    let feedbackCode = null;
-    
-    if (existingFeedback) {
-      // Se já existe, usar o código existente ou gerar um novo se não tiver
-      feedbackCode = existingFeedback.feedback_code;
+    // Se um ID foi fornecido, é uma atualização explícita
+    if (feedback.id) {
+      console.log(`🔄 Atualizando feedback existente ID: ${feedback.id}`);
+      
+      // Gerar código se não existir
+      const { data: existingFeedback } = await supabase
+        .from('manager_feedbacks')
+        .select('feedback_code')
+        .eq('id', feedback.id)
+        .single();
+      
+      let feedbackCode = existingFeedback?.feedback_code;
       if (!feedbackCode) {
-        console.log('⚠️ Feedback existente sem código, gerando...');
         feedbackCode = await generateFeedbackCode();
+        console.log(`✅ Código gerado para feedback existente: ${feedbackCode}`);
       }
-    } else {
-      // Se não existe, gerar novo código
-      feedbackCode = await generateFeedbackCode();
-      console.log(`✅ Código gerado para novo feedback: ${feedbackCode}`);
+      
+      // Atualizar feedback existente
+      const { data, error } = await supabase
+        .from('manager_feedbacks')
+        .update({
+          feedback_text: feedback.feedback_text,
+          manager_email: feedback.manager_email,
+          manager_name: feedback.manager_name,
+          feedback_code: feedbackCode,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', feedback.id)
+        .select()
+        .single();
+      
+      if (error) {
+        throw error;
+      }
+      
+      console.log(`✅ Feedback atualizado com sucesso:`, {
+        id: data?.id,
+        feedback_code: data?.feedback_code
+      });
+      
+      return data;
     }
     
-    // Usar UPSERT (INSERT ... ON CONFLICT UPDATE) para criar ou atualizar
+    // Se não há ID, sempre criar um NOVO feedback (nunca atualizar)
+    console.log(`➕ Criando novo feedback (sempre criar novo, nunca atualizar existente)`);
+    
+    // Gerar novo código
+    const feedbackCode = await generateFeedbackCode();
+    console.log(`✅ Código gerado para novo feedback: ${feedbackCode}`);
+    
+    // Sempre INSERT (criar novo), nunca UPDATE
     const { data, error } = await supabase
       .from('manager_feedbacks')
-      .upsert({
+      .insert({
         operator_id: feedback.operator_id,
         month: feedback.month,
         year: feedback.year,
         feedback_text: feedback.feedback_text,
         manager_email: feedback.manager_email,
         manager_name: feedback.manager_name,
-        feedback_code: feedbackCode, // Incluir código gerado
-      }, {
-        onConflict: 'operator_id,month,year',
-        ignoreDuplicates: false
+        feedback_code: feedbackCode,
       })
       .select()
       .single();
@@ -355,16 +379,13 @@ export const saveManagerFeedback = async (feedback) => {
         console.log('⚠️ Tentando salvar sem feedback_code (coluna pode não existir)...');
         const { data: dataWithoutCode, error: errorWithoutCode } = await supabase
           .from('manager_feedbacks')
-          .upsert({
+          .insert({
             operator_id: feedback.operator_id,
             month: feedback.month,
             year: feedback.year,
             feedback_text: feedback.feedback_text,
             manager_email: feedback.manager_email,
             manager_name: feedback.manager_name,
-          }, {
-            onConflict: 'operator_id,month,year',
-            ignoreDuplicates: false
           })
           .select()
           .single();

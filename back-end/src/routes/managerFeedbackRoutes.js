@@ -255,13 +255,13 @@ router.get('/feedback/:operatorId', async (req, res) => {
 
 /**
  * POST /api/manager/feedback
- * Cria ou atualiza feedback de um operador para um mês específico
- * Body: { operatorId, month, year, feedbackText }
+ * Cria um NOVO feedback (sempre cria novo ID) ou atualiza um feedback existente (se id for fornecido)
+ * Body: { operatorId, month, year, feedbackText, id? (opcional para atualização) }
  */
 router.post('/feedback', async (req, res) => {
   try {
     console.log(`📥 POST /api/manager/feedback`, req.body);
-    const { operatorId, month, year, feedbackText } = req.body;
+    const { operatorId, month, year, feedbackText, id } = req.body;
     
     // Validações
     if (!operatorId || !month || !year || !feedbackText) {
@@ -292,17 +292,14 @@ router.post('/feedback', async (req, res) => {
       });
     }
     
-    // Verificar se já existe um feedback para este operador/mês/ano
-    // Se existir, é uma atualização. Se não existir, é um novo feedback.
-    const existingFeedback = await getManagerFeedbackByOperatorAndMonth(
-      parseInt(operatorId),
-      month,
-      parseInt(year)
-    );
-    const isNewFeedback = !existingFeedback;
+    // Se ID foi fornecido, é uma atualização explícita
+    const isUpdate = !!id;
     
     // Salvar feedback
+    // Se id for fornecido, atualiza o feedback existente
+    // Se id não for fornecido, sempre cria um NOVO feedback (novo ID)
     const feedback = await saveManagerFeedback({
+      id: id ? parseInt(id) : undefined, // Passar ID apenas se for atualização
       operator_id: parseInt(operatorId),
       month: month,
       year: parseInt(year),
@@ -311,13 +308,27 @@ router.post('/feedback', async (req, res) => {
       manager_name: req.user.operatorName || req.user.name,
     });
     
-    // Quando um NOVO feedback é criado (não atualização), não há confirmação anterior para excluir
-    // Cada feedback terá sua própria confirmação única vinculada ao feedback_id
-    // O código do feedback será gerado automaticamente pelo trigger SQL
+    // IMPORTANTE: Sempre que um feedback é criado ou atualizado,
+    // excluir a confirmação existente para forçar uma nova confirmação do operador
+    // Isso garante que cada vez que o gestor cria/atualiza um feedback,
+    // o operador precisa confirmar novamente
+    if (feedback && feedback.id) {
+      try {
+        const { deleteOperatorConfirmationByFeedbackId } = await import('../services/operatorConfirmationsService.js');
+        const confirmationDeleted = await deleteOperatorConfirmationByFeedbackId(feedback.id);
+        if (confirmationDeleted) {
+          console.log(`✅ Confirmação do feedback (ID ${feedback.id}) excluída para forçar nova confirmação após ${isUpdate ? 'atualização' : 'criação'} do feedback`);
+        } else {
+          console.log(`ℹ️ Nenhuma confirmação existente para feedback ID ${feedback.id} (normal para feedback novo)`);
+        }
+      } catch (confirmationError) {
+        console.warn(`⚠️ Erro ao excluir confirmação (não crítico):`, confirmationError.message);
+      }
+    }
     
     res.status(201).json({
       success: true,
-      message: isNewFeedback ? 'Feedback criado com sucesso' : 'Feedback atualizado com sucesso',
+      message: isUpdate ? 'Feedback atualizado com sucesso' : 'Feedback criado com sucesso',
       feedback: feedback,
     });
   } catch (error) {

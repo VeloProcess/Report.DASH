@@ -6,7 +6,8 @@ import {
   getDashboardOperator,
   getDashboardMonths,
   exportPDF,
-  getOperatorFeedbacks
+  getOperatorFeedbacks,
+  getThreeMonthsFeedback
 } from '../services/api';
 import MetricCard from '../components/MetricCard';
 import OperatorConfirmation from '../components/OperatorConfirmation';
@@ -44,11 +45,13 @@ const METRIC_EXPLANATIONS = {
 };
 
 function Dashboard() {
-  const { user, handleLogout } = useAuth();
+  const { user, handleLogout, loading: authLoading } = useAuth();
   const [metrics, setMetrics] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [operator, setOperator] = useState(null);
   const [managerFeedbacks, setManagerFeedbacks] = useState([]);
+  const [threeMonthsFeedback, setThreeMonthsFeedback] = useState(null);
+  const [loadingThreeMonthsFeedback, setLoadingThreeMonthsFeedback] = useState(false);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState({ pdf: false });
   // Meses fixos disponíveis
@@ -56,14 +59,57 @@ function Dashboard() {
   const [selectedMonth, setSelectedMonth] = useState('Dezembro'); // Padrão: Dezembro (mês vigente)
   const [availableMonths, setAvailableMonths] = useState(FIXED_MONTHS);
 
+  // Log quando user muda
+  useEffect(() => {
+    console.log('👤 User mudou no Dashboard:', { 
+      hasUser: !!user, 
+      email: user?.email, 
+      authLoading 
+    });
+  }, [user, authLoading]);
+
   useEffect(() => {
     // Tentar carregar meses da API, mas usar os fixos como fallback
     loadAvailableMonths();
   }, []);
 
   useEffect(() => {
-    loadDashboardData();
-  }, [user, selectedMonth]);
+    console.log('🔄 useEffect Dashboard - authLoading:', authLoading, 'user:', user?.email, 'selectedMonth:', selectedMonth);
+    if (!authLoading && user?.email) {
+      console.log('✅ Usuário disponível, carregando dados...');
+      loadDashboardData();
+      loadThreeMonthsFeedback();
+    } else if (!authLoading && !user?.email) {
+      console.warn('⚠️ Usuário não disponível no useEffect (authLoading:', authLoading, ', user:', user, ')');
+    }
+  }, [user, selectedMonth, authLoading]);
+  
+  const loadThreeMonthsFeedback = async () => {
+    if (!user?.email) {
+      console.warn('⚠️ Usuário não disponível para carregar feedback de 3 meses');
+      return;
+    }
+    
+    setLoadingThreeMonthsFeedback(true);
+    try {
+      console.log('🔄 Carregando feedback de 3 meses para:', user.email);
+      const response = await getThreeMonthsFeedback(user.email);
+      console.log('📥 Resposta do feedback de 3 meses:', response.data);
+      if (response.data && response.data.success) {
+        console.log('✅ Feedback de 3 meses carregado:', response.data.feedback?.substring(0, 100));
+        setThreeMonthsFeedback(response.data.feedback);
+      } else {
+        console.warn('⚠️ Resposta sem success ou sem feedback:', response.data);
+        setThreeMonthsFeedback(null);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao carregar feedback de 3 meses:', error);
+      console.error('❌ Detalhes do erro:', error.response?.data || error.message);
+      setThreeMonthsFeedback(null);
+    } finally {
+      setLoadingThreeMonthsFeedback(false);
+    }
+  };
 
   const loadAvailableMonths = async () => {
     try {
@@ -164,6 +210,94 @@ function Dashboard() {
     return null;
   };
 
+  // Função para formatar o texto do feedback de IA (converte markdown simples para HTML)
+  const formatAIFeedback = (text) => {
+    if (!text) return '';
+    
+    // Dividir por linhas
+    const lines = text.split('\n');
+    const formatted = [];
+    
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      
+      // Linha vazia
+      if (!trimmedLine) {
+        formatted.push(<br key={`br-${index}`} />);
+        return;
+      }
+      
+      // Detectar títulos/seções (linhas que começam com emoji e texto em negrito)
+      const titleMatch = trimmedLine.match(/^([📊✅⚠️➡️🎯])\s*\*\*(.+?)\*\*/);
+      if (titleMatch) {
+        const [, emoji, title] = titleMatch;
+        formatted.push(
+          <div key={`title-${index}`} className="ai-feedback-section-title">
+            <span className="ai-feedback-emoji">{emoji}</span>
+            <strong className="ai-feedback-title">{title}</strong>
+          </div>
+        );
+        return;
+      }
+      
+      // Detectar texto em negrito (**texto**)
+      const boldMatch = trimmedLine.match(/\*\*(.+?)\*\*/);
+      if (boldMatch && trimmedLine.startsWith('**')) {
+        // Linha inteira em negrito (título)
+        formatted.push(
+          <div key={`bold-${index}`} className="ai-feedback-bold-line">
+            <strong>{trimmedLine.replace(/\*\*/g, '')}</strong>
+          </div>
+        );
+        return;
+      }
+      
+      // Processar texto com negrito inline
+      const parts = [];
+      let currentIndex = 0;
+      const boldRegex = /\*\*(.+?)\*\*/g;
+      let match;
+      let lastIndex = 0;
+      
+      while ((match = boldRegex.exec(trimmedLine)) !== null) {
+        // Texto antes do negrito
+        if (match.index > lastIndex) {
+          parts.push(trimmedLine.substring(lastIndex, match.index));
+        }
+        // Texto em negrito
+        parts.push(<strong key={`bold-${index}-${match.index}`}>{match[1]}</strong>);
+        lastIndex = match.index + match[0].length;
+      }
+      
+      // Texto restante
+      if (lastIndex < trimmedLine.length) {
+        parts.push(trimmedLine.substring(lastIndex));
+      }
+      
+      // Se não encontrou nenhum negrito, usar o texto original
+      if (parts.length === 0) {
+        parts.push(trimmedLine);
+      }
+      
+      // Detectar se é um item de lista (começa com - ou •)
+      if (trimmedLine.startsWith('-') || trimmedLine.startsWith('•')) {
+        formatted.push(
+          <div key={`item-${index}`} className="ai-feedback-item">
+            {parts}
+          </div>
+        );
+      } else {
+        formatted.push(
+          <p key={`para-${index}`} className="ai-feedback-paragraph">
+            {parts}
+          </p>
+        );
+      }
+    });
+    
+    return formatted;
+  };
+
   const renderMetricCard = (key, label, value, isPercentage = false) => {
     if (value === null || value === undefined || value === '') return null;
     
@@ -179,7 +313,7 @@ function Dashboard() {
     );
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="dashboard">
         <div className="dashboard-loading">Carregando...</div>
@@ -390,7 +524,27 @@ function Dashboard() {
                 </section>
               )}
             </>
-              )}
+          )}
+
+          {/* Seção: Feedback de IA dos Últimos 3 Meses - Aparece após todas as métricas e confirmações */}
+          {user?.email && (
+            <section className="feedback-section ai-feedback-section">
+              <h2>🤖 Análise de IA - Últimos 3 Meses</h2>
+              <div className="feedback-content">
+                <div className="feedback-item ai-feedback">
+                  {loadingThreeMonthsFeedback ? (
+                    <p>Carregando análise...</p>
+                  ) : threeMonthsFeedback ? (
+                    <div className="ai-feedback-text">
+                      {formatAIFeedback(threeMonthsFeedback)}
+                    </div>
+                  ) : (
+                    <p>Não foi possível carregar a análise. Verifique o console para mais detalhes.</p>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
         </>
       )}
     </div>

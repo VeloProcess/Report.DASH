@@ -60,6 +60,12 @@ export const getDashboardComparison = (month = null, operatorEmail = null) => {
   if (operatorEmail) params.operatorEmail = operatorEmail;
   return api.get('/dashboard/comparison', { params });
 };
+export const getThreeMonthsFeedback = (operatorEmail = null, forceRegenerate = false) => {
+  const params = {};
+  if (operatorEmail) params.operatorEmail = operatorEmail;
+  if (forceRegenerate) params.forceRegenerate = 'true';
+  return api.get('/dashboard/three-months-feedback', { params });
+};
 
 // Indicadores
 export const createIndicators = (data) => api.post('/feedback/indicators', data);

@@ -42,6 +42,44 @@ const escapeHtml = (text) => {
     .replace(/'/g, '&#039;');
 };
 
+// Função para processar feedback de 3 meses removendo markdown e formatando
+const processThreeMonthsFeedback = (text) => {
+  if (!text) return '';
+  
+  let processed = String(text);
+  
+  // Remover emojis e caracteres especiais problemáticos
+  processed = processed.replace(/[🤖📊✅⚠️➡️🎯]/g, '');
+  
+  // Remover markdown bold (**texto**)
+  processed = processed.replace(/\*\*(.*?)\*\*/g, '$1');
+  
+  // Converter seções markdown em texto simples (case insensitive)
+  processed = processed.replace(/\*\*Análise Comparativa dos Últimos 3 Meses\*\*/gi, '\nANÁLISE COMPARATIVA DOS ÚLTIMOS 3 MESES\n');
+  processed = processed.replace(/\*\*Quesitos em Melhoria:\*\*/gi, '\nQUESITOS EM MELHORIA:\n');
+  processed = processed.replace(/\*\*Quesitos que Precisam de Atenção:\*\*/gi, '\nQUESITOS QUE PRECISAM DE ATENÇÃO:\n');
+  processed = processed.replace(/\*\*Quesitos Mantidos:\*\*/gi, '\nQUESITOS MANTIDOS:\n');
+  processed = processed.replace(/\*\*Recomendações para o Próximo Mês:\*\*/gi, '\nRECOMENDAÇÕES PARA O PRÓXIMO MÊS:\n');
+  
+  // Remover caracteres de controle e caracteres não imprimíveis (exceto quebras de linha e tabs)
+  processed = processed.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x9F]/g, '');
+  
+  // Limpar múltiplas quebras de linha
+  processed = processed.replace(/\n{3,}/g, '\n\n');
+  
+  // Processar linhas: remover espaços extras e normalizar
+  processed = processed.split('\n').map(line => {
+    let cleaned = line.trim();
+    // Remover caracteres problemáticos que podem aparecer
+    cleaned = cleaned.replace(/[ØÝÜÊþ¡ß¯]/g, '');
+    // Normalizar espaços múltiplos
+    cleaned = cleaned.replace(/\s+/g, ' ');
+    return cleaned;
+  }).filter(line => line.length > 0).join('\n');
+  
+  return processed.trim();
+};
+
 // Gerar PDF do feedback usando PDFKit (mais estável no Windows)
 export const generateFeedbackPDF = async (operator, feedback) => {
   return new Promise((resolve, reject) => {
@@ -178,7 +216,7 @@ export const generateFeedbackPDF = async (operator, feedback) => {
  * @param {Object} managerFeedback - Feedback do gestor (opcional)
  * @returns {Promise<Buffer>} Buffer do PDF
  */
-export const generateMetricsPDF = async (operator, indicators, month = null, managerFeedback = null, aiFeedbacks = null) => {
+export const generateMetricsPDF = async (operator, indicators, month = null, managerFeedback = null, aiFeedbacks = null, threeMonthsFeedback = null) => {
   return new Promise((resolve, reject) => {
     try {
       const chunks = [];
@@ -397,6 +435,67 @@ export const generateMetricsPDF = async (operator, indicators, month = null, man
             width: doc.page.width - 100
           });
         });
+        doc.moveDown();
+      }
+
+      // Seção: Feedback de IA dos Últimos 3 Meses
+      if (threeMonthsFeedback) {
+        doc.moveDown();
+        doc.fontSize(16).font('Helvetica-Bold').fillColor(COLORS.blueDark).text('ANÁLISE DE IA - ÚLTIMOS 3 MESES');
+        doc.fillColor(COLORS.black);
+        doc.moveDown(0.5);
+        
+        // Processar texto removendo markdown e formatando adequadamente
+        const processedFeedback = processThreeMonthsFeedback(threeMonthsFeedback);
+        
+        // Texto do feedback de 3 meses formatado
+        doc.fontSize(11).font('Helvetica');
+        const lines = processedFeedback.split('\n');
+        
+        lines.forEach((line) => {
+          const trimmedLine = line.trim();
+          
+          if (!trimmedLine) {
+            doc.moveDown(0.3);
+            return;
+          }
+          
+          // Verificar se precisa de nova página antes de adicionar linha
+          if (doc.y > doc.page.height - 100) {
+            doc.addPage();
+          }
+          
+          // Detectar seções principais (títulos)
+          const upperLine = trimmedLine.toUpperCase();
+          if (upperLine.startsWith('ANÁLISE COMPARATIVA') || 
+              upperLine.startsWith('QUESITOS EM MELHORIA') ||
+              upperLine.startsWith('QUESITOS QUE PRECISAM DE ATENÇÃO') ||
+              upperLine.startsWith('QUESITOS MANTIDOS') ||
+              upperLine.startsWith('RECOMENDAÇÕES PARA O PRÓXIMO MÊS')) {
+            doc.moveDown(0.5);
+            doc.fontSize(13).font('Helvetica-Bold').fillColor(COLORS.blue1);
+            doc.text(trimmedLine, { indent: 20 });
+            doc.fontSize(11).font('Helvetica').fillColor(COLORS.black);
+            doc.moveDown(0.4);
+          } else if (trimmedLine.match(/^[-•]\s/) || trimmedLine.match(/^\d+[\.\)]\s/)) {
+            // Item de lista
+            doc.text(trimmedLine, {
+              indent: 30,
+              align: 'left',
+              width: doc.page.width - 120
+            });
+            doc.moveDown(0.2);
+          } else {
+            // Texto normal
+            doc.text(trimmedLine, {
+              indent: 20,
+              align: 'justify',
+              width: doc.page.width - 100
+            });
+            doc.moveDown(0.2);
+          }
+        });
+        
         doc.moveDown();
       }
 

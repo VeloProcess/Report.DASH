@@ -325,6 +325,85 @@
   box-shadow: 0 0 0 3px rgba(22, 148, 255, 0.1);
 }
 
+/* Estilos específicos para feedback de IA */
+.ai-feedback-section {
+  margin-top: 32px;
+}
+
+.ai-feedback-text {
+  line-height: 1.8;
+  color: #334155;
+  font-size: 15px;
+}
+
+.ai-feedback-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 24px 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.ai-feedback-section-title:first-child {
+  margin-top: 0;
+}
+
+.ai-feedback-emoji {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.ai-feedback-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+}
+
+.ai-feedback-paragraph {
+  margin: 12px 0;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.ai-feedback-paragraph strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.ai-feedback-item {
+  margin: 10px 0;
+  padding-left: 20px;
+  position: relative;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.ai-feedback-item::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #64748b;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.ai-feedback-item strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.ai-feedback-bold-line {
+  margin: 16px 0;
+  font-size: 16px;
+}
+
+.ai-feedback-bold-line strong {
+  color: #1e293b;
+  font-weight: 700;
+}
+
 @media (max-width: 1024px) {
   .manager-content {
     grid-template-columns: 1fr;

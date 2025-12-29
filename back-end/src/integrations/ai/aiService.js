@@ -1,5 +1,6 @@
 import Groq from 'groq-sdk';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
 import dotenv from 'dotenv';
 import { getIndicators } from '../../database.js';
 
@@ -52,6 +53,29 @@ if (geminiApiKey) {
 }
 
 const gemini = geminiApiKey ? new GoogleGenerativeAI(geminiApiKey) : null;
+
+// Configurar OpenAI (Fallback 2)
+let openaiApiKey = process.env.OPENAI_API_KEY;
+console.log('🔍 DEBUG: Verificando OPENAI_API_KEY...');
+console.log('🔍 DEBUG: Tipo:', typeof openaiApiKey);
+console.log('🔍 DEBUG: Valor raw:', openaiApiKey ? openaiApiKey.substring(0, 20) + '...' : 'undefined/null');
+
+if (openaiApiKey) {
+  openaiApiKey = openaiApiKey.trim().replace(/\s+/g, '').replace(/['"]/g, '');
+  if (openaiApiKey && openaiApiKey.length > 10) {
+    console.log('✅ Chave do OpenAI processada. Tamanho:', openaiApiKey.length, 'caracteres');
+    console.log('✅ Primeiros caracteres:', openaiApiKey.substring(0, 10) + '...');
+  } else {
+    console.error('❌ OPENAI_API_KEY está vazia ou inválida após processamento');
+    openaiApiKey = null;
+  }
+} else {
+  console.warn('⚠️ OPENAI_API_KEY não configurada no .env (opcional)');
+}
+
+const openai = openaiApiKey && openaiApiKey.length > 10 ? new OpenAI({
+  apiKey: openaiApiKey,
+}) : null;
 
 // Função para converter tempo hh:mm:ss para segundos
 const timeToSeconds = (timeStr) => {
@@ -220,6 +244,33 @@ const generateWithGemini = async (prompt, systemPrompt) => {
   return response.text();
 };
 
+// Função para gerar feedback usando OpenAI (Fallback 2)
+const generateWithOpenAI = async (prompt, systemPrompt) => {
+  if (!openai || !openaiApiKey) {
+    throw new Error('OpenAI não configurado');
+  }
+
+  console.log('🤖 Tentando gerar feedback com OpenAI (fallback 2)...');
+  
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      {
+        role: 'system',
+        content: systemPrompt,
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ],
+    temperature: 0.3,
+    response_format: { type: 'json_object' },
+  });
+
+  return completion.choices[0].message.content;
+};
+
 // Função para formatar array de métricas em texto
 const formatMetricsArray = (metricsArray) => {
   const sections = {
@@ -314,12 +365,16 @@ export const generateFeedback = async (operatorData, indicators, monthComparison
     console.log('🔍 DEBUG: Verificando APIs antes de gerar feedback...');
     console.log('🔍 DEBUG: groqApiKey existe?', !!groqApiKey);
     console.log('🔍 DEBUG: geminiApiKey existe?', !!geminiApiKey);
+    console.log('🔍 DEBUG: openaiApiKey existe?', !!openaiApiKey);
     
-    if (!groqApiKey && !geminiApiKey) {
+    if (!groqApiKey && !geminiApiKey && !openaiApiKey) {
       console.error('❌ Nenhuma API configurada!');
       console.error('💡 Verifique o arquivo back-end/.env');
-      console.error('💡 Certifique-se de que as linhas GROQ_API_KEY=... e/ou GEMINI_API_KEY=... estão presentes');
-      throw new Error('Nenhuma API de IA configurada. Configure GROQ_API_KEY ou GEMINI_API_KEY no arquivo .env (pasta back-end/).');
+      console.error('💡 Certifique-se de que pelo menos uma das linhas está presente:');
+      console.error('💡   - GROQ_API_KEY=...');
+      console.error('💡   - GEMINI_API_KEY=...');
+      console.error('💡   - OPENAI_API_KEY=...');
+      throw new Error('Nenhuma API de IA configurada. Configure pelo menos uma API no arquivo .env (pasta back-end/).');
     }
 
     // Calcular médias de todos os operadores
@@ -478,7 +533,21 @@ ${monthComparison ? 'IMPORTANTE: Inclua comparação com meses anteriores no fee
         }
       } catch (geminiError) {
         console.error('❌ Erro ao gerar com Gemini:', geminiError.message);
-        throw new Error(`Erro ao gerar feedback: Groq falhou (${groqError.message}) e Gemini falhou (${geminiError.message})`);
+        console.log('🔄 Tentando fallback com OpenAI...');
+        
+        // Fallback para OpenAI
+        try {
+          if (openaiApiKey) {
+            responseContent = await generateWithOpenAI(prompt, systemPrompt);
+            usedProvider = 'OpenAI';
+            console.log('✅ Feedback gerado com sucesso usando OpenAI (fallback 2)');
+          } else {
+            throw new Error('OpenAI não configurado');
+          }
+        } catch (openaiError) {
+          console.error('❌ Erro ao gerar com OpenAI:', openaiError.message);
+          throw new Error(`Erro ao gerar feedback: Groq falhou (${groqError.message}), Gemini falhou (${geminiError.message}) e OpenAI falhou (${openaiError.message})`);
+        }
       }
     }
 

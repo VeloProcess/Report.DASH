@@ -4,6 +4,7 @@ import ExcelJS from 'exceljs';
 import { getOperatorByEmail } from '../utils/operatorUtils.js';
 import { getMetricsByEmail, convertMetricsToDashboardFormat } from './metricsService.js';
 import { getMetrics as getSupabaseMetrics, getAIFeedbacks } from './metricsSupabaseService.js';
+import { generateThreeMonthsFeedbackDirect } from './threeMonthsAIService.js';
 
 /**
  * Exporta dados do operador autenticado em formato PDF
@@ -57,7 +58,17 @@ export const exportToPDF = async (userData, month = null) => {
         const indicators = convertSupabaseMetricsToDashboardFormat(supabaseMetrics);
         if (indicators) {
           console.log('✅ Métricas do Supabase convertidas, gerando PDF...');
-          return await generateMetricsPDF(operator, indicators, month, managerFeedback, aiFeedbacks);
+          
+          // Buscar feedback de 3 meses
+          let threeMonthsFeedback = null;
+          try {
+            threeMonthsFeedback = await generateThreeMonthsFeedbackDirect(userData.email);
+            console.log('✅ Feedback de 3 meses gerado para PDF');
+          } catch (error) {
+            console.warn('⚠️ Erro ao gerar feedback de 3 meses para PDF (não crítico):', error.message);
+          }
+          
+          return await generateMetricsPDF(operator, indicators, month, managerFeedback, aiFeedbacks, threeMonthsFeedback);
         }
       } else {
         console.log('⚠️ Nenhuma métrica encontrada no Supabase');
@@ -75,7 +86,17 @@ export const exportToPDF = async (userData, month = null) => {
       if (indicators) {
         console.log('✅ Métricas convertidas com sucesso, gerando PDF...');
         console.log(`📊 Métricas disponíveis: ${Object.keys(indicators).filter(k => indicators[k] !== null).length} campos`);
-        return await generateMetricsPDF(operator, indicators, month, managerFeedback);
+        
+        // Buscar feedback de 3 meses
+        let threeMonthsFeedback = null;
+        try {
+          threeMonthsFeedback = await generateThreeMonthsFeedbackDirect(userData.email);
+          console.log('✅ Feedback de 3 meses gerado para PDF');
+        } catch (error) {
+          console.warn('⚠️ Erro ao gerar feedback de 3 meses para PDF (não crítico):', error.message);
+        }
+        
+        return await generateMetricsPDF(operator, indicators, month, managerFeedback, null, threeMonthsFeedback);
       } else {
         console.log('⚠️ Métricas encontradas mas conversão retornou null');
       }

@@ -14,6 +14,7 @@ import {
   getAvailableMonths
 } from '../services/metricsService.js';
 import { compareMonthsForTopics } from '../services/monthComparisonService.js';
+import { generateThreeMonthsFeedbackDirect } from '../services/threeMonthsAIService.js';
 
 const router = express.Router();
 
@@ -315,6 +316,39 @@ router.get('/comparison', async (req, res) => {
     res.status(500).json({ 
       error: 'Erro ao buscar comparação',
       details: error.message 
+    });
+  }
+});
+
+/**
+ * GET /api/dashboard/three-months-feedback
+ * Retorna feedback de IA dos últimos 3 meses do operador
+ * Query params:
+ *   - operatorEmail (opcional): Email do operador (para gestores visualizando outro operador)
+ *   - forceRegenerate (opcional): true para forçar regeneração do feedback
+ */
+router.get('/three-months-feedback', async (req, res) => {
+  try {
+    // Se operatorEmail for fornecido (gestor visualizando operador), usar esse email
+    // Caso contrário, usar o email do usuário autenticado
+    const email = req.query.operatorEmail || req.user.email;
+    const forceRegenerate = req.query.forceRegenerate === 'true';
+    
+    console.log(`📥 GET /api/dashboard/three-months-feedback - Email: ${email}, ForceRegenerate: ${forceRegenerate}`);
+    
+    // Gerar feedback de 3 meses
+    const feedback = await generateThreeMonthsFeedbackDirect(email);
+    
+    res.json({
+      success: true,
+      feedback: feedback,
+      email: email
+    });
+  } catch (error) {
+    console.error('❌ Erro ao gerar feedback de 3 meses:', error);
+    res.status(500).json({
+      error: 'Erro ao gerar feedback de 3 meses',
+      details: error.message
     });
   }
 });

@@ -3,7 +3,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { 
   getManagerOperators,
   getManagerOperatorMetrics,
-  exportManagerPDF
+  exportManagerPDF,
+  getThreeMonthsFeedback
 } from '../services/api';
 import MetricCard from '../components/MetricCard';
 import ManagerFeedbackModal from '../components/ManagerFeedbackModal';
@@ -48,6 +49,8 @@ function ManagerDashboard() {
   const [selectedOperator, setSelectedOperator] = useState(null);
   const [metrics, setMetrics] = useState(null);
   const [operatorConfirmation, setOperatorConfirmation] = useState(null);
+  const [threeMonthsFeedback, setThreeMonthsFeedback] = useState(null);
+  const [loadingThreeMonthsFeedback, setLoadingThreeMonthsFeedback] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingMetrics, setLoadingMetrics] = useState(false);
   const [exporting, setExporting] = useState({ pdf: false });
@@ -66,8 +69,38 @@ function ManagerDashboard() {
   useEffect(() => {
     if (selectedOperator) {
       loadOperatorMetrics();
+      loadThreeMonthsFeedback();
+    } else {
+      setThreeMonthsFeedback(null);
     }
   }, [selectedOperator, selectedMonth]);
+
+  const loadThreeMonthsFeedback = async () => {
+    if (!selectedOperator?.email) {
+      console.warn('⚠️ Operador não disponível para carregar feedback de 3 meses');
+      return;
+    }
+    
+    setLoadingThreeMonthsFeedback(true);
+    try {
+      console.log('🔄 Carregando feedback de 3 meses para:', selectedOperator.email);
+      const response = await getThreeMonthsFeedback(selectedOperator.email);
+      console.log('📥 Resposta do feedback de 3 meses:', response.data);
+      if (response.data && response.data.success) {
+        console.log('✅ Feedback de 3 meses carregado:', response.data.feedback?.substring(0, 100));
+        setThreeMonthsFeedback(response.data.feedback);
+      } else {
+        console.warn('⚠️ Resposta sem success ou sem feedback:', response.data);
+        setThreeMonthsFeedback(null);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao carregar feedback de 3 meses:', error);
+      console.error('❌ Detalhes do erro:', error.response?.data || error.message);
+      setThreeMonthsFeedback(null);
+    } finally {
+      setLoadingThreeMonthsFeedback(false);
+    }
+  };
 
   const loadOperators = async () => {
     setLoading(true);
@@ -135,6 +168,94 @@ function ManagerDashboard() {
     } finally {
       setExporting({ pdf: false });
     }
+  };
+
+  // Função para formatar o texto do feedback de IA (converte markdown simples para HTML)
+  const formatAIFeedback = (text) => {
+    if (!text) return '';
+    
+    // Dividir por linhas
+    const lines = text.split('\n');
+    const formatted = [];
+    
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      
+      // Linha vazia
+      if (!trimmedLine) {
+        formatted.push(<br key={`br-${index}`} />);
+        return;
+      }
+      
+      // Detectar títulos/seções (linhas que começam com emoji e texto em negrito)
+      const titleMatch = trimmedLine.match(/^([📊✅⚠️➡️🎯])\s*\*\*(.+?)\*\*/);
+      if (titleMatch) {
+        const [, emoji, title] = titleMatch;
+        formatted.push(
+          <div key={`title-${index}`} className="ai-feedback-section-title">
+            <span className="ai-feedback-emoji">{emoji}</span>
+            <strong className="ai-feedback-title">{title}</strong>
+          </div>
+        );
+        return;
+      }
+      
+      // Detectar texto em negrito (**texto**)
+      const boldMatch = trimmedLine.match(/\*\*(.+?)\*\*/);
+      if (boldMatch && trimmedLine.startsWith('**')) {
+        // Linha inteira em negrito (título)
+        formatted.push(
+          <div key={`bold-${index}`} className="ai-feedback-bold-line">
+            <strong>{trimmedLine.replace(/\*\*/g, '')}</strong>
+          </div>
+        );
+        return;
+      }
+      
+      // Processar texto com negrito inline
+      const parts = [];
+      let currentIndex = 0;
+      const boldRegex = /\*\*(.+?)\*\*/g;
+      let match;
+      let lastIndex = 0;
+      
+      while ((match = boldRegex.exec(trimmedLine)) !== null) {
+        // Texto antes do negrito
+        if (match.index > lastIndex) {
+          parts.push(trimmedLine.substring(lastIndex, match.index));
+        }
+        // Texto em negrito
+        parts.push(<strong key={`bold-${index}-${match.index}`}>{match[1]}</strong>);
+        lastIndex = match.index + match[0].length;
+      }
+      
+      // Texto restante
+      if (lastIndex < trimmedLine.length) {
+        parts.push(trimmedLine.substring(lastIndex));
+      }
+      
+      // Se não encontrou nenhum negrito, usar o texto original
+      if (parts.length === 0) {
+        parts.push(trimmedLine);
+      }
+      
+      // Detectar se é um item de lista (começa com - ou •)
+      if (trimmedLine.startsWith('-') || trimmedLine.startsWith('•')) {
+        formatted.push(
+          <div key={`item-${index}`} className="ai-feedback-item">
+            {parts}
+          </div>
+        );
+      } else {
+        formatted.push(
+          <p key={`para-${index}`} className="ai-feedback-paragraph">
+            {parts}
+          </p>
+        );
+      }
+    });
+    
+    return formatted;
   };
 
   const renderMetricCard = (key, label, value, isPercentage = false) => {
@@ -453,6 +574,26 @@ function ManagerDashboard() {
                       )}
                     </div>
                   </section>
+
+                  {/* Seção: Feedback de IA dos Últimos 3 Meses - Aparece após todas as métricas e confirmações */}
+                  {selectedOperator?.email && (threeMonthsFeedback || loadingThreeMonthsFeedback) && (
+                    <section className="feedback-section ai-feedback-section">
+                      <h2>🤖 Análise de IA - Últimos 3 Meses</h2>
+                      <div className="feedback-content">
+                        <div className="feedback-item ai-feedback">
+                          {loadingThreeMonthsFeedback ? (
+                            <p>Carregando análise...</p>
+                          ) : threeMonthsFeedback ? (
+                            <div className="ai-feedback-text">
+                              {formatAIFeedback(threeMonthsFeedback)}
+                            </div>
+                          ) : (
+                            <p>Não foi possível carregar a análise. Verifique o console para mais detalhes.</p>
+                          )}
+                        </div>
+                      </div>
+                    </section>
+                  )}
                 </>
               )}
             </>

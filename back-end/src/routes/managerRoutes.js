@@ -120,6 +120,9 @@ const getAllOperatorsComplete = () => {
   return allOperators;
 };
 
+// Exportar função para uso em outras rotas
+export { getAllOperatorsComplete };
+
 const router = express.Router();
 
 // Middleware para verificar se é gestor

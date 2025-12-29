@@ -82,8 +82,22 @@ app.use('/api/export', exportRoutes);
 app.use('/api/sheets', googleSheetsRoutes);
 // IMPORTANTE: managerFeedbackRoutes deve vir ANTES de managerRoutes para evitar conflitos
 // pois managerFeedbackRoutes tem rotas mais específicas (/feedback/:operatorId)
-app.use('/api/manager', managerFeedbackRoutes);
-app.use('/api/manager', managerRoutes);
+console.log('🔍 Registrando managerFeedbackRoutes...');
+console.log('🔍 Tipo:', typeof managerFeedbackRoutes);
+if (managerFeedbackRoutes) {
+  app.use('/api/manager', managerFeedbackRoutes);
+  console.log('✅ managerFeedbackRoutes registrado');
+} else {
+  console.error('❌ managerFeedbackRoutes não está definido!');
+}
+
+console.log('🔍 Registrando managerRoutes...');
+if (managerRoutes) {
+  app.use('/api/manager', managerRoutes);
+  console.log('✅ managerRoutes registrado');
+} else {
+  console.error('❌ managerRoutes não está definido!');
+}
 app.use('/api/metrics', metricsRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/operator/confirmation', operatorConfirmationsRoutes);
@@ -111,6 +125,18 @@ console.log('  - DELETE /api/manager/feedback/:id');
 console.log('  - GET /api/manager/operators');
 console.log('  - GET /api/manager/operators/:operatorId/metrics');
 console.log('  - GET /api/manager/operators/:operatorId/export/pdf');
+
+// Middleware catch-all para debug (deve vir DEPOIS de todas as rotas)
+app.use((req, res, next) => {
+  console.log(`⚠️ Rota não encontrada: ${req.method} ${req.path}`);
+  console.log(`⚠️ Headers:`, req.headers);
+  res.status(404).json({
+    error: 'Rota não encontrada',
+    method: req.method,
+    path: req.path,
+    message: `A rota ${req.method} ${req.path} não foi encontrada`
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);

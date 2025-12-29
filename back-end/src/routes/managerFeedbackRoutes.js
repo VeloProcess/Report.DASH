@@ -32,9 +32,11 @@ const requireManager = (req, res, next) => {
   next();
 };
 
-// Middleware de debug para todas as requisições
+// Middleware de debug para todas as requisições (ANTES de autenticação para ver todas as requisições)
 router.use((req, res, next) => {
-  console.log(`🔍 managerFeedbackRoutes: ${req.method} ${req.path}`);
+  console.log(`🔍 managerFeedbackRoutes recebeu: ${req.method} ${req.path}`);
+  console.log(`🔍 Query params:`, req.query);
+  console.log(`🔍 Params:`, req.params);
   next();
 });
 
@@ -212,7 +214,17 @@ router.get('/feedback/:operatorId', async (req, res) => {
     console.log(`📥 GET /api/manager/feedback/${operatorId}`, { month, year });
     
     // Verificar se operador existe
-    const operator = getOperatorById(operatorId);
+    // IMPORTANTE: Usar getAllOperatorsComplete() para incluir operadores criados dinamicamente
+    let operator = getOperatorById(operatorId);
+    
+    // Se não encontrou no DB, tentar buscar na lista completa (inclui operadores dinâmicos)
+    if (!operator) {
+      console.log(`🔄 Operador não encontrado no DB, buscando na lista completa...`);
+      const { getAllOperatorsComplete } = await import('./managerRoutes.js');
+      const allOperators = getAllOperatorsComplete();
+      operator = allOperators.find(op => op.id === operatorId);
+    }
+    
     if (!operator) {
       console.log(`❌ Operador não encontrado: ${operatorId}`);
       return res.status(404).json({
@@ -259,6 +271,9 @@ router.get('/feedback/:operatorId', async (req, res) => {
  * Body: { operatorId, month, year, feedbackText, id? (opcional para atualização) }
  */
 router.post('/feedback', async (req, res) => {
+  console.log(`🚀 ROTA POST /feedback EXECUTADA!`);
+  console.log(`📥 Body recebido:`, req.body);
+  console.log(`📥 Headers:`, req.headers);
   try {
     console.log(`📥 POST /api/manager/feedback`, req.body);
     const { operatorId, month, year, feedbackText, id } = req.body;
@@ -277,12 +292,29 @@ router.post('/feedback', async (req, res) => {
     }
     
     // Verificar se operador existe
-    const operator = getOperatorById(parseInt(operatorId));
+    // IMPORTANTE: Usar getAllOperatorsComplete() para incluir operadores criados dinamicamente
+    console.log(`🔍 Verificando operador ID: ${operatorId}`);
+    let operator = getOperatorById(parseInt(operatorId));
+    
+    // Se não encontrou no DB, tentar buscar na lista completa (inclui operadores dinâmicos)
     if (!operator) {
+      console.log(`🔄 Operador não encontrado no DB, buscando na lista completa...`);
+      const { getAllOperatorsComplete } = await import('./managerRoutes.js');
+      const allOperators = getAllOperatorsComplete();
+      operator = allOperators.find(op => op.id === parseInt(operatorId));
+      console.log(`🔍 Total de operadores na lista completa: ${allOperators.length}`);
+      console.log(`🔍 IDs disponíveis:`, allOperators.map(op => op.id).join(', '));
+    }
+    
+    console.log(`🔍 Operador encontrado:`, operator ? `Sim - ${operator.name}` : 'Não');
+    if (!operator) {
+      console.log(`❌ Operador ID ${operatorId} não encontrado, retornando 404`);
       return res.status(404).json({
-        error: 'Operador não encontrado'
+        error: 'Operador não encontrado',
+        operatorId: operatorId
       });
     }
+    console.log(`✅ Operador válido: ${operator.name} (ID: ${operator.id})`);
     
     // Validar mês
     const validMonths = ['Outubro', 'Novembro', 'Dezembro'];

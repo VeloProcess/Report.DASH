@@ -17,21 +17,30 @@ const formatMonthMetrics = (month, metrics) => {
   
   return `
 ${month}:
+ATENDIMENTO:
 - Ligações: ${metrics.calls || add.calls || 'N/A'}
 - TMA: ${metrics.tma || add.tma || 'N/A'}
-- Tickets: ${add.tickets || 'N/A'}
-- TMT: ${add.tmt || 'N/A'}
+- Tickets: ${add.tickets || metrics.tickets || 'N/A'}
+- TMT: ${add.tmt || metrics.tmt || 'N/A'}
+
+QUALIDADE:
+- Pesq telefone: ${metrics.quality_score || add.quality_score || add.pesquisa_telefone || 'N/A'}
+- Qtd pesq telefone: ${metrics.qtd_pesq_telefone || add.qtd_pesq_telefone || 'N/A'}
+- Pesq ticket: ${metrics.pesquisa_ticket || add.pesquisa_ticket || 'N/A'}
+- Qtd pesq ticket: ${metrics.qtd_pesq_ticket || add.qtd_pesq_ticket || 'N/A'}
+- Nota qualidade: ${metrics.nota_qualidade || add.nota_qualidade || 'N/A'}%
+- Qtd avaliações: ${metrics.qtd_avaliacoes || add.qtd_avaliacoes || 'N/A'}
+
+DISPONIBILIDADE, PAUSAS E INTERVALOS:
 - % Logado: ${metrics.percent_logado || add.percent_logado || 'N/A'}%
-- Nota Qualidade: ${add.nota_qualidade || 'N/A'}%
-- Qtd Avaliações: ${add.qtd_avaliacoes || 'N/A'}
-- Pausas Escaladas: ${add.pausa_escalada || 'N/A'}
-- Pausas Realizadas: ${add.total_pausas || 'N/A'}
-- Almoço Escalado: ${add.almoco_escalado || 'N/A'}
-- Almoço Realizado: ${add.almoco_realizado || 'N/A'}
-- Pausa 10min Escalada: ${add.pausa10_escalada || 'N/A'}
-- Pausa 10min Realizada: ${add.pausa10_realizado || 'N/A'}
-- Pausa Banheiro: ${add.pausa_banheiro || 'N/A'}
-- Pausa Feedback: ${add.pausa_feedback || 'N/A'}
+- Pausas Escaladas: ${add.pausa_escalada || metrics.pausa_escalada || 'N/A'}
+- Pausas Realizadas: ${add.total_pausas || metrics.total_pausas || 'N/A'}
+- Almoço Escalado: ${add.almoco_escalado || metrics.almoco_escalado || 'N/A'}
+- Almoço Realizado: ${add.almoco_realizado || metrics.almoco_realizado || 'N/A'}
+- Pausa 10min Escalada: ${add.pausa10_escalada || metrics.pausa10_escalada || 'N/A'}
+- Pausa 10min Realizada: ${add.pausa10_realizado || metrics.pausa10_realizado || 'N/A'}
+- Pausa Banheiro: ${add.pausa_banheiro || metrics.pausa_banheiro || 'N/A'}
+- Pausa Feedback: ${add.pausa_feedback || metrics.pausa_feedback || 'N/A'}
 `;
 };
 
@@ -213,40 +222,70 @@ export const generateThreeMonthsFeedbackDirect = async (email) => {
       }
     }
     
-    // Criar prompt específico
+    // Criar prompt específico com agrupamento de métricas
     const prompt = `Analise a evolução do desempenho do operador ${operatorName} nos últimos 3 meses:
 
 ${monthsMetricsText}
 
-IMPORTANTE - Entenda corretamente o que significa MELHORAR vs PIORAR para cada métrica:
+IMPORTANTE - Organize a análise em 3 grupos principais:
 
-MÉTRICAS ONDE MENOR É MELHOR (redução = melhoria):
-- TMA (Tempo Médio de Atendimento): Se diminuiu de 5min para 3min = MELHOROU (não aumentou!)
-- TMT (Tempo Médio de Tratamento): Se diminuiu = MELHOROU
-- Pausas: Se diminuiu = MELHOROU
+1. **ATENDIMENTO** (agrupe: Ligações, TMA, Tickets e TMT)
+   - Ligações: Se aumentou = MELHOROU
+   - TMA (Tempo Médio de Atendimento): Se diminuiu = MELHOROU (ex: de 5min para 3min = MELHOROU)
+   - Tickets: Se aumentou = MELHOROU
+   - TMT (Tempo Médio de Tratamento): Se diminuiu = MELHOROU
 
-MÉTRICAS ONDE MAIOR É MELHOR (aumento = melhoria):
-- Ligações: Se aumentou = MELHOROU
-- Tickets: Se aumentou = MELHOROU
-- Nota Qualidade: Se aumentou = MELHOROU
-- % Logado: Se aumentou = MELHOROU
-- Qtd Avaliações: Se aumentou = MELHOROU
+2. **QUALIDADE** (agrupe: Pesq telefone, Qtd pesq telefone, Pesq ticket, Qtd pesq ticket, Nota qualidade e Qtd avaliações)
+   - Pesq telefone: Se aumentou = MELHOROU
+   - Qtd pesq telefone: Se aumentou = MELHOROU
+   - Pesq ticket: Se aumentou = MELHOROU
+   - Qtd pesq ticket: Se aumentou = MELHOROU
+   - Nota qualidade: Se aumentou = MELHOROU
+   - Qtd avaliações: Se aumentou = MELHOROU
 
-ATENÇÃO: Quando TMA ou TMT diminuem, isso é uma MELHORIA, não uma piora! Use palavras como "reduziu", "diminuiu", "melhorou" ao invés de "aumentou".
+3. **DISPONIBILIDADE, PAUSAS E INTERVALOS** (agrupe tudo junto: % Logado, Pausas, Almoço, Pausa 10min, Pausa Banheiro, Pausa Feedback)
+   - % Logado: Se aumentou = MELHOROU
+   - Pausas: Se diminuiu = MELHOROU
+   - Almoço: Se diminuiu = MELHOROU (tempo de almoço menor = melhor)
+   - Pausa 10min: Se diminuiu = MELHOROU
+   - Pausa Banheiro: Se diminuiu = MELHOROU
+   - Pausa Feedback: Se diminuiu = MELHOROU
+
+ATENÇÃO CRÍTICA: 
+- Quando TMA ou TMT diminuem, isso é uma MELHORIA! Use palavras como "reduziu", "diminuiu", "melhorou" ao invés de "aumentou".
+- Agrupe os quesitos conforme os 3 grupos acima ao analisar melhorias, declínios e manutenções.
 
 Forneça um feedback comparativo seguindo este formato JSON:
 
 {
   "summary": "Resumo geral da evolução nos últimos 3 meses (2-3 frases). Mencione se está melhorando, piorando ou mantendo desempenho.",
-  "improving": "Quesitos onde está melhorando. Para TMA/TMT: mencione a REDUÇÃO (ex: 'TMA reduziu de 5min para 3min'). Para outras: mencione o AUMENTO.",
-  "declining": "Quesitos onde está piorando ou precisa atenção. Para TMA/TMT: mencione o AUMENTO (ex: 'TMA aumentou de 3min para 5min'). Para outras: mencione a REDUÇÃO.",
-  "maintained": "Quesitos onde manteve desempenho semelhante (lista)",
-  "recommendations": "Recomendações práticas para o próximo mês (lista de ações específicas)"
+  "atendimento": {
+    "improving": "Métricas de ATENDIMENTO que melhoraram (Ligações, TMA, Tickets, TMT). Seja específico com valores e meses.",
+    "declining": "Métricas de ATENDIMENTO que pioraram ou precisam atenção. Seja específico.",
+    "maintained": "Métricas de ATENDIMENTO que mantiveram desempenho semelhante."
+  },
+  "qualidade": {
+    "improving": "Métricas de QUALIDADE que melhoraram (Pesq telefone, Qtd pesq telefone, Pesq ticket, Qtd pesq ticket, Nota qualidade, Qtd avaliações). Seja específico.",
+    "declining": "Métricas de QUALIDADE que pioraram ou precisam atenção. Seja específico.",
+    "maintained": "Métricas de QUALIDADE que mantiveram desempenho semelhante."
+  },
+  "disponibilidade_pausas_intervalos": {
+    "improving": "Métricas de DISPONIBILIDADE, PAUSAS E INTERVALOS que melhoraram (% Logado, Pausas, Almoço, Pausa 10min, Pausa Banheiro, Pausa Feedback). Seja específico.",
+    "declining": "Métricas de DISPONIBILIDADE, PAUSAS E INTERVALOS que pioraram ou precisam atenção. Seja específico.",
+    "maintained": "Métricas de DISPONIBILIDADE, PAUSAS E INTERVALOS que mantiveram desempenho semelhante."
+  },
+  "recommendations": "Recomendações práticas para o próximo mês, organizadas por grupo (Atendimento, Qualidade, Disponibilidade/Pausas/Intervalos). Seja específico e acionável."
 }`;
 
     const systemPrompt = `Você é um analista de desempenho. Analise os dados dos últimos 3 meses e forneça feedback comparativo objetivo e construtivo.
 
-CRÍTICO: Entenda que para TMA e TMT, REDUZIR é MELHORAR. Se TMA foi de 5min para 3min, isso é uma MELHORIA (redução do tempo), não uma piora.
+CRÍTICO: 
+1. Entenda que para TMA e TMT, REDUZIR é MELHORAR. Se TMA foi de 5min para 3min, isso é uma MELHORIA (redução do tempo), não uma piora.
+2. ORGANIZE a análise em 3 grupos:
+   - ATENDIMENTO: Ligações, TMA, Tickets e TMT
+   - QUALIDADE: Pesq telefone, Qtd pesq telefone, Pesq ticket, Qtd pesq ticket, Nota qualidade e Qtd avaliações
+   - DISPONIBILIDADE, PAUSAS E INTERVALOS: % Logado, Pausas, Almoço, Pausa 10min, Pausa Banheiro, Pausa Feedback
+3. Para cada grupo, identifique o que melhorou, piorou e manteve.
 
 Retorne APENAS um objeto JSON válido, sem texto adicional antes ou depois.`;
 
@@ -335,23 +374,77 @@ Retorne APENAS um objeto JSON válido, sem texto adicional antes ou depois.`;
     // Parsear resposta JSON
     const feedbackData = JSON.parse(responseContent);
     
-    // Formatar feedback
+    // Formatar feedback com agrupamento
     let feedbackText = `📊 **Análise Comparativa dos Últimos 3 Meses**\n\n`;
     
     if (feedbackData.summary) {
       feedbackText += `${feedbackData.summary}\n\n`;
     }
     
-    if (feedbackData.improving) {
-      feedbackText += `✅ **Quesitos em Melhoria:**\n${feedbackData.improving}\n\n`;
+    // Seção: ATENDIMENTO
+    if (feedbackData.atendimento) {
+      feedbackText += `📞 **ATENDIMENTO** (Ligações, TMA, Tickets e TMT)\n\n`;
+      
+      if (feedbackData.atendimento.improving) {
+        feedbackText += `✅ **Em Melhoria:**\n${feedbackData.atendimento.improving}\n\n`;
+      }
+      
+      if (feedbackData.atendimento.declining) {
+        feedbackText += `⚠️ **Precisa Atenção:**\n${feedbackData.atendimento.declining}\n\n`;
+      }
+      
+      if (feedbackData.atendimento.maintained) {
+        feedbackText += `➡️ **Mantido:**\n${feedbackData.atendimento.maintained}\n\n`;
+      }
     }
     
-    if (feedbackData.declining) {
-      feedbackText += `⚠️ **Quesitos que Precisam de Atenção:**\n${feedbackData.declining}\n\n`;
+    // Seção: QUALIDADE
+    if (feedbackData.qualidade) {
+      feedbackText += `⭐ **QUALIDADE** (Pesq telefone, Qtd pesq telefone, Pesq ticket, Qtd pesq ticket, Nota qualidade e Qtd avaliações)\n\n`;
+      
+      if (feedbackData.qualidade.improving) {
+        feedbackText += `✅ **Em Melhoria:**\n${feedbackData.qualidade.improving}\n\n`;
+      }
+      
+      if (feedbackData.qualidade.declining) {
+        feedbackText += `⚠️ **Precisa Atenção:**\n${feedbackData.qualidade.declining}\n\n`;
+      }
+      
+      if (feedbackData.qualidade.maintained) {
+        feedbackText += `➡️ **Mantido:**\n${feedbackData.qualidade.maintained}\n\n`;
+      }
     }
     
-    if (feedbackData.maintained) {
-      feedbackText += `➡️ **Quesitos Mantidos:**\n${feedbackData.maintained}\n\n`;
+    // Seção: DISPONIBILIDADE, PAUSAS E INTERVALOS
+    if (feedbackData.disponibilidade_pausas_intervalos) {
+      feedbackText += `⏰ **DISPONIBILIDADE, PAUSAS E INTERVALOS**\n\n`;
+      
+      if (feedbackData.disponibilidade_pausas_intervalos.improving) {
+        feedbackText += `✅ **Em Melhoria:**\n${feedbackData.disponibilidade_pausas_intervalos.improving}\n\n`;
+      }
+      
+      if (feedbackData.disponibilidade_pausas_intervalos.declining) {
+        feedbackText += `⚠️ **Precisa Atenção:**\n${feedbackData.disponibilidade_pausas_intervalos.declining}\n\n`;
+      }
+      
+      if (feedbackData.disponibilidade_pausas_intervalos.maintained) {
+        feedbackText += `➡️ **Mantido:**\n${feedbackData.disponibilidade_pausas_intervalos.maintained}\n\n`;
+      }
+    }
+    
+    // Fallback para formato antigo (compatibilidade)
+    if (!feedbackData.atendimento && !feedbackData.qualidade && !feedbackData.disponibilidade_pausas_intervalos) {
+      if (feedbackData.improving) {
+        feedbackText += `✅ **Quesitos em Melhoria:**\n${feedbackData.improving}\n\n`;
+      }
+      
+      if (feedbackData.declining) {
+        feedbackText += `⚠️ **Quesitos que Precisam de Atenção:**\n${feedbackData.declining}\n\n`;
+      }
+      
+      if (feedbackData.maintained) {
+        feedbackText += `➡️ **Quesitos Mantidos:**\n${feedbackData.maintained}\n\n`;
+      }
     }
     
     if (feedbackData.recommendations) {
